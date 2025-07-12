@@ -45,7 +45,108 @@
         </header>
 
     <main>
-        <section id="travel-details" style="display:none;">
+        <section id="flight-selection">
+            <h2>Znajdź swój lot</h2>
+            <form id="flight-form">
+                <div class="form-group">
+                    <label for="departureCity">Miasto wylotu:</label>
+                    <input type="text" id="departureCity" placeholder="Wybierz miasto wylotu" readonly required>
+                </div>
+
+                <div class="form-group">
+                    <label for="arrivalCity">Miasto przylotu:</label>
+                    <input type="text" id="arrivalCity" placeholder="Wybierz miasto przylotu" readonly required>
+                </div>
+
+                <div class="form-group">
+                    <label for="departureDate">Data wylotu:</label>
+                    <input type="text" id="departureDate" placeholder="Wybierz datę wylotu" readonly required>
+                </div>
+
+                <div class="form-group">
+                    <label for="returnDate">Data powrotu (opcjonalnie):</label>
+                    <input type="text" id="returnDate" placeholder="Wybierz datę powrotu (opcjonalnie)" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="classPassengers">Klasa i pasażerowie:</label>
+                    <input type="text" id="classPassengers" placeholder="Wybierz klasę i liczbę pasażerów" readonly>
+                    </div>
+
+                <button type="submit">Wyszukaj loty</button>
+            </form>
+        </section>
+
+        <section id="payment-simulation" style="display:none;">
+            <h2>Symulacja płatności</h2>
+            <p>To jest tylko test. Żadna prawdziwa płatność nie zostanie dokonana.</p>
+            <button>Zasymuluj płatność</button>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 VIS Airlines. Wszystkie prawa zastrzeżone.</p>
+    </footer>
+
+    <div id="citySelectionModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" data-modal="citySelectionModal">&times;</span>
+            <h3>Wybierz miasto/lotnisko</h3>
+            <div class="city-list">
+                <div class="country-group">
+                    <h4>Polska</h4>
+                    <ul>
+                        <li data-city="Warsaw">Warszawa (WAW)</li>
+                        <li data-city="Krakow">Kraków (KRK)</li>
+                        <li data-city="Gdansk">Gdańsk (GDN)</li>
+                        <li data-city="Wroclaw">Wrocław (WRO)</li>
+                    </ul>
+                </div>
+                <div class="country-group">
+                    <h4>Niemcy</h4>
+                    <ul>
+                        <li data-city="Berlin">Berlin (BER)</li>
+                        <li data-city="Frankfurt">Frankfurt (FRA)</li>
+                        <li data-city="Munich">Monachium (MUC)</li>
+                    </ul>
+                </div>
+                <div class="country-group">
+                    <h4>Wielka Brytania</h4>
+                    <ul>
+                        <li data-city="London">Londyn (LHR)</li>
+                        <li data-city="Manchester">Manchester (MAN)</li>
+                    </ul>
+                </div>
+                <div class="country-group">
+                    <h4>Francja</h4>
+                    <ul>
+                        <li data-city="Paris">Paryż (CDG)</li>
+                        <li data-city="Nice">Nicea (NCE)</li>
+                    </ul>
+                </div>
+                <div class="country-group">
+                    <h4>Włochy</h4>
+                    <ul>
+                        <li data-city="Rome">Rzym (FCO)</li>
+                        <li data-city="Milan">Mediolan (MXP)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="calendarModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" data-modal="calendarModal">&times;</span>
+            <h3>Wybierz datę</h3>
+            <div id="calendar-container">
+                </div>
+        </div>
+    </div>
+
+    <div id="travelDetailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" data-modal="travelDetailsModal">&times;</span>
             <h2>Wybierz klasę podróży i pasażerów</h2>
             <div class="travel-class-selection">
                 <button class="class-button" data-class="Economy">LOT Economy Class</button>
@@ -99,100 +200,6 @@
                 </div>
                 <button class="confirm-passengers-btn">Potwierdź</button>
             </div>
-        </section>
-
-
-        <section id="flight-selection">
-            <h2>Znajdź swój lot</h2>
-            <form id="flight-form">
-                <div class="form-group">
-                    <label for="departureCity">Miasto wylotu:</label>
-                    <input type="text" id="departureCity" placeholder="Wybierz miasto wylotu" readonly required>
-                    </div>
-
-                <div class="form-group">
-                    <label for="arrivalCity">Miasto przylotu:</label>
-                    <input type="text" id="arrivalCity" placeholder="Wybierz miasto przylotu" readonly required>
-                    </div>
-
-                <div class="form-group">
-                    <label for="departureDate">Data wylotu:</label>
-                    <input type="text" id="departureDate" placeholder="Wybierz datę wylotu" readonly required>
-                    </div>
-
-                <div class="form-group">
-                    <label for="returnDate">Data powrotu (opcjonalnie):</label>
-                    <input type="text" id="returnDate" placeholder="Wybierz datę powrotu (opcjonalnie)" readonly>
-                    </div>
-
-                <button type="submit">Wyszukaj loty</button>
-            </form>
-        </section>
-
-        <section id="payment-simulation" style="display:none;">
-            <h2>Symulacja płatności</h2>
-            <p>To jest tylko test. Żadna prawdziwa płatność nie zostanie dokonana.</p>
-            <button>Zasymuluj płatność</button>
-        </section>
-    </main>
-
-    <footer>
-        <p>&copy; 2025 VIS Airlines. Wszystkie prawa zastrzeżone.</p>
-    </footer>
-
-    <div id="citySelectionModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button">&times;</span>
-            <h3>Wybierz miasto/lotnisko</h3>
-            <div class="city-list">
-                <div class="country-group">
-                    <h4>Polska</h4>
-                    <ul>
-                        <li data-city="Warsaw">Warszawa (WAW)</li>
-                        <li data-city="Krakow">Kraków (KRK)</li>
-                        <li data-city="Gdansk">Gdańsk (GDN)</li>
-                        <li data-city="Wroclaw">Wrocław (WRO)</li>
-                    </ul>
-                </div>
-                <div class="country-group">
-                    <h4>Niemcy</h4>
-                    <ul>
-                        <li data-city="Berlin">Berlin (BER)</li>
-                        <li data-city="Frankfurt">Frankfurt (FRA)</li>
-                        <li data-city="Munich">Monachium (MUC)</li>
-                    </ul>
-                </div>
-                <div class="country-group">
-                    <h4>Wielka Brytania</h4>
-                    <ul>
-                        <li data-city="London">Londyn (LHR)</li>
-                        <li data-city="Manchester">Manchester (MAN)</li>
-                    </ul>
-                </div>
-                <div class="country-group">
-                    <h4>Francja</h4>
-                    <ul>
-                        <li data-city="Paris">Paryż (CDG)</li>
-                        <li data-city="Nice">Nicea (NCE)</li>
-                    </ul>
-                </div>
-                <div class="country-group">
-                    <h4>Włochy</h4>
-                    <ul>
-                        <li data-city="Rome">Rzym (FCO)</li>
-                        <li data-city="Milan">Mediolan (MXP)</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="calendarModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button">&times;</span>
-            <h3>Wybierz datę</h3>
-            <div id="calendar-container">
-                </div>
         </div>
     </div>
 
