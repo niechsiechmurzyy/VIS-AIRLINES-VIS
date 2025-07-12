@@ -46,12 +46,6 @@ body {
     color: white;
 }
 
-/* Usunięto style dla .nav-center i związanych z logo/tytułem VIS, ponieważ te elementy zostały usunięte z HTML */
-/* .nav-center { ... } */
-/* .nav-center .nav-logo { ... } */
-/* .nav-center .nav-title { ... } */
-
-
 .nav-icon {
     width: 28px;
     height: 28px;
@@ -102,14 +96,13 @@ body {
     display: block;
 }
 
-/* Nagłówek jest teraz pusty, aby usunąć "Witaj w VIS Airlines!" i logo */
 header {
     padding: 0;
-    min-height: 0; /* Ustawienie minimalnej wysokości na 0 */
-    margin: 0; /* Usunięcie marginesów */
-    background-color: transparent; /* Usunięte tło */
-    color: transparent; /* Usunięty kolor tekstu */
-    display: block; /* Może być block, bo nic nie wyświetla */
+    min-height: 0;
+    margin: 0;
+    background-color: transparent;
+    color: transparent;
+    display: block;
 }
 
 main {
@@ -186,17 +179,8 @@ footer {
     cursor: pointer; /* Zaznacza, że input jest klikalny (otwiera modal) */
 }
 
-/* Style dla sekcji wyboru klasy i pasażerów (nowe style) */
-#travel-details {
-    display: block; /* Domyślnie widoczna, jeśli zaczynamy od niej */
-    margin-bottom: 30px;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: #fdfdfd;
-    text-align: center;
-}
 
+/* Style dla wyboru klasy i pasażerów w modalu (nowe style) */
 .travel-class-selection {
     display: flex;
     justify-content: center;
@@ -363,11 +347,18 @@ footer {
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
-.modal-content h3 {
+.modal-content h2 { /* Zastosuj do h2 w modalu klasy/pasazerow */
     text-align: center;
     color: #0056b3;
     margin-bottom: 20px;
 }
+
+.modal-content h3 { /* Zastosuj do h3 w modalu wyboru miasta */
+    text-align: center;
+    color: #0056b3;
+    margin-bottom: 20px;
+}
+
 
 .close-button {
     color: #aaa;
