@@ -3,15 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIS Airlines - Symulacja Zakupu Biletów</title>
+    <title>VIS Airlines - Wyniki Wyszukiwania Lotów</title>
     <link rel="icon" href="assets/images/logo.png" type="image/png">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css"> <style>
+        /* Dodatkowe style specyficzne dla strony wyników, jeśli potrzebne */
+        .search-summary {
+            background-color: #e6f7ff; /* Jasnoniebieskie tło */
+            border: 1px solid #99ddff;
+            padding: 15px 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            text-align: left;
+            font-size: 1.1em;
+            color: #333;
+        }
+
+        .search-summary p {
+            margin: 5px 0;
+        }
+
+        .flight-results h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #0056b3;
+        }
+
+        .flight-card {
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .flight-segment {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px dashed #eee;
+            padding-bottom: 10px;
+        }
+
+        .flight-segment:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .flight-time, .flight-info {
+            flex: 1;
+            text-align: center;
+        }
+
+        .flight-time {
+            font-size: 1.6em;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .flight-info {
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .flight-route {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .flight-duration {
+            font-size: 0.85em;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .arrow {
+            font-size: 1.5em;
+            color: #ccc;
+            margin: 0 10px;
+        }
+
+        .flight-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .flight-price {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #28a745; /* Zielony kolor dla ceny */
+        }
+
+        .select-flight-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease;
+        }
+
+        .select-flight-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Styl dla komunikatu o braku lotów */
+        .no-flights-message {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2em;
+            color: #d9534f; /* Czerwony kolor */
+            background-color: #fdd;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+
+        /* Styl dla komunikatu o klasie podróży */
+        .class-restriction-message {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1em;
+            color: #f0ad4e; /* Pomarańczowy kolor */
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+    </style>
 </head>
 <body>
     <nav class="navbar">
         <div class="nav-left">
-            <a href="#" class="nav-link">Zarezerwuj lot</a>
-            <a href="#" class="nav-link">Odpraw się</a>
+            <a href="index.html" class="nav-link">Zarezerwuj lot</a> <a href="#" class="nav-link">Odpraw się</a>
             <a href="#" class="nav-link">Zarządzaj rezerwacją</a>
         </div>
         <div class="nav-right">
@@ -45,42 +179,21 @@
         </header>
 
     <main>
-        <section id="flight-selection">
-            <h2>Znajdź swój lot</h2>
-            <form id="flight-form">
-                <div class="form-group">
-                    <label for="departureCity">Miasto wylotu:</label>
-                    <input type="text" id="departureCity" placeholder="Wybierz miasto wylotu" readonly required>
-                </div>
+        <section class="flight-results">
+            <div class="search-summary">
+                <p><strong>Wybrane kryteria:</strong></p>
+                <p id="summary-route"></p>
+                <p id="summary-dates"></p>
+                <p id="summary-class-passengers"></p>
+            </div>
 
-                <div class="form-group">
-                    <label for="arrivalCity">Miasto przylotu:</label>
-                    <input type="text" id="arrivalCity" placeholder="Wybierz miasto przylotu" readonly required>
-                </div>
+            <h2>Dostępne loty</h2>
 
-                <div class="form-group">
-                    <label for="departureDate">Data wylotu:</label>
-                    <input type="text" id="departureDate" placeholder="Wybierz datę wylotu" readonly required>
-                </div>
+            <div id="flight-listings">
+                <p class="no-flights-message" id="no-flights-message" style="display: none;">Brak dostępnych lotów dla wybranej trasy lub daty.</p>
+                <p class="class-restriction-message" id="class-restriction-message" style="display: none;">Ta trasa nie obsługuje wybranej klasy podróży.</p>
+            </div>
 
-                <div class="form-group">
-                    <label for="returnDate">Data powrotu (opcjonalnie):</label>
-                    <input type="text" id="returnDate" placeholder="Wybierz datę powrotu (opcjonalnie)" readonly>
-                </div>
-
-                <div class="form-group">
-                    <label for="classPassengers">Klasa i pasażerowie:</label>
-                    <input type="text" id="classPassengers" placeholder="Wybierz klasę i liczbę pasażerów" readonly>
-                    </div>
-
-                <button type="submit">Wyszukaj loty</button>
-            </form>
-        </section>
-
-        <section id="payment-simulation" style="display:none;">
-            <h2>Symulacja płatności</h2>
-            <p>To jest tylko test. Żadna prawdziwa płatność nie zostanie dokonana.</p>
-            <button>Zasymuluj płatność</button>
         </section>
     </main>
 
@@ -88,122 +201,150 @@
         <p>&copy; 2025 VIS Airlines. Wszystkie prawa zastrzeżone.</p>
     </footer>
 
-    <div id="citySelectionModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" data-modal="citySelectionModal">&times;</span>
-            <h3>Wybierz miasto/lotnisko</h3>
-            <div class="city-list">
-                <div class="country-group">
-                    <h4>Polska</h4>
-                    <ul>
-                        <li data-city="Warsaw">Warszawa (WAW)</li>
-                        <li data-city="Krakow">Kraków (KRK)</li>
-                        <li data-city="Gdansk">Gdańsk (GDN)</li>
-                        <li data-city="Wroclaw">Wrocław (WRO)</li>
-                    </ul>
-                </div>
-                <div class="country-group">
-                    <h4>Niemcy</h4>
-                    <ul>
-                        <li data-city="Berlin">Berlin (BER)</li>
-                        <li data-city="Frankfurt">Frankfurt (FRA)</li>
-                        <li data-city="Munich">Monachium (MUC)</li>
-                    </ul>
-                </div>
-                <div class="country-group">
-                    <h4>Wielka Brytania</h4>
-                    <ul>
-                        <li data-city="London">Londyn (LHR)</li>
-                        <li data-city="Manchester">Manchester (MAN)</li>
-                    </ul>
-                </div>
-                <div class="country-group">
-                    <h4>Francja</h4>
-                    <ul>
-                        <li data-city="Paris">Paryż (CDG)</li>
-                        <li data-city="Nice">Nicea (NCE)</li>
-                    </ul>
-                </div>
-                <div class="country-group">
-                    <h4>Włochy</h4>
-                    <ul>
-                        <li data-city="Rome">Rzym (FCO)</li>
-                        <li data-city="Milan">Mediolan (MXP)</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
+    <script>
+        // Skrypt specyficzny dla tej strony do wyświetlania wyników
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const departureCity = params.get('departureCity');
+            const arrivalCity = params.get('arrivalCity');
+            const departureDate = params.get('departureDate');
+            const returnDate = params.get('returnDate');
+            const selectedClass = params.get('selectedClass');
+            const adults = params.get('adults');
+            const teenagers = params.get('teenagers');
+            const children = params.get('children');
+            const infantsSeat = params.get('infants-seat');
+            const infantsLap = params.get('infants-lap');
 
-    <div id="calendarModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" data-modal="calendarModal">&times;</span>
-            <h3>Wybierz datę</h3>
-            <div id="calendar-container">
-                </div>
-        </div>
-    </div>
+            document.getElementById('summary-route').textContent = `Trasa: ${departureCity} → ${arrivalCity}`;
+            document.getElementById('summary-dates').textContent = `Daty: ${departureDate} ${returnDate ? '→ ' + returnDate : ''}`;
+            document.getElementById('summary-class-passengers').textContent = `Klasa: ${selectedClass}, Pasażerowie: Dorośli ${adults}, Nastolatkowie ${teenagers}, Dzieci ${children}, Niemowlęta z miejscem ${infantsSeat}, Niemowlęta ${infantsLap}`;
 
-    <div id="travelDetailsModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" data-modal="travelDetailsModal">&times;</span>
-            <h2>Wybierz klasę podróży i pasażerów</h2>
-            <div class="travel-class-selection">
-                <button class="class-button" data-class="Economy">LOT Economy Class</button>
-                <button class="class-button" data-class="PremiumEconomy">LOT Premium Economy</button>
-                <button class="class-button" data-class="Business">LOT Business Class</button>
-                <button class="class-button" data-class="First">LOT First Class</button>
-            </div>
-            <div class="passenger-selection">
-                <h3>Dodaj pasażerów</h3>
-                <p>Sprawdź wiek pasażerów w dniu wylotu</p>
+            const flightListings = document.getElementById('flight-listings');
+            const noFlightsMessage = document.getElementById('no-flights-message');
+            const classRestrictionMessage = document.getElementById('class-restriction-message');
 
-                <div class="passenger-row">
-                    <span>Dorośli<br><span>16+ lat <span class="info-icon">i</span></span></span>
-                    <div class="quantity-control">
-                        <button class="minus-btn" data-type="adults">-</button>
-                        <span id="adults-count">1</span>
-                        <button class="plus-btn" data-type="adults">+</button>
-                    </div>
-                </div>
-                <div class="passenger-row">
-                    <span>Nastolatkowie<br><span>12-15 lat <span class="info-icon">i</span></span></span>
-                    <div class="quantity-control">
-                        <button class="minus-btn" data-type="teenagers">-</button>
-                        <span id="teenagers-count">0</span>
-                        <button class="plus-btn" data-type="teenagers">+</button>
-                    </div>
-                </div>
-                <div class="passenger-row">
-                    <span>Dzieci<br><span>2-11 lat <span class="info-icon">i</span></span></span>
-                    <div class="quantity-control">
-                        <button class="minus-btn" data-type="children">-</button>
-                        <span id="children-count">0</span>
-                        <button class="plus-btn" data-type="children">+</button>
-                    </div>
-                </div>
-                <div class="passenger-row">
-                    <span>Niemowlęta (z miejscem)<br><span>0-24 miesięcy <span class="info-icon">i</span></span></span>
-                    <div class="quantity-control">
-                        <button class="minus-btn" data-type="infants-seat">-</button>
-                        <span id="infants-seat-count">0</span>
-                        <button class="plus-btn" data-type="infants-seat">+</button>
-                    </div>
-                </div>
-                <div class="passenger-row">
-                    <span>Niemowlęta<br><span>0-24 miesięcy <span class="info-icon">i</span></span></span>
-                    <div class="quantity-control">
-                        <button class="minus-btn" data-type="infants-lap">-</button>
-                        <span id="infants-lap-count">0</span>
-                        <button class="plus-btn" data-type="infants-lap">+</button>
-                    </div>
-                </div>
-                <button class="confirm-passengers-btn">Potwierdź</button>
-            </div>
-        </div>
-    </div>
+            // --- Dane lotów (Symulacja) ---
+            const availableFlights = [
+                {
+                    from: "Gdańsk",
+                    to: "Warszawa",
+                    departureTime: "05:00",
+                    arrivalTime: "05:55",
+                    duration: "0h 55min",
+                    price: 199,
+                    restrictedClasses: ["LOT First Class", "LOT Premium Economy"], // Te klasy nie są obsługiwane
+                    frequency: "daily" // Codziennie dostępne
+                }
+                // Tutaj będziesz dodawać kolejne trasy
+            ];
 
+            let flightsFound = false;
 
-    <script src="js/script.js"></script>
+            availableFlights.forEach(flight => {
+                // Sprawdź, czy lot pasuje do wyszukiwania
+                if (departureCity === flight.from && arrivalCity === flight.to) {
+                    // Sprawdź ograniczenia klasy
+                    if (flight.restrictedClasses.includes(selectedClass)) {
+                        classRestrictionMessage.style.display = 'block';
+                        noFlightsMessage.style.display = 'none';
+                        flightsFound = true; // Znaleziono trasę, ale klasa nie pasuje
+                        return; // Przerwij dalsze przetwarzanie dla tego lotu
+                    }
+
+                    // Sprawdź daty (dla codziennych lotów, na razie zakładamy, że są dostępne)
+                    // W przyszłości można rozbudować o konkretne daty, dni tygodnia itp.
+                    if (flight.frequency === "daily") {
+                        // Tworzenie karty lotu
+                        const flightCard = document.createElement('div');
+                        flightCard.classList.add('flight-card');
+                        flightCard.innerHTML = `
+                            <div class="flight-segment">
+                                <div class="flight-time">${flight.departureTime}</div>
+                                <div class="flight-info">
+                                    <div class="flight-route">${flight.from} (${departureCity.substring(0, 3).toUpperCase()}) <span class="arrow">→</span> ${flight.to} (${arrivalCity.substring(0, 3).toUpperCase()})</div>
+                                    <div class="flight-duration">Czas lotu: ${flight.duration}</div>
+                                </div>
+                            </div>
+                            <div class="flight-details">
+                                <div class="flight-price">${flight.price} PLN</div>
+                                <button class="select-flight-btn">Wybierz lot</button>
+                            </div>
+                        `;
+                        flightListings.appendChild(flightCard);
+
+                        // Dodaj obsługę dla przycisku "Wybierz lot"
+                        flightCard.querySelector('.select-flight-btn').addEventListener('click', () => {
+                            alert(`Wybrano lot z ${flight.from} do ${flight.to} o ${flight.departureTime}! Przejście do następnego etapu.`);
+                            // Tutaj można by przekierować na stronę podsumowania/płatności
+                        });
+                        flightsFound = true;
+                    }
+                }
+            });
+
+            // Wyświetl komunikat o braku lotów tylko jeśli nie znaleziono żadnych pasujących lotów
+            if (!flightsFound) {
+                noFlightsMessage.style.display = 'block';
+                classRestrictionMessage.style.display = 'none'; // Upewnij się, że komunikat o klasie jest ukryty, jeśli to ogólny brak lotów
+            } else if (classRestrictionMessage.style.display === 'block') {
+                // Jeśli foundFlights jest true, ale komunikat o klasie jest wyświetlony, oznacza to, że trasa istnieje, ale klasa nie pasuje
+                noFlightsMessage.style.display = 'none';
+            } else {
+                noFlightsMessage.style.display = 'none'; // Jeśli loty zostały znalezione i wyświetlone
+                classRestrictionMessage.style.display = 'none';
+            }
+
+            // Obsługa nawigacji na stronie flights.html (potrzebna ta sama funkcjonalność dropdownów)
+            const languageIcon = document.getElementById('language-icon');
+            const languageDropdown = document.getElementById('language-dropdown');
+            const currencyIcon = document.getElementById('currency-icon');
+            const currencyDropdown = document.getElementById('currency-dropdown');
+            const accountIcon = document.getElementById('account-icon');
+            const accountDropdown = document.getElementById('account-dropdown');
+
+            function toggleDropdown(dropdownElement) {
+                document.querySelectorAll('.dropdown-content').forEach(dropdown => {
+                    if (dropdown !== dropdownElement && dropdown.classList.contains('show')) {
+                        dropdown.classList.remove('show');
+                    }
+                });
+                dropdownElement.classList.toggle('show');
+            }
+
+            if (languageIcon) {
+                languageIcon.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    toggleDropdown(languageDropdown);
+                });
+            }
+
+            if (currencyIcon) {
+                currencyIcon.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    toggleDropdown(currencyDropdown);
+                });
+            }
+
+            if (accountIcon) {
+                accountIcon.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    toggleDropdown(accountDropdown);
+                });
+            }
+
+            document.addEventListener('click', (event) => {
+                if (languageDropdown && languageDropdown.classList.contains('show') && !languageDropdown.contains(event.target) && event.target !== languageIcon) {
+                    languageDropdown.classList.remove('show');
+                }
+                if (currencyDropdown && currencyDropdown.classList.contains('show') && !currencyDropdown.contains(event.target) && event.target !== currencyIcon) {
+                    currencyDropdown.classList.remove('show');
+                }
+                if (accountDropdown && accountDropdown.classList.contains('show') && !accountDropdown.contains(event.target) && event.target !== accountIcon) {
+                    accountDropdown.classList.remove('show');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
