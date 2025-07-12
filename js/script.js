@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const flightSelectionSection = document.getElementById('flight-selection');
     const paymentSimulationSection = document.getElementById('payment-simulation');
-    const travelDetailsSection = document.getElementById('travel-details'); // Nowa sekcja
     const flightForm = document.getElementById('flight-form');
     const paymentButton = paymentSimulationSection.querySelector('button');
 
@@ -19,7 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const departureCityInput = document.getElementById('departureCity');
     const arrivalCityInput = document.getElementById('arrivalCity');
     const citySelectionModal = document.getElementById('citySelectionModal');
-    const cityModalCloseButton = citySelectionModal.querySelector('.close-button');
     const cityListItems = citySelectionModal.querySelectorAll('.city-list li');
     let currentCityInput = null; // Przechowuje, które pole input jest aktywne (wylot czy przylot)
 
@@ -27,19 +25,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const departureDateInput = document.getElementById('departureDate');
     const returnDateInput = document.getElementById('returnDate');
     const calendarModal = document.getElementById('calendarModal');
-    const calendarModalCloseButton = calendarModal.querySelector('.close-button');
     const calendarContainer = document.getElementById('calendar-container');
     let currentCalendarInput = null; // Przechowuje, które pole daty jest aktywne (wylot czy powrót)
     let selectedDepartureDate = null; // Przechowuje wybraną datę wylotu
     let selectedReturnDate = null; // Przechowuje wybraną datę powrotu
 
-    // Elementy dla sekcji pasażerów i klasy podróży
-    const classButtons = document.querySelectorAll('.class-button');
+    // Elementy dla NOWEGO modala wyboru klasy i pasażerów
+    const classPassengersInput = document.getElementById('classPassengers'); // Input, który otworzy modal
+    const travelDetailsModal = document.getElementById('travelDetailsModal'); // Sam modal
+    const classButtons = travelDetailsModal.querySelectorAll('.class-button');
     const passengerCounts = {
         adults: 1, teenagers: 0, children: 0, 'infants-seat': 0, 'infants-lap': 0
     };
-    const quantityControls = document.querySelectorAll('.quantity-control button');
-    const confirmPassengersBtn = document.querySelector('.confirm-passengers-btn');
+    const quantityControls = travelDetailsModal.querySelectorAll('.quantity-control button');
+    const confirmPassengersBtn = travelDetailsModal.querySelector('.confirm-passengers-btn');
+    let selectedClass = "LOT Economy Class"; // Domyślna klasa
 
     // --- Funkcje Ogólne ---
 
@@ -84,6 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Zamknij rozwijane menu, jeśli kliknięto poza nimi
     document.addEventListener('click', (event) => {
         if (languageDropdown && languageDropdown.classList.contains('show') && !languageDropdown.contains(event.target) && event.target !== languageIcon) {
             languageDropdown.classList.remove('show');
@@ -94,6 +95,19 @@ document.addEventListener('DOMContentLoaded', () => {
         if (accountDropdown && accountDropdown.classList.contains('show') && !accountDropdown.contains(event.target) && event.target !== accountIcon) {
             accountDropdown.classList.remove('show');
         }
+
+        // Zamknij modale, jeśli kliknięto poza ich zawartością, ale nie na triggerze
+        if (event.target.classList.contains('modal')) {
+            event.target.style.display = 'none';
+        }
+    });
+
+    // Obsługa przycisków zamykania modali (X)
+    document.querySelectorAll('.close-button').forEach(button => {
+        button.addEventListener('click', (event) => {
+            const modalId = event.target.dataset.modal;
+            document.getElementById(modalId).style.display = 'none';
+        });
     });
 
     if (registerLink) {
@@ -109,12 +123,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Obsługa Sekcji Wyboru Klasy i Pasażerów ---
+    // --- Obsługa Modala Wyboru Klasy i Pasażerów ---
+
+    // Otwórz modal po kliknięciu w input
+    if (classPassengersInput) {
+        classPassengersInput.addEventListener('click', () => {
+            closeAllModals();
+            travelDetailsModal.style.display = 'block';
+            updateClassPassengersInput(); // Aktualizuj input za każdym otwarciem
+        });
+    }
 
     classButtons.forEach(button => {
         button.addEventListener('click', () => {
             classButtons.forEach(btn => btn.classList.remove('selected'));
             button.classList.add('selected');
+            selectedClass = button.dataset.class; // Zapisz wybraną klasę
         });
     });
 
@@ -134,15 +158,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (confirmPassengersBtn) {
         confirmPassengersBtn.addEventListener('click', () => {
-            // Tutaj można by dodać walidację, np. czy wybrano klasę
-            alert(`Wybrano klasę: ${document.querySelector('.class-button.selected')?.dataset.class || 'Brak'}\n` +
-                  `Pasażerowie: Dorośli ${passengerCounts.adults}, Nastolatkowie ${passengerCounts.teenagers}, Dzieci ${passengerCounts.children}, Niemowlęta z miejscem ${passengerCounts['infants-seat']}, Niemowlęta ${passengerCounts['infants-lap']}`);
-
-            // Przejście do sekcji wyszukiwania lotów
-            travelDetailsSection.style.display = 'none';
-            flightSelectionSection.style.display = 'block';
+            travelDetailsModal.style.display = 'none'; // Zamknij modal
+            updateClassPassengersInput(); // Zaktualizuj input na stronie głównej
         });
     }
+
+    function updateClassPassengersInput() {
+        let totalPassengers = 0;
+        for (const type in passengerCounts) {
+            totalPassengers += passengerCounts[type];
+        }
+        let summaryText = '';
+        if (selectedClass) {
+            summaryText += `${selectedClass}`;
+        }
+        if (totalPassengers > 0) {
+            if (summaryText) summaryText += ", ";
+            summaryText += `${totalPassengers} pasażerów`;
+        } else {
+             if (summaryText) summaryText += ", "; // Jeśli klasa jest, ale pasażerów 0
+             summaryText += `0 pasażerów`;
+        }
+
+        classPassengersInput.value = summaryText || "Wybierz klasę i liczbę pasażerów";
+    }
+
+    // Ustawienie domyślnej klasy przy ładowaniu
+    // Upewnij się, że przynajmniej jeden przycisk klasy jest zaznaczony domyślnie
+    // (np. pierwszy, jeśli nie ma zapisanego wyboru)
+    if (classButtons.length > 0) {
+        let foundSelected = false;
+        classButtons.forEach(button => {
+            if (button.dataset.class === selectedClass) {
+                button.classList.add('selected');
+                foundSelected = true;
+            }
+        });
+        if (!foundSelected) {
+            classButtons[0].classList.add('selected'); // Zaznacz pierwszy jako domyślny
+            selectedClass = classButtons[0].dataset.class;
+        }
+    }
+    // Ustawienie początkowej wartości inputa przy ładowaniu strony
+    updateClassPassengersInput();
 
 
     // --- Obsługa Modala Wyboru Miasta/Lotniska ---
@@ -157,16 +215,6 @@ document.addEventListener('DOMContentLoaded', () => {
         closeAllModals();
         currentCityInput = arrivalCityInput;
         citySelectionModal.style.display = 'block';
-    });
-
-    cityModalCloseButton.addEventListener('click', () => {
-        citySelectionModal.style.display = 'none';
-    });
-
-    citySelectionModal.addEventListener('click', (event) => {
-        if (event.target === citySelectionModal) {
-            citySelectionModal.style.display = 'none';
-        }
     });
 
     cityListItems.forEach(item => {
@@ -194,18 +242,10 @@ document.addEventListener('DOMContentLoaded', () => {
         calendarModal.style.display = 'block';
     });
 
-    calendarModalCloseButton.addEventListener('click', () => {
-        calendarModal.style.display = 'none';
-    });
-
-    calendarModal.addEventListener('click', (event) => {
-        if (event.target === calendarModal) {
-            calendarModal.style.display = 'none';
-        }
-    });
 
     // Logika renderowania kalendarza
     let currentCalendarDate = new Date(); // Aktualny miesiąc/rok wyświetlany w kalendarzu
+    currentCalendarDate.setDate(1); // Ustaw na pierwszy dzień miesiąca, żeby uniknąć problemów z przełączaniem miesięcy
 
     function renderCalendar() {
         calendarContainer.innerHTML = ''; // Wyczyść poprzedni kalendarz
@@ -270,6 +310,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     cell.textContent = '';
                 } else {
                     const cellDate = new Date(year, month, date);
+                    cellDate.setHours(0,0,0,0); // Normalizuj czas
+
                     cell.textContent = date;
 
                     // Ograniczenie dat do roku do przodu od dzisiaj
@@ -286,8 +328,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     } else {
                         cell.dataset.date = cellDate.toISOString().split('T')[0]; // Format YYYY-MM-DD
                         cell.addEventListener('click', (event) => {
-                            const clickedDate = new Date(event.target.dataset.date);
-                            clickedDate.setHours(0,0,0,0);
+                            const clickedDateString = event.target.dataset.date;
+                            const clickedDate = new Date(clickedDateString);
+                            clickedDate.setHours(0,0,0,0); // Normalizuj czas
 
                             if (currentCalendarInput === departureDateInput) {
                                 // Wybieranie daty wylotu
@@ -310,8 +353,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         // Podświetlanie wybranych dat
                         if (selectedDepartureDate && cellDate.toDateString() === selectedDepartureDate.toDateString()) {
                             cell.classList.add('selected');
-                        }
-                        if (selectedReturnDate && cellDate.toDateString() === selectedReturnDate.toDateString()) {
+                        } else if (selectedReturnDate && cellDate.toDateString() === selectedReturnDate.toDateString()) {
                             cell.classList.add('selected');
                         }
                     }
@@ -342,7 +384,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            let flightDetails = `Znaleziono lot dla VIS Airlines:\n`;
+            let flightDetails = `Znaleziono Lot dla VIS Airlines:\n`; // Zmieniono "lot" na "Lot"
             flightDetails += `Wylot z: ${departureCity}\n`;
             flightDetails += `Przylot do: ${arrivalCity}\n`;
             flightDetails += `Data wylotu: ${departureDate}\n`;
@@ -351,7 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                  flightDetails += `Lot w jedną stronę\n`;
             }
-            flightDetails += `Klasa podróży: ${document.querySelector('.class-button.selected')?.dataset.class || 'Nie wybrano'}\n`;
+            flightDetails += `Klasa podróży: ${selectedClass || 'Nie wybrano'}\n`;
             flightDetails += `Liczba pasażerów: Dorośli ${passengerCounts.adults}, Nastolatkowie ${passengerCounts.teenagers}, Dzieci ${passengerCounts.children}, Niemowlęta z miejscem ${passengerCounts['infants-seat']}, Niemowlęta ${passengerCounts['infants-lap']}\n`;
             flightDetails += `\nPrzechodzimy do symulacji płatności.`;
 
@@ -371,8 +413,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Początkowe ukrywanie/pokazywanie sekcji ---
-    // Startujemy od sekcji wyboru klasy/pasażerów
-    travelDetailsSection.style.display = 'block';
-    flightSelectionSection.style.display = 'none';
+    // Startujemy od sekcji wyboru lotów, wszystkie modale są ukryte
+    flightSelectionSection.style.display = 'block';
     paymentSimulationSection.style.display = 'none';
+    citySelectionModal.style.display = 'none';
+    calendarModal.style.display = 'none';
+    travelDetailsModal.style.display = 'none'; // Upewnij się, że ten modal jest ukryty na start
 });
