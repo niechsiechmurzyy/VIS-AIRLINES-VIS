@@ -1,1 +1,69 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIS Airlines - Symulacja Zakupu Biletów</title>
+    <link rel="icon" href="assets/images/logo.png" type="image/png">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <img src="assets/images/logo.png" alt="Logo VIS Airlines" class="header-logo">
+        <h1>Witaj w VIS Airlines!</h1>
+    </header>
 
+    <main>
+        <section id="flight-selection">
+            <h2>Znajdź swój lot</h2>
+            <form id="flight-form">
+                <div class="form-group">
+                    <label for="departureCity">Miasto wylotu:</label>
+                    <select id="departureCity" required>
+                        <option value="">Wybierz miasto</option>
+                        <option value="Warsaw">Warszawa</option>
+                        <option value="Krakow">Kraków</option>
+                        <option value="Gdansk">Gdańsk</option>
+                        <option value="Wroclaw">Wrocław</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="arrivalCity">Miasto przylotu:</label>
+                    <select id="arrivalCity" required>
+                        <option value="">Wybierz miasto</option>
+                        <option value="Berlin">Berlin</option>
+                        <option value="London">Londyn</option>
+                        <option value="Paris">Paryż</option>
+                        <option value="Rome">Rzym</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="departureDate">Data wylotu:</label>
+                    <input type="date" id="departureDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="returnDate">Data powrotu (opcjonalnie):</label>
+                    <input type="date" id="returnDate">
+                </div>
+
+                <button type="submit">Wyszukaj loty</button>
+            </form>
+        </section>
+
+        <section id="payment-simulation" style="display:none;">
+            <h2>Symulacja płatności</h2>
+            <p>To jest tylko test. Żadna prawdziwa płatność nie zostanie dokonana.</p>
+            <button>Zasymuluj płatność</button>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 VIS Airlines. Wszystkie prawa zastrzeżone.</p>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
