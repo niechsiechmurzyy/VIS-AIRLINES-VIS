@@ -7,11 +7,98 @@ body {
     line-height: 1.6;
 }
 
+/* Style dla paska nawigacyjnego */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #87CEEB; /* JASNONIEBIESKIE TŁO NAWIGACJI */
+    padding: 10px 20px;
+    color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    position: sticky; /* Przykleja nawigację do góry podczas przewijania */
+    top: 0;
+    z-index: 1000; /* Upewnia się, że nawigacja jest zawsze na wierzchu */
+}
+
+.nav-left, .nav-right {
+    display: flex;
+    align-items: center;
+}
+
+.nav-left .nav-link {
+    color: white;
+    text-decoration: none;
+    margin-right: 20px;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.nav-left .nav-link:hover {
+    color: #0056b3; /* Ciemniejszy niebieski przy najechaniu */
+}
+
+.nav-center .nav-title {
+    font-size: 2em;
+    font-weight: bold;
+    color: #0056b3; /* Ciemniejszy niebieski dla napisu "VIS" */
+}
+
+.nav-icon {
+    width: 24px; /* Rozmiar ikon */
+    height: 24px;
+    cursor: pointer;
+    margin-left: 15px;
+    vertical-align: middle;
+}
+
+/* Style dla rozwijanych menu (dropdown) */
+.nav-item.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none; /* Domyślnie ukryte */
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    right: 0; /* Wyrównanie do prawej ikony */
+    border-radius: 5px;
+    overflow: hidden; /* Zapobiega wychodzeniu za rogi */
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    transition: background-color 0.3s ease;
+}
+
+.dropdown-content a:hover {
+    background-color: #ddd;
+}
+
+/* Widoczność dropdown po kliknięciu JS */
+.dropdown-content.show {
+    display: block;
+}
+
+/* Style dla nagłówka strony */
 header {
-    background-color: #333;
-    color: #fff;
+    background-color: #007bff;
+    color: white;
     padding: 1rem 0;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 120px;
+    margin-top: 0; /* Usuń margines, bo nawigacja jest sticky */
 }
 
 main {
@@ -29,130 +116,60 @@ section {
     border: 1px solid #ddd;
     border-radius: 5px;
     background-color: #fdfdfd;
-}
-
-h1, h2, h3 {
-    color: #0056b3;
     text-align: center;
-    margin-bottom: 20px;
 }
 
-.form-group {
-    margin-bottom: 15px;
-}
-
-label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-input[type="text"],
-input[type="number"],
-input[type="date"],
-input[type="email"],
-select {
-    width: calc(100% - 20px);
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box; /* Ważne, żeby padding nie dodawał do szerokości */
+h2 {
+    color: #0056b3;
 }
 
 button {
-    background-color: #007bff;
+    background-color: #28a745;
     color: white;
-    padding: 10px 15px;
+    padding: 10px 20px;
     border: none;
-    border-radius: 4px;
+    border-radius: 5px;
     cursor: pointer;
-    font-size: 16px;
-    width: 100%;
-    margin-top: 10px;
+    font-size: 1em;
+    margin-top: 15px;
+    transition: background-color 0.3s ease;
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #218838;
 }
 
-#flight-list div {
-    border: 1px solid #eee;
-    padding: 10px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    background-color: #fff;
-}
-
-#flight-list div.selected {
-    background-color: #e6f7ff;
-    border-color: #007bff;
-}
-
-.service-option {
-    margin-bottom: 10px;
-}
-
-.service-option label {
-    display: inline-block;
-    margin-left: 10px;
-    font-weight: normal;
-}
-
-#seat-map {
-    display: grid;
-    grid-template-columns: repeat(6, 40px); /* 6 miejsc w rzędzie */
-    gap: 5px;
-    justify-content: center;
-    margin-bottom: 20px;
-}
-
-.seat {
-    width: 40px;
-    height: 40px;
-    background-color: #eee;
-    border: 1px solid #ccc;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-.seat.available {
-    background-color: #d4edda; /* Zielony */
-    cursor: pointer;
-}
-
-.seat.unavailable {
-    background-color: #f8d7da; /* Czerwony */
-    cursor: not-allowed;
-}
-
-.seat.selected-seat {
-    background-color: #007bff; /* Niebieski */
-    color: white;
-}
-
-#total-price {
-    font-size: 1.5em;
-    font-weight: bold;
-    color: #28a745;
-}
-
-#confirmation p, #check-in-simulation p {
+footer {
     text-align: center;
-    font-size: 1.1em;
-}
-
-#boarding-pass {
-    border: 2px dashed #007bff;
     padding: 20px;
-    margin-top: 20px;
-    text-align: center;
-    background-color: #f0f8ff;
-    border-radius: 8px;
+    margin-top: 40px;
+    background-color: #333;
+    color: white;
+    font-size: 0.9em;
 }
 
-#boarding-pass h3 {
-    color: #0056b3;
+/* Style dla formularza wyboru lotów */
+.form-group {
+    margin-bottom: 15px;
+    text-align: left;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+.form-group input[type="date"],
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1em;
 }
