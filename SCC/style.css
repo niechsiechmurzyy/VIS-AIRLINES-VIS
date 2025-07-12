@@ -8,28 +8,10 @@ body {
 }
 
 header {
-    background-color: #007bff; /* Typowy niebieski dla lotnictwa */
-    color: white;
+    background-color: #333;
+    color: #fff;
     padding: 1rem 0;
     text-align: center;
-    display: flex; /* Układaj elementy obok siebie */
-    flex-direction: column; /* Ułóż logo i tekst jeden pod drugim */
-    align-items: center; /* Wyśrodkuj poziomo */
-    justify-content: center; /* Wyśrodkuj pionowo */
-    min-height: 120px; /* Zwiększ wysokość nagłówka */
-}
-
-.header-logo {
-    width: 80px; /* Rozmiar logo */
-    height: auto;
-    margin-bottom: 10px; /* Odstęp pod logo */
-    border-radius: 50%; /* Jeśli chcesz, żeby logo było okrągłe */
-}
-
-h1 {
-    color: white; /* Nagłówek w nagłówku strony */
-    margin: 0; /* Usuń domyślne marginesy */
-    font-size: 2.5em; /* Większy rozmiar dla głównego nagłówka */
 }
 
 main {
@@ -47,60 +29,130 @@ section {
     border: 1px solid #ddd;
     border-radius: 5px;
     background-color: #fdfdfd;
+}
+
+h1, h2, h3 {
+    color: #0056b3;
     text-align: center;
+    margin-bottom: 20px;
 }
 
-h2 {
-    color: #0056b3; /* Kolor nagłówków sekcji */
-}
-
-button {
-    background-color: #28a745; /* Zielony kolor dla przycisków akcji */
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1em;
-    margin-top: 15px;
-    transition: background-color 0.3s ease; /* Płynne przejście koloru przy najechaniu */
-}
-
-button:hover {
-    background-color: #218838;
-}
-
-footer {
-    text-align: center;
-    padding: 20px;
-    margin-top: 40px;
-    background-color: #333;
-    color: white;
-    font-size: 0.9em;
-}
-
-/* NOWE STYLE DLA FORMULARZA */
 .form-group {
     margin-bottom: 15px;
-    text-align: left;
-    max-width: 400px;
-    margin-left: auto;
-    margin-right: auto;
 }
 
-.form-group label {
+label {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
-    color: #555;
 }
 
-.form-group input[type="date"],
-.form-group select {
-    width: 100%;
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="email"],
+select {
+    width: calc(100% - 20px);
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    box-sizing: border-box;
-    font-size: 1em;
+    box-sizing: border-box; /* Ważne, żeby padding nie dodawał do szerokości */
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#flight-list div {
+    border: 1px solid #eee;
+    padding: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    background-color: #fff;
+}
+
+#flight-list div.selected {
+    background-color: #e6f7ff;
+    border-color: #007bff;
+}
+
+.service-option {
+    margin-bottom: 10px;
+}
+
+.service-option label {
+    display: inline-block;
+    margin-left: 10px;
+    font-weight: normal;
+}
+
+#seat-map {
+    display: grid;
+    grid-template-columns: repeat(6, 40px); /* 6 miejsc w rzędzie */
+    gap: 5px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.seat {
+    width: 40px;
+    height: 40px;
+    background-color: #eee;
+    border: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.seat.available {
+    background-color: #d4edda; /* Zielony */
+    cursor: pointer;
+}
+
+.seat.unavailable {
+    background-color: #f8d7da; /* Czerwony */
+    cursor: not-allowed;
+}
+
+.seat.selected-seat {
+    background-color: #007bff; /* Niebieski */
+    color: white;
+}
+
+#total-price {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #28a745;
+}
+
+#confirmation p, #check-in-simulation p {
+    text-align: center;
+    font-size: 1.1em;
+}
+
+#boarding-pass {
+    border: 2px dashed #007bff;
+    padding: 20px;
+    margin-top: 20px;
+    text-align: center;
+    background-color: #f0f8ff;
+    border-radius: 8px;
+}
+
+#boarding-pass h3 {
+    color: #0056b3;
 }
