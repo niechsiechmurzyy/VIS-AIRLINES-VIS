@@ -1,1 +1,350 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIS Airlines - Wyniki Wyszukiwania Lotów</title>
+    <link rel="icon" href="assets/images/logo.png" type="image/png">
+    <link rel="stylesheet" href="css/style.css"> <style>
+        /* Dodatkowe style specyficzne dla strony wyników, jeśli potrzebne */
+        .search-summary {
+            background-color: #e6f7ff; /* Jasnoniebieskie tło */
+            border: 1px solid #99ddff;
+            padding: 15px 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            text-align: left;
+            font-size: 1.1em;
+            color: #333;
+        }
 
+        .search-summary p {
+            margin: 5px 0;
+        }
+
+        .flight-results h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #0056b3;
+        }
+
+        .flight-card {
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .flight-segment {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px dashed #eee;
+            padding-bottom: 10px;
+        }
+
+        .flight-segment:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .flight-time, .flight-info {
+            flex: 1;
+            text-align: center;
+        }
+
+        .flight-time {
+            font-size: 1.6em;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .flight-info {
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .flight-route {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .flight-duration {
+            font-size: 0.85em;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .arrow {
+            font-size: 1.5em;
+            color: #ccc;
+            margin: 0 10px;
+        }
+
+        .flight-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .flight-price {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #28a745; /* Zielony kolor dla ceny */
+        }
+
+        .select-flight-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease;
+        }
+
+        .select-flight-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Styl dla komunikatu o braku lotów */
+        .no-flights-message {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2em;
+            color: #d9534f; /* Czerwony kolor */
+            background-color: #fdd;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+
+        /* Styl dla komunikatu o klasie podróży */
+        .class-restriction-message {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1em;
+            color: #f0ad4e; /* Pomarańczowy kolor */
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="index.html" class="nav-link">Zarezerwuj lot</a> <a href="#" class="nav-link">Odpraw się</a>
+            <a href="#" class="nav-link">Zarządzaj rezerwacją</a>
+        </div>
+        <div class="nav-right">
+            <div class="nav-item dropdown">
+                <img src="assets/images/language-icon.png" alt="Język" class="nav-icon" id="language-icon">
+                <div class="dropdown-content" id="language-dropdown">
+                    <a href="#">Polski</a>
+                    <a href="#">English</a>
+                    <a href="#">Deutsch</a>
+                </div>
+            </div>
+            <div class="nav-item dropdown">
+                <img src="assets/images/currency-icon.png" alt="Waluta" class="nav-icon" id="currency-icon">
+                <div class="dropdown-content" id="currency-dropdown">
+                    <a href="#">PLN</a>
+                    <a href="#">USD</a>
+                    <a href="#">EUR</a>
+                </div>
+            </div>
+            <div class="nav-item dropdown">
+                <img src="assets/images/account-icon.png" alt="Konto" class="nav-icon" id="account-icon">
+                <div class="dropdown-content" id="account-dropdown">
+                    <a href="#" id="login-link">Zaloguj się</a>
+                    <a href="register.html" id="register-link">Zarejestruj się</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header>
+        </header>
+
+    <main>
+        <section class="flight-results">
+            <div class="search-summary">
+                <p><strong>Wybrane kryteria:</strong></p>
+                <p id="summary-route"></p>
+                <p id="summary-dates"></p>
+                <p id="summary-class-passengers"></p>
+            </div>
+
+            <h2>Dostępne loty</h2>
+
+            <div id="flight-listings">
+                <p class="no-flights-message" id="no-flights-message" style="display: none;">Brak dostępnych lotów dla wybranej trasy lub daty.</p>
+                <p class="class-restriction-message" id="class-restriction-message" style="display: none;">Ta trasa nie obsługuje wybranej klasy podróży.</p>
+            </div>
+
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 VIS Airlines. Wszystkie prawa zastrzeżone.</p>
+    </footer>
+
+    <script>
+        // Skrypt specyficzny dla tej strony do wyświetlania wyników
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const departureCity = params.get('departureCity');
+            const arrivalCity = params.get('arrivalCity');
+            const departureDate = params.get('departureDate');
+            const returnDate = params.get('returnDate');
+            const selectedClass = params.get('selectedClass');
+            const adults = params.get('adults');
+            const teenagers = params.get('teenagers');
+            const children = params.get('children');
+            const infantsSeat = params.get('infants-seat');
+            const infantsLap = params.get('infants-lap');
+
+            document.getElementById('summary-route').textContent = `Trasa: ${departureCity} → ${arrivalCity}`;
+            document.getElementById('summary-dates').textContent = `Daty: ${departureDate} ${returnDate ? '→ ' + returnDate : ''}`;
+            document.getElementById('summary-class-passengers').textContent = `Klasa: ${selectedClass}, Pasażerowie: Dorośli ${adults}, Nastolatkowie ${teenagers}, Dzieci ${children}, Niemowlęta z miejscem ${infantsSeat}, Niemowlęta ${infantsLap}`;
+
+            const flightListings = document.getElementById('flight-listings');
+            const noFlightsMessage = document.getElementById('no-flights-message');
+            const classRestrictionMessage = document.getElementById('class-restriction-message');
+
+            // --- Dane lotów (Symulacja) ---
+            const availableFlights = [
+                {
+                    from: "Gdańsk",
+                    to: "Warszawa",
+                    departureTime: "05:00",
+                    arrivalTime: "05:55",
+                    duration: "0h 55min",
+                    price: 199,
+                    restrictedClasses: ["LOT First Class", "LOT Premium Economy"], // Te klasy nie są obsługiwane
+                    frequency: "daily" // Codziennie dostępne
+                }
+                // Tutaj będziesz dodawać kolejne trasy
+            ];
+
+            let flightsFound = false;
+
+            availableFlights.forEach(flight => {
+                // Sprawdź, czy lot pasuje do wyszukiwania
+                if (departureCity === flight.from && arrivalCity === flight.to) {
+                    // Sprawdź ograniczenia klasy
+                    if (flight.restrictedClasses.includes(selectedClass)) {
+                        classRestrictionMessage.style.display = 'block';
+                        noFlightsMessage.style.display = 'none';
+                        flightsFound = true; // Znaleziono trasę, ale klasa nie pasuje
+                        return; // Przerwij dalsze przetwarzanie dla tego lotu
+                    }
+
+                    // Sprawdź daty (dla codziennych lotów, na razie zakładamy, że są dostępne)
+                    // W przyszłości można rozbudować o konkretne daty, dni tygodnia itp.
+                    if (flight.frequency === "daily") {
+                        // Tworzenie karty lotu
+                        const flightCard = document.createElement('div');
+                        flightCard.classList.add('flight-card');
+                        flightCard.innerHTML = `
+                            <div class="flight-segment">
+                                <div class="flight-time">${flight.departureTime}</div>
+                                <div class="flight-info">
+                                    <div class="flight-route">${flight.from} (${departureCity.substring(0, 3).toUpperCase()}) <span class="arrow">→</span> ${flight.to} (${arrivalCity.substring(0, 3).toUpperCase()})</div>
+                                    <div class="flight-duration">Czas lotu: ${flight.duration}</div>
+                                </div>
+                            </div>
+                            <div class="flight-details">
+                                <div class="flight-price">${flight.price} PLN</div>
+                                <button class="select-flight-btn">Wybierz lot</button>
+                            </div>
+                        `;
+                        flightListings.appendChild(flightCard);
+
+                        // Dodaj obsługę dla przycisku "Wybierz lot"
+                        flightCard.querySelector('.select-flight-btn').addEventListener('click', () => {
+                            alert(`Wybrano lot z ${flight.from} do ${flight.to} o ${flight.departureTime}! Przejście do następnego etapu.`);
+                            // Tutaj można by przekierować na stronę podsumowania/płatności
+                        });
+                        flightsFound = true;
+                    }
+                }
+            });
+
+            // Wyświetl komunikat o braku lotów tylko jeśli nie znaleziono żadnych pasujących lotów
+            if (!flightsFound) {
+                noFlightsMessage.style.display = 'block';
+                classRestrictionMessage.style.display = 'none'; // Upewnij się, że komunikat o klasie jest ukryty, jeśli to ogólny brak lotów
+            } else if (classRestrictionMessage.style.display === 'block') {
+                // Jeśli foundFlights jest true, ale komunikat o klasie jest wyświetlony, oznacza to, że trasa istnieje, ale klasa nie pasuje
+                noFlightsMessage.style.display = 'none';
+            } else {
+                noFlightsMessage.style.display = 'none'; // Jeśli loty zostały znalezione i wyświetlone
+                classRestrictionMessage.style.display = 'none';
+            }
+
+            // Obsługa nawigacji na stronie flights.html (potrzebna ta sama funkcjonalność dropdownów)
+            const languageIcon = document.getElementById('language-icon');
+            const languageDropdown = document.getElementById('language-dropdown');
+            const currencyIcon = document.getElementById('currency-icon');
+            const currencyDropdown = document.getElementById('currency-dropdown');
+            const accountIcon = document.getElementById('account-icon');
+            const accountDropdown = document.getElementById('account-dropdown');
+
+            function toggleDropdown(dropdownElement) {
+                document.querySelectorAll('.dropdown-content').forEach(dropdown => {
+                    if (dropdown !== dropdownElement && dropdown.classList.contains('show')) {
+                        dropdown.classList.remove('show');
+                    }
+                });
+                dropdownElement.classList.toggle('show');
+            }
+
+            if (languageIcon) {
+                languageIcon.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    toggleDropdown(languageDropdown);
+                });
+            }
+
+            if (currencyIcon) {
+                currencyIcon.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    toggleDropdown(currencyDropdown);
+                });
+            }
+
+            if (accountIcon) {
+                accountIcon.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    toggleDropdown(accountDropdown);
+                });
+            }
+
+            document.addEventListener('click', (event) => {
+                if (languageDropdown && languageDropdown.classList.contains('show') && !languageDropdown.contains(event.target) && event.target !== languageIcon) {
+                    languageDropdown.classList.remove('show');
+                }
+                if (currencyDropdown && currencyDropdown.classList.contains('show') && !currencyDropdown.contains(event.target) && event.target !== currencyIcon) {
+                    currencyDropdown.classList.remove('show');
+                }
+                if (accountDropdown && accountDropdown.classList.contains('show') && !accountDropdown.contains(event.target) && event.target !== accountIcon) {
+                    accountDropdown.classList.remove('show');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
