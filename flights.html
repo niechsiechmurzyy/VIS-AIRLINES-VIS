@@ -583,6 +583,26 @@
             let initialInfantsSeat = parseInt(params.get('infants-seat') || 0);
             let initialInfantsLap = parseInt(params.get('infants-lap') || 0);
 
+            // Funkcja pomocnicza do wyodrębniania nazwy miasta z formatu "Miasto (KOD)"
+            function extractCityName(cityString) {
+                if (!cityString) return '';
+                const match = cityString.match(/^(.*?)\s*\(.+\)$/);
+                return match ? match[1].trim() : cityString.trim();
+            }
+
+            // Użyj wyodrębnionej nazwy miasta do filtrowania lotów
+            let currentDepartureCity = extractCityName(initialDepartureCity);
+            let currentArrivalCity = extractCityName(initialArrivalCity);
+            let currentDepartureDate = initialDepartureDate;
+            let currentReturnDate = initialReturnDate;
+            let currentSelectedClass = initialSelectedClass;
+            let currentAdults = initialAdults;
+            let currentTeenagers = initialTeenagers;
+            let currentChildren = initialChildren;
+            let currentInfantsSeat = initialInfantsSeat;
+            let currentInfantsLap = initialInfantsLap;
+
+
             // Pobieranie elementów DOM
             const topBarRoute = document.getElementById('top-bar-route');
             const topBarPassengers = document.getElementById('top-bar-passengers');
@@ -632,18 +652,6 @@
             const confirmPassengersBtn = travelDetailsModal.querySelector('.confirm-passengers-btn');
             let currentEditSelectedClass = initialSelectedClass;
 
-            // Zmienne do przechowywania aktualnych kryteriów wyszukiwania
-            let currentDepartureCity = initialDepartureCity;
-            let currentArrivalCity = initialArrivalCity;
-            let currentDepartureDate = initialDepartureDate;
-            let currentReturnDate = initialReturnDate;
-            let currentSelectedClass = initialSelectedClass;
-            let currentAdults = initialAdults;
-            let currentTeenagers = initialTeenagers;
-            let currentChildren = initialChildren;
-            let currentInfantsSeat = initialInfantsSeat;
-            let currentInfantsLap = initialInfantsLap;
-
 
             // --- Funkcje pomocnicze ---
 
@@ -679,8 +687,8 @@
             // --- Dane lotów (Symulacja dla Gdańsk -> Warszawa) ---
             const simulatedFlights = [
                 { // Lot Gdańsk -> Warszawa
-                    from: "Gdańsk",
-                    to: "Warszawa",
+                    from: "Gdańsk", // BEZ KODU LOTNISKA
+                    to: "Warszawa", // BEZ KODU LOTNISKA
                     flightNumber: "VIS101",
                     departureTime: "05:00",
                     arrivalTime: "05:55",
@@ -811,24 +819,17 @@
                 }
                 // Domyślnie zaznacz środkową datę (lub datę z URL, jeśli jest dostępna i mieści się w sliderze)
                 const defaultSelectedDateElement = dateListElement.querySelector(`[data-date="${targetDate.toISOString().split('T')[0]}"]`);
-                if (defaultSelectedDateElement) {
+                if (defaultSelectedDateElement && !defaultSelectedDateElement.classList.contains('disabled')) {
                     defaultSelectedDateElement.classList.add('selected');
                 } else {
-                    // Jeśli data z URL nie jest w zakresie wyświetlanych 7 dni, wybierz środkową (lub najbliższą poprawną)
-                    const middleIndex = 3; // Index dla dzisiaj
-                    if (dateListElement.children[middleIndex] && !dateListElement.children[middleIndex].classList.contains('disabled')) {
-                        dateListElement.children[middleIndex].classList.add('selected');
-                        selectedCallback(dateListElement.children[middleIndex].dataset.date);
-                    } else {
-                        // Fallback: znajdź pierwszą niedostępną datę
-                         for(let i=0; i<dateListElement.children.length; i++){
-                            if(!dateListElement.children[i].classList.contains('disabled')){
-                                dateListElement.children[i].classList.add('selected');
-                                selectedCallback(dateListElement.children[i].dataset.date);
-                                break;
-                            }
-                         }
-                    }
+                    // Jeśli data z URL nie jest w zakresie wyświetlanych 7 dni lub jest nieaktywna, znajdź pierwszą niedostępną datę
+                     for(let i=0; i<dateListElement.children.length; i++){
+                        if(!dateListElement.children[i].classList.contains('disabled')){
+                            dateListElement.children[i].classList.add('selected');
+                            selectedCallback(dateListElement.children[i].dataset.date);
+                            break;
+                        }
+                     }
                 }
             }
 
@@ -837,7 +838,8 @@
 
             function initializePage() {
                 // Ustaw nagłówki i podsumowanie
-                topBarRoute.textContent = `${currentDepartureCity} (${currentDepartureCity.substring(0, 3).toUpperCase()}) → ${currentArrivalCity} (${currentArrivalCity.substring(0, 3).toUpperCase()})`;
+                // Użyj oryginalnych wartości z URL dla topBarRoute, aby zachować format z kodem lotniska
+                topBarRoute.textContent = `${initialDepartureCity} → ${initialArrivalCity}`;
                 const totalPassengers = currentAdults + currentTeenagers + currentChildren + currentInfantsSeat + currentInfantsLap;
                 topBarPassengers.textContent = `${totalPassengers} pasażerów`;
                 departureFlightHeading.textContent = `Loty z ${currentDepartureCity} (${currentDepartureCity.substring(0, 3).toUpperCase()}) do ${currentArrivalCity} (${currentArrivalCity.substring(0, 3).toUpperCase()})`;
@@ -855,8 +857,11 @@
                     currentDepartureDate = formatDate(selectedDateStr); // Zapisz sformatowaną datę
                     renderFlights(selectedDateStr, 'departure', departureFlightListings, noDepartureFlightsMessage, departureClassRestrictionMessage);
                 });
-                // Ręcznie wywołaj renderFlights dla domyślnej daty wylotu
-                renderFlights(depDate.toISOString().split('T')[0], 'departure', departureFlightListings, noDepartureFlightsMessage, departureClassRestrictionMessage);
+                // Ręcznie wywołaj renderFlights dla domyślnej daty wylotu (tej, która zostanie zaznaczona w sliderze)
+                const selectedDepDateElement = departureDateList.querySelector('.date-item.selected');
+                if (selectedDepDateElement) {
+                    renderFlights(selectedDepDateElement.dataset.date, 'departure', departureFlightListings, noDepartureFlightsMessage, departureClassRestrictionMessage);
+                }
 
 
                 if (initialReturnDate) {
@@ -866,7 +871,10 @@
                         renderFlights(selectedDateStr, 'return', returnFlightListings, noReturnFlightsMessage, returnClassRestrictionMessage);
                     });
                      // Ręcznie wywołaj renderFlights dla domyślnej daty powrotu
-                    renderFlights(retDate.toISOString().split('T')[0], 'return', returnFlightListings, noReturnFlightsMessage, returnClassRestrictionMessage);
+                    const selectedRetDateElement = returnDateList.querySelector('.date-item.selected');
+                    if (selectedRetDateElement) {
+                        renderFlights(selectedRetDateElement.dataset.date, 'return', returnFlightListings, noReturnFlightsMessage, returnClassRestrictionMessage);
+                    }
                 }
 
                 // Inicjalizacja modali (te same funkcje co na index.html)
@@ -880,9 +888,9 @@
 
             editSearchToggle.addEventListener('click', () => {
                 editSearchDetails.classList.toggle('hidden');
-                // Ustaw bieżące wartości w polach edycji
-                editDepartureCity.value = currentDepartureCity;
-                editArrivalCity.value = currentArrivalCity;
+                // Ustaw bieżące wartości w polach edycji (UŻYJ ORYGINALNYCH WARTOŚCI DLA INPUTÓW)
+                editDepartureCity.value = initialDepartureCity; // Użyj initial, by zachować (GDN)
+                editArrivalCity.value = initialArrivalCity;   // Użyj initial, by zachować (WAW)
                 editDepartureDate.value = currentDepartureDate;
                 editReturnDate.value = currentReturnDate || ''; // Puste jeśli brak
                 updateEditClassPassengersInput();
@@ -914,8 +922,13 @@
 
             updateSearchBtn.addEventListener('click', () => {
                 // Zaktualizuj globalne zmienne kryteriów
-                currentDepartureCity = editDepartureCity.value;
-                currentArrivalCity = editArrivalCity.value;
+                // Przetwarzaj nazwy miast przed aktualizacją currentDepartureCity/currentArrivalCity
+                initialDepartureCity = editDepartureCity.value; // Zaktualizuj oryginalne, bo wrócą do URL
+                initialArrivalCity = editArrivalCity.value;   // Zaktualizuj oryginalne, bo wrócą do URL
+
+                currentDepartureCity = extractCityName(editDepartureCity.value); // Zawsze używaj wyodrębnionej nazwy dla logiki lotów
+                currentArrivalCity = extractCityName(editArrivalCity.value);     // Zawsze używaj wyodrębnionej nazwy dla logiki lotów
+
                 currentDepartureDate = editDepartureDate.value;
                 currentReturnDate = editReturnDate.value;
                 currentSelectedClass = currentEditSelectedClass; // Zaktualizuj z wartości z modala
@@ -946,7 +959,7 @@
                 cityListItems.forEach(item => {
                     item.addEventListener('click', () => {
                         if (currentEditCityInput) {
-                            currentEditCityInput.value = item.textContent;
+                            currentEditCityInput.value = item.textContent; // Ustaw pełną nazwę z kodem
                             citySelectionModal.style.display = 'none';
                         }
                     });
@@ -1079,13 +1092,13 @@
                                 const cellDate = new Date(year, month, date);
                                 cellDate.setHours(0,0,0,0);
 
-                                cell.textContent = date;
                                 const today = new Date();
                                 today.setHours(0,0,0,0);
                                 const maxDate = new Date();
                                 maxDate.setFullYear(maxDate.getFullYear() + 1);
                                 maxDate.setHours(23,59,59,999);
 
+                                cell.textContent = date;
                                 if (cellDate < today || cellDate > maxDate) {
                                     cell.classList.add('disabled');
                                     cell.style.pointerEvents = 'none';
