@@ -3,25 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIS Airlines – Gdańsk → Warszawa</title>
-    <link rel="stylesheet" href="style.css">
+    <title>VIS Airlines | Rezerwacja lotów</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <h1>VIS ✈</h1>
-        <p>Lotnisko Gdańsk → Lotnisko Warszawa</p>
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">✈ VIS Airlines</h1>
+            <nav class="nav">
+                <a href="#" class="nav-link">Strona główna</a>
+                <a href="#" class="nav-link">Moje rezerwacje</a>
+                <a href="#" class="nav-link">Kontakt</a>
+            </nav>
+        </div>
     </header>
-    <main>
-        <form action="flights.html" method="GET">
-            <div class="form-group">
-                <label for="date">Wybierz datę:</label>
-                <input type="date" id="date" name="date" required>
+
+    <main class="main">
+        <div class="container">
+            <div class="search-box">
+                <h2 class="search-title">Znajdź swój lot</h2>
+                <form id="search-form" class="search-form" action="flights.html" method="GET">
+                    <div class="input-group">
+                        <label class="input-label">Skąd</label>
+                        <input type="text" id="from-input" class="input-field" placeholder="Wybierz lotnisko" readonly>
+                        <div id="from-modal" class="airport-modal">
+                            <!-- Dynamicznie ładowane lotniska -->
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Dokąd</label>
+                        <input type="text" id="to-input" class="input-field" placeholder="Wybierz lotnisko" readonly>
+                        <div id="to-modal" class="airport-modal">
+                            <!-- Dynamicznie ładowane lotniska -->
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary">Szukaj lotów</button>
+                </form>
             </div>
-            <button type="submit">Szukaj lotów</button>
-        </form>
+        </div>
     </main>
-    <footer>
-        <p>© 2023 VIS Airlines. Loty codzienne.</p>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2023 VIS Airlines. Wszelkie prawa zastrzeżone.</p>
+        </div>
     </footer>
+
+    <script src="assets/js/script.js"></script>
 </body>
 </html>
