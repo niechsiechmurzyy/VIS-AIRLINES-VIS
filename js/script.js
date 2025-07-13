@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const flightSelectionSection = document.getElementById('flight-selection');
     const paymentSimulationSection = document.getElementById('payment-simulation');
     const flightForm = document.getElementById('flight-form');
-    const paymentButton = paymentSimulationSection.querySelector('button');
 
     // Elementy nawigacji
     const languageIcon = document.getElementById('language-icon');
@@ -27,10 +26,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const calendarModal = document.getElementById('calendarModal');
     const calendarContainer = document.getElementById('calendar-container');
     let currentCalendarInput = null; // Przechowuje, które pole daty jest aktywne (wylot czy powrót)
-    let selectedDepartureDate = null; // Przechowuje wybraną datę wylotu
-    let selectedReturnDate = null; // Przechowuje wybraną datę powrotu
+    let selectedDepartureDate = null; // Przechowuje wybraną datę wylotu (obiekt Date)
+    let selectedReturnDate = null; // Przechowuje wybraną datę powrotu (obiekt Date)
 
-    // Elementy dla NOWEGO modala wyboru klasy i pasażerów
+    // Elementy dla modala wyboru klasy i pasażerów
     const classPassengersInput = document.getElementById('classPassengers'); // Input, który otworzy modal
     const travelDetailsModal = document.getElementById('travelDetailsModal'); // Sam modal
     const classButtons = travelDetailsModal.querySelectorAll('.class-button');
@@ -130,7 +129,11 @@ document.addEventListener('DOMContentLoaded', () => {
         classPassengersInput.addEventListener('click', () => {
             closeAllModals();
             travelDetailsModal.style.display = 'block';
-            updateClassPassengersInput(); // Aktualizuj input za każdym otwarciem
+            // Upewnij się, że domyślna klasa jest zaznaczona przy otwarciu, jeśli jeszcze nie była
+            if (!document.querySelector('.class-button.selected') && classButtons.length > 0) {
+                classButtons[0].classList.add('selected');
+                selectedClass = classButtons[0].dataset.class;
+            }
         });
     }
 
@@ -146,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
         button.addEventListener('click', () => {
             const type = button.dataset.type;
             if (button.classList.contains('minus-btn')) {
-                if (passengerCounts[type] > (type === 'adults' ? 1 : 0)) { // Dorośli min. 1
+                if (passengerCounts[type] > (type === 'adults' ? 1 : 0)) { // Dorośli min. 1, reszta min. 0
                     passengerCounts[type]--;
                 }
             } else if (button.classList.contains('plus-btn')) {
@@ -158,6 +161,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (confirmPassengersBtn) {
         confirmPassengersBtn.addEventListener('click', () => {
+            // Walidacja: upewnij się, że co najmniej 1 dorosły został wybrany
+            if (passengerCounts.adults < 1) {
+                alert("Musisz wybrać co najmniej jednego dorosłego pasażera.");
+                return;
+            }
+
             travelDetailsModal.style.display = 'none'; // Zamknij modal
             updateClassPassengersInput(); // Zaktualizuj input na stronie głównej
         });
@@ -176,7 +185,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (summaryText) summaryText += ", ";
             summaryText += `${totalPassengers} pasażerów`;
         } else {
-             if (summaryText) summaryText += ", "; // Jeśli klasa jest, ale pasażerów 0
+             // To raczej nie powinno się zdarzyć, bo dorośli >= 1, ale na wszelki wypadek
+             if (summaryText) summaryText += ", ";
              summaryText += `0 pasażerów`;
         }
 
@@ -184,20 +194,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Ustawienie domyślnej klasy przy ładowaniu
-    // Upewnij się, że przynajmniej jeden przycisk klasy jest zaznaczony domyślnie
-    // (np. pierwszy, jeśli nie ma zapisanego wyboru)
-    if (classButtons.length > 0) {
-        let foundSelected = false;
-        classButtons.forEach(button => {
-            if (button.dataset.class === selectedClass) {
-                button.classList.add('selected');
-                foundSelected = true;
-            }
-        });
-        if (!foundSelected) {
-            classButtons[0].classList.add('selected'); // Zaznacz pierwszy jako domyślny
-            selectedClass = classButtons[0].dataset.class;
-        }
+    // Zaznacz pierwszy przycisk klasy jako domyślny i ustaw selectedClass
+    if (classButtons.length > 0 && !document.querySelector('.class-button.selected')) {
+        classButtons[0].classList.add('selected');
+        selectedClass = classButtons[0].dataset.class;
     }
     // Ustawienie początkowej wartości inputa przy ładowaniu strony
     updateClassPassengersInput();
@@ -377,46 +377,41 @@ document.addEventListener('DOMContentLoaded', () => {
             const departureCity = departureCityInput.value;
             const arrivalCity = arrivalCityInput.value;
             const departureDate = departureDateInput.value;
-            const returnDate = returnDateInput.value;
+            const returnDate = returnDateInput.value; // Może być pusty string jeśli lot w jedną stronę
 
-            if (!departureCity || !arrivalCity || !departureDate) {
-                alert('Proszę wypełnić wszystkie wymagane pola lotu (miasto wylotu, przylotu, data wylotu).');
+            // Walidacja podstawowa
+            if (!departureCity || !arrivalCity || !departureDate || !classPassengersInput.value || classPassengersInput.value === "Wybierz klasę i liczbę pasażerów") {
+                alert('Proszę wypełnić wszystkie wymagane pola lotu (Miasto wylotu, Miasto przylotu, Data wylotu, Klasa i pasażerowie).');
                 return;
             }
 
-            let flightDetails = `Znaleziono Lot dla VIS Airlines:\n`; // Zmieniono "lot" na "Lot"
-            flightDetails += `Wylot z: ${departureCity}\n`;
-            flightDetails += `Przylot do: ${arrivalCity}\n`;
-            flightDetails += `Data wylotu: ${departureDate}\n`;
+            // Przekierowanie na nową stronę z wynikami
+            const queryParams = new URLSearchParams();
+            queryParams.append('departureCity', departureCity);
+            queryParams.append('arrivalCity', arrivalCity);
+            queryParams.append('departureDate', departureDate);
             if (returnDate) {
-                flightDetails += `Data powrotu: ${returnDate}\n`;
-            } else {
-                 flightDetails += `Lot w jedną stronę\n`;
+                queryParams.append('returnDate', returnDate);
             }
-            flightDetails += `Klasa podróży: ${selectedClass || 'Nie wybrano'}\n`;
-            flightDetails += `Liczba pasażerów: Dorośli ${passengerCounts.adults}, Nastolatkowie ${passengerCounts.teenagers}, Dzieci ${passengerCounts.children}, Niemowlęta z miejscem ${passengerCounts['infants-seat']}, Niemowlęta ${passengerCounts['infants-lap']}\n`;
-            flightDetails += `\nPrzechodzimy do symulacji płatności.`;
+            queryParams.append('selectedClass', selectedClass); // Użyj zmiennej selectedClass
+            queryParams.append('adults', passengerCounts.adults);
+            queryParams.append('teenagers', passengerCounts.teenagers);
+            queryParams.append('children', passengerCounts.children);
+            queryParams.append('infants-seat', passengerCounts['infants-seat']);
+            queryParams.append('infants-lap', passengerCounts['infants-lap']);
 
-            alert(flightDetails);
 
-            flightSelectionSection.style.display = 'none';
-            paymentSimulationSection.style.display = 'block';
+            // Przekierowujemy na flights.html, który jest w tym samym katalogu głównym
+            window.location.href = `flights.html?${queryParams.toString()}`;
         });
     }
 
-    // --- Obsługa Przycisku Płatności ---
-
-    if (paymentButton) {
-        paymentButton.addEventListener('click', () => {
-            alert('Symulacja płatności dla VIS Airlines zakończona pomyślnie! Bilet został "kupiony".');
-        });
-    }
-
-    // --- Początkowe ukrywanie/pokazywanie sekcji ---
-    // Startujemy od sekcji wyboru lotów, wszystkie modale są ukryte
+    // --- Początkowe ukrywanie/pokazywanie sekcji i modali ---
+    // Upewnij się, że główna sekcja formularza jest widoczna
     flightSelectionSection.style.display = 'block';
+    // Upewnij się, że sekcja płatności jest ukryta na start
     paymentSimulationSection.style.display = 'none';
-    citySelectionModal.style.display = 'none';
-    calendarModal.style.display = 'none';
-    travelDetailsModal.style.display = 'none'; // Upewnij się, że ten modal jest ukryty na start
+
+    // Upewnij się, że wszystkie modale są ukryte na start
+    closeAllModals(); // Ta funkcja już to robi dla wszystkich elementów z klasą 'modal'
 });
