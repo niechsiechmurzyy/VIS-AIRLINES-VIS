@@ -3,1258 +3,750 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIS Airlines - Wyniki Wyszukiwania Lotów</title>
-    <link rel="icon" href="assets/images/logo.png" type="image/png">
+    <title>VIS Airlines - Znalezione loty</title>
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        /* Styles for Ryanair-like flight results page */
-        main {
-            padding: 0; /* Usuwamy padding z main, sekcje będą miały swój */
-            max-width: none; /* Używamy pełnej szerokości */
-            box-shadow: none; /* Usuwamy cień */
-            background-color: #f4f4f4; /* Tło strony */
-        }
-
-        .navbar {
-            background-color: #0056b3;
-            color: white;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-        .navbar .nav-left, .navbar .nav-right {
-            display: flex;
-            align-items: center;
-        }
-        .navbar .nav-link {
-            color: white;
-            text-decoration: none;
-            padding: 8px 15px;
-            border-radius: 4px;
-            transition: background-color 0.3s ease;
-        }
-        .navbar .nav-link:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-        .navbar .nav-item {
-            position: relative;
-            margin-left: 20px;
-        }
-        .navbar .nav-icon {
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-            vertical-align: middle;
-        }
-        .navbar .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: #f9f9f9;
-            min-width: 120px;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-            z-index: 1;
-            right: 0;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        .navbar .dropdown-content a {
-            color: black;
-            padding: 10px 16px;
-            text-decoration: none;
-            display: block;
-            text-align: left;
-        }
-        .navbar .dropdown-content a:hover {
-            background-color: #ddd;
-        }
-        .navbar .dropdown-content.show {
-            display: block;
-        }
-
-
-        .top-bar {
-            background-color: #e0f2f7; /* Jasnoniebieskie tło górnej belki */
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 1.1em;
-            color: #333;
-            border-bottom: 1px solid #cceeff;
-        }
-
-        .top-bar .route-info {
-            font-weight: bold;
-            color: #0056b3;
-        }
-
-        .top-bar .edit-search-btn {
-            background-color: #007bff;
-            color: white;
-            padding: 8px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9em;
-            transition: background-color 0.3s ease;
-        }
-        .top-bar .edit-search-btn:hover {
-            background-color: #0056b3;
-        }
-
-        .tab-navigation {
-            background-color: #ffffff;
-            border-bottom: 1px solid #ddd;
-            display: flex;
-            justify-content: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .tab-navigation a {
-            padding: 15px 25px;
-            text-decoration: none;
-            color: #555;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .tab-navigation a:hover {
-            background-color: #f0f0f0;
-        }
-
-        .tab-navigation a.active {
-            color: #007bff;
-            border-bottom: 3px solid #007bff;
-            background-color: #e6f7ff;
-        }
-
-        .tab-navigation img {
-            width: 20px;
-            height: 20px;
-            vertical-align: middle;
-        }
-
-        .flight-section {
-            max-width: 960px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-        }
-
-        h2 {
-            text-align: center;
-            color: #007bff;
-            margin-bottom: 20px;
-            font-size: 1.8em;
-        }
-
-        .date-slider {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            padding: 10px 0;
-            background-color: #f8f8f8;
-            border-radius: 8px;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
-        }
-
-        .date-slider-arrow {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1.2em;
-            transition: background-color 0.3s ease;
-            margin: 0 10px;
-        }
-        .date-slider-arrow:hover {
-            background-color: #0056b3;
-        }
-
-        .date-list {
-            display: flex;
-            overflow-x: auto; /* Pozwala na przewijanie dat, jeśli jest ich wiele */
-            scroll-behavior: smooth;
-            flex-grow: 1;
-            justify-content: flex-start; /* Domyślnie wyrównaj do lewej */
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-        }
-        .date-list::-webkit-scrollbar {
-            display: none; /* Chrome, Safari, Opera */
-        }
-
-        .date-item {
-            flex: 0 0 auto; /* Nie rozciągaj, nie kurcz, zachowaj rozmiar */
-            padding: 10px 15px;
-            text-align: center;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            min-width: 100px; /* Minimalna szerokość dla każdej daty */
-            margin: 0 5px;
-        }
-
-        .date-item.selected {
-            background-color: #e6f7ff; /* Jasnoniebieskie tło dla wybranej daty */
-            border: 2px solid #007bff;
-            color: #007bff;
-            font-weight: bold;
-            transform: translateY(-3px);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .date-item .day-name {
-            font-size: 0.9em;
-            color: #777;
-        }
-        .date-item .day-number {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #333;
-            margin-top: 5px;
-        }
-        .date-item .price {
-            font-size: 1.1em;
-            color: #28a745;
-            font-weight: bold;
-            margin-top: 5px;
-        }
-        .date-item.selected .day-name, .date-item.selected .day-number, .date-item.selected .price {
-            color: #007bff; /* Tekst również niebieski dla wybranej daty */
-        }
-
-        .flight-card {
-            background-color: #fff;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .flight-segment {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-bottom: 10px;
-        }
-
-        .flight-time-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-grow: 1;
-        }
-
-        .flight-times {
-            font-size: 1.8em;
-            font-weight: bold;
-            color: #007bff;
-            display: flex;
-            gap: 10px;
-        }
-        .flight-times span {
-            white-space: nowrap;
-        }
-
-        .flight-route-duration {
-            flex-grow: 1;
-        }
-        .flight-route {
-            font-size: 1.1em;
-            font-weight: bold;
-            color: #333;
-        }
-        .flight-duration {
-            font-size: 0.9em;
-            color: #777;
-            margin-top: 3px;
-        }
-
-        .flight-operator {
-            font-size: 0.8em;
-            color: #888;
-            background-color: #f0f0f0;
-            padding: 5px 10px;
-            border-radius: 5px;
-            white-space: nowrap;
-        }
-
-        .flight-details-bottom {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #eee;
-        }
-
-        .flight-price {
-            font-size: 2em;
-            font-weight: bold;
-            color: #28a745;
-        }
-
-        .select-flight-btn {
-            background-color: #007bff;
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1.1em;
-            transition: background-color 0.3s ease;
-        }
-        .select-flight-btn:hover {
-            background-color: #0056b3;
-        }
-
-        /* Style for no flights message */
-        .no-flights-message, .class-restriction-message {
-            text-align: center;
-            padding: 40px;
-            font-size: 1.2em;
-            color: #d9534f;
-            background-color: #fdd;
-            border: 1px solid #f5c6cb;
-            border-radius: 8px;
-            margin-top: 30px;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        /* Sekcja edycji wyszukiwania - na wzór Ryanair */
-        .edit-search-section {
-            background-color: #f0f8ff; /* Jasnoniebieskie tło */
-            border: 1px solid #cceeff;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .edit-search-section h3 {
-            margin-top: 0;
-            color: #0056b3;
-            font-size: 1.5em;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .edit-search-section .form-group {
-            margin-bottom: 15px;
-        }
-
-        .edit-search-section .form-group label {
-            font-weight: bold;
-            color: #555;
-            margin-bottom: 5px;
-            display: block;
-        }
-
-        .edit-search-section .form-group input[type="text"] {
-            width: calc(100% - 22px); /* Pełna szerokość z paddingiem i borderem */
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 1em;
-            cursor: pointer;
-        }
-
-        .edit-search-section .buttons-container {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .edit-search-section .buttons-container button {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.3s ease;
-        }
-
-        .edit-search-section .buttons-container button:hover {
-            background-color: #0056b3;
-        }
-
-        /* Responsywność */
-        @media (max-width: 768px) {
-            .top-bar {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-            .tab-navigation {
-                overflow-x: auto;
-                justify-content: flex-start;
-            }
-            .tab-navigation a {
-                flex-shrink: 0; /* Zapobiega kurczeniu się zakładek */
-            }
-            .date-list {
-                justify-content: flex-start;
-            }
-            .flight-segment {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-            .flight-time-info {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 5px;
-            }
-            .flight-details-bottom {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-            .select-flight-btn {
-                width: 100%;
-            }
-        }
-        @media (max-width: 480px) {
-            .flight-section {
-                padding: 10px;
-            }
-            .date-slider-arrow {
-                padding: 8px 12px;
-                font-size: 1em;
-            }
-            .date-item {
-                min-width: 80px;
-                padding: 8px 10px;
-            }
-            .flight-times {
-                font-size: 1.5em;
-            }
-            .flight-price {
-                font-size: 1.5em;
-            }
-        }
-    </style>
+    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-left">
-            <a href="index.html" class="nav-link">Zarezerwuj lot</a>
-            <a href="#" class="nav-link">Odpraw się</a>
-            <a href="#" class="nav-link">Zarządzaj rezerwacją</a>
-        </div>
-        <div class="nav-right">
-            <div class="nav-item dropdown">
-                <img src="assets/images/language-icon.png" alt="Język" class="nav-icon" id="language-icon">
-                <div class="dropdown-content" id="language-dropdown">
-                    <a href="#">Polski</a>
-                    <a href="#">English</a>
-                    <a href="#">Deutsch</a>
+    <header class="header">
+        <div class="top-bar">
+            <div class="container">
+                <div class="top-bar-left">
+                    <a href="index.html" class="logo-link">
+                        <img src="assets/images/logo.png" alt="VIS Airlines Logo" class="logo">
+                    </a>
+                    <nav class="main-nav">
+                        <ul>
+                            <li><a href="index.html" class="active">Zarezerwuj lot</a></li>
+                            <li><a href="#">Odpraw się</a></li>
+                            <li><a href="#">Zarządzaj rezerwacją</a></li>
+                        </ul>
+                    </nav>
                 </div>
-            </div>
-            <div class="nav-item dropdown">
-                <img src="assets/images/currency-icon.png" alt="Waluta" class="nav-icon" id="currency-icon">
-                <div class="dropdown-content" id="currency-dropdown">
-                    <a href="#">PLN</a>
-                    <a href="#">USD</a>
-                    <a href="#">EUR</a>
-                </div>
-            </div>
-            <div class="nav-item dropdown">
-                <img src="assets/images/account-icon.png" alt="Konto" class="nav-icon" id="account-icon">
-                <div class="dropdown-content" id="account-dropdown">
-                    <a href="#" id="login-link">Zaloguj się</a>
-                    <a href="register.html" id="register-link">Zarejestruj się</a>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <div class="top-bar">
-        <div class="route-info" id="top-bar-route"></div>
-        <div class="passengers-info" id="top-bar-passengers"></div>
-        <button class="edit-search-btn" id="edit-search-toggle">Edytuj wyszukiwanie</button>
-    </div>
-
-    <div class="tab-navigation">
-        <a href="#" class="active"><img src="assets/images/plane-icon.png" alt="Loty"> Loty</a>
-        <a href="#"><img src="assets/images/seat-icon.png" alt="Miejsca"> Miejsca</a>
-        <a href="#"><img src="assets/images/baggage-icon.png" alt="Bagaż"> Bagaż</a>
-        <a href="#"><img src="assets/images/extras-icon.png" alt="Dodatki"> Dodatki</a>
-        <a href="#"><img src="assets/images/payment-icon.png" alt="Przejdź i zapłać"> Przejdź i zapłać</a>
-    </div>
-
-    <main>
-        <section class="flight-section" id="departure-flights-section">
-            <h2 id="departure-flight-heading">Loty z Gdańsk (GDN) do Warszawa (WAW)</h2>
-
-            <div class="edit-search-section hidden" id="edit-search-details">
-                <h3>Edytuj wyszukiwanie</h3>
-                <div class="form-group">
-                    <label for="editDepartureCity">Miasto wylotu:</label>
-                    <input type="text" id="editDepartureCity" placeholder="Wybierz miasto" required readonly>
-                </div>
-                <div class="form-group">
-                    <label for="editArrivalCity">Miasto przylotu:</label>
-                    <input type="text" id="editArrivalCity" placeholder="Wybierz miasto" required readonly>
-                </div>
-                <div class="form-group">
-                    <label for="editDepartureDate">Data wylotu:</label>
-                    <input type="text" id="editDepartureDate" placeholder="dd. mm. rrrr" required readonly>
-                </div>
-                <div class="form-group">
-                    <label for="editReturnDate">Data powrotu (opcjonalnie):</label>
-                    <input type="text" id="editReturnDate" placeholder="dd. mm. rrrr" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="editClassPassengers">Klasa i pasażerowie:</label>
-                    <input type="text" id="editClassPassengers" placeholder="Wybierz klasę i liczbę pasażerów" required readonly>
-                </div>
-                <div class="buttons-container">
-                    <button id="update-search-btn">Zaktualizuj wyszukiwanie</button>
-                    <button id="cancel-edit-btn">Anuluj</button>
-                </div>
-            </div>
-
-            <div class="date-slider">
-                <button class="date-slider-arrow" id="prev-departure-day">&lt;</button>
-                <div class="date-list" id="departure-date-list">
+                <div class="top-bar-right">
+                    <div class="language-selector">
+                        <img src="assets/images/flag_pl.png" alt="Język" class="icon">
+                        <span>Język</span>
+                        <select>
+                            <option value="pl">Polski</option>
+                            <option value="en">English</option>
+                        </select>
                     </div>
-                <button class="date-slider-arrow" id="next-departure-day">&gt;</button>
-            </div>
-
-            <div id="departure-flight-listings">
+                    <div class="currency-selector">
+                        <img src="assets/images/icon_currency.png" alt="Waluta" class="icon">
+                        <span>Waluta</span>
+                        <select>
+                            <option value="PLN">PLN</option>
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                        </select>
+                    </div>
+                    <a href="#" class="account-link">
+                        <img src="assets/images/icon_account.png" alt="Konto" class="icon">
+                        <span>Konto</span>
+                    </a>
                 </div>
+            </div>
+        </div>
+    </header>
 
-            <p class="no-flights-message hidden" id="no-departure-flights-message">Brak dostępnych lotów w wybranej dacie.</p>
-            <p class="class-restriction-message hidden" id="departure-class-restriction-message">Wybrana klasa podróży nie jest obsługiwana dla tej trasy.</p>
+    <main class="main-content">
+        <section class="search-results-summary">
+            <div class="container">
+                <div class="summary-top-bar">
+                    <p>Wybrane kryteria:</p>
+                    <p id="topBarRoute">Trasa: ---</p>
+                    <p id="topBarDates">Daty: ---</p>
+                    <p id="topBarClass">Klasa: ---</p>
+                    <p id="topBarPassengers">Pasażerowie: ---</p>
+                    <button id="editSearchBtn" class="edit-search-btn">Edytuj wyszukiwanie</button>
+                </div>
+            </div>
         </section>
 
-        <section class="flight-section hidden" id="return-flights-section">
-            <h2 id="return-flight-heading">Loty z Warszawa (WAW) do Gdańsk (GDN)</h2>
-            <div class="date-slider">
-                <button class="date-slider-arrow" id="prev-return-day">&lt;</button>
-                <div class="date-list" id="return-date-list">
-                    </div>
-                <button class="date-slider-arrow" id="next-return-day">&gt;</button>
-            </div>
-
-            <div id="return-flight-listings">
+        <section class="flights-display">
+            <div class="container">
+                <div class="flight-section">
+                    <h2 id="departureFlightHeading">Loty wylotowe</h2>
+                    <div class="date-slider" id="departureDateSlider">
+                        </div>
+                    <div class="flight-listings" id="departure-flight-listings">
+                        </div>
+                    <p class="message-box error-message hidden" id="noDepartureFlightsMessage">Brak dostępnych lotów w wybranej dacie.</p>
+                    <p class="message-box error-message hidden" id="departureClassRestrictionMessage">Wybrana klasa podróży nie jest obsługiwana dla tej trasy.</p>
                 </div>
-            <p class="no-flights-message hidden" id="no-return-flights-message">Brak dostępnych lotów powrotnych w wybranej dacie.</p>
-            <p class="class-restriction-message hidden" id="return-class-restriction-message">Wybrana klasa podróży nie jest obsługiwana dla tej trasy.</p>
+
+                <div class="flight-section hidden" id="returnFlightsSection">
+                    <h2 id="returnFlightHeading">Loty powrotne</h2>
+                    <div class="date-slider" id="returnDateSlider">
+                        </div>
+                    <div class="flight-listings" id="return-flight-listings">
+                        </div>
+                    <p class="message-box error-message hidden" id="noReturnFlightsMessage">Brak dostępnych lotów w wybranej dacie.</p>
+                    <p class="message-box error-message hidden" id="returnClassRestrictionMessage">Wybrana klasa podróży nie jest obsługiwana dla tej trasy.</p>
+                </div>
+            </div>
         </section>
     </main>
 
-    <footer>
-        <p>&copy; 2025 VIS Airlines. Wszystkie prawa zastrzeżone.</p>
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 VIS Airlines. Wszystkie prawa zastrzeżone.</p>
+        </div>
     </footer>
 
+    <div id="editSearchModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Edytuj wyszukiwanie</h2>
+            <form id="editFlightSearchForm">
+                <div class="form-group">
+                    <label for="editDepartureCity">Miasto wylotu:</label>
+                    <select id="editDepartureCity" name="from" required>
+                        <option value="Gdańsk (GDN)">Gdańsk (GDN)</option>
+                        <option value="Warszawa (WAW)">Warszawa (WAW)</option>
+                        <option value="Kraków (KRK)">Kraków (KRK)</option>
+                        <option value="Wrocław (WRO)">Wrocław (WRO)</option>
+                        <option value="Poznań (POZ)">Poznań (POZ)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editArrivalCity">Miasto przylotu:</label>
+                    <select id="editArrivalCity" name="to" required>
+                        <option value="Warszawa (WAW)">Warszawa (WAW)</option>
+                        <option value="Gdańsk (GDN)">Gdańsk (GDN)</option>
+                        <option value="Kraków (KRK)">Kraków (KRK)</option>
+                        <option value="Wrocław (WRO)">Wrocław (WRO)</option>
+                        <option value="Poznań (POZ)">Poznań (POZ)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editDepartureDate">Data wylotu:</label>
+                    <input type="date" id="editDepartureDate" name="date_from" required>
+                </div>
+                <div class="form-group">
+                    <label for="editReturnDate">Data powrotu (opcjonalnie):</label>
+                    <input type="date" id="editReturnDate" name="date_to">
+                </div>
+                <div class="form-group class-passengers-group">
+                    <button type="button" id="editClassPassengersBtn" class="class-passengers-button">
+                        <span id="editSelectedClass">LOT Economy Class</span>, <span id="editSelectedPassengers">1 Pasażer</span>
+                    </button>
+                </div>
+                <button type="submit" class="search-flights-btn">Zaktualizuj wyszukiwanie</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="editClassPassengersModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Wybierz klasę podróży</h2>
+            <div class="class-options">
+                <button type="button" class="class-option selected" data-class="Economy">LOT Economy Class</button>
+                <button type="button" class="class-option" data-class="Premium Economy">LOT Premium Economy</button>
+                <button type="button" class="class-option" data-class="Business">LOT Business Class</button>
+            </div>
+
+            <h2>Dodaj pasażerów</h2>
+            <p class="small-text">Sprawdź wiek pasażerów w dniu wylotu</p>
+            <div class="passenger-types">
+                <div class="passenger-type">
+                    <label>Dorośli <span class="small-text">16+ lat</span> <span class="info-icon" title="Osoby w wieku 16 lat lub starsze."><img src="assets/images/icon_info.png" alt="Info"></span></label>
+                    <div class="quantity-control">
+                        <button type="button" class="minus-btn">-</button>
+                        <input type="number" value="1" min="1" id="editAdults" data-type="adults">
+                        <button type="button" class="plus-btn">+</button>
+                    </div>
+                </div>
+                <div class="passenger-type">
+                    <label>Nastolatkowie <span class="small-text">12-15 lat</span> <span class="info-icon" title="Osoby w wieku 12-15 lat."><img src="assets/images/icon_info.png" alt="Info"></span></label>
+                    <div class="quantity-control">
+                        <button type="button" class="minus-btn">-</button>
+                        <input type="number" value="0" min="0" id="editTeenagers" data-type="teenagers">
+                        <button type="button" class="plus-btn">+</button>
+                    </div>
+                </div>
+                <div class="passenger-type">
+                    <label>Dzieci <span class="small-text">2-11 lat</span> <span class="info-icon" title="Osoby w wieku 2-11 lat."><img src="assets/images/icon_info.png" alt="Info"></span></label>
+                    <div class="quantity-control">
+                        <button type="button" class="minus-btn">-</button>
+                        <input type="number" value="0" min="0" id="editChildren" data-type="children">
+                        <button type="button" class="plus-btn">+</button>
+                    </div>
+                </div>
+                <div class="passenger-type">
+                    <label>Niemowlęta (z miejscem) <span class="small-text">0-24 miesiące</span> <span class="info-icon" title="Dzieci do 24 miesiąca życia, które będą miały swoje miejsce."><img src="assets/images/icon_info.png" alt="Info"></span></label>
+                    <div class="quantity-control">
+                        <button type="button" class="minus-btn">-</button>
+                        <input type="number" value="0" min="0" id="editInfantsSeat" data-type="infantsSeat">
+                        <button type="button" class="plus-btn">+</button>
+                    </div>
+                </div>
+                <div class="passenger-type">
+                    <label>Niemowlęta <span class="small-text">0-24 miesiące</span> <span class="info-icon" title="Dzieci do 24 miesiąca życia, które będą podróżować na kolanach dorosłego."> <img src="assets/images/icon_info.png" alt="Info"></span></label>
+                    <div class="quantity-control">
+                        <button type="button" class="minus-btn">-</button>
+                        <input type="number" value="0" min="0" id="editInfantsLap" data-type="infantsLap">
+                        <button type="button" class="plus-btn">+</button>
+                    </div>
+                </div>
+            </div>
+            <button type="button" id="editConfirmPassengersBtn">Potwierdź</button>
+        </div>
+    </div>
+
+
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const params = new URLSearchParams(window.location.search);
-            const initialDepartureCity = params.get('departureCity');
-            const initialArrivalCity = params.get('arrivalCity');
-            let initialDepartureDate = params.get('departureDate');
-            let initialReturnDate = params.get('returnDate'); // Może być null
-            let initialSelectedClass = params.get('selectedClass');
-            let initialAdults = parseInt(params.get('adults') || 1);
-            let initialTeenagers = parseInt(params.get('teenagers') || 0);
-            let initialChildren = parseInt(params.get('children') || 0);
-            let initialInfantsSeat = parseInt(params.get('infants-seat') || 0);
-            let initialInfantsLap = parseInt(params.get('infants-lap') || 0);
-
-            // Funkcja pomocnicza do wyodrębniania nazwy miasta z formatu "Miasto (KOD)"
-            function extractCityName(cityString) {
-                if (!cityString) return '';
-                const match = cityString.match(/^(.*?)\s*\(.+\)$/);
-                return match ? match[1].trim() : cityString.trim();
-            }
-
-            // Użyj wyodrębnionej nazwy miasta do filtrowania lotów
-            let currentDepartureCity = extractCityName(initialDepartureCity);
-            let currentArrivalCity = extractCityName(initialArrivalCity);
-            let currentDepartureDate = initialDepartureDate;
-            let currentReturnDate = initialReturnDate;
-            let currentSelectedClass = initialSelectedClass;
-            let currentAdults = initialAdults;
-            let currentTeenagers = initialTeenagers;
-            let currentChildren = initialChildren;
-            let currentInfantsSeat = initialInfantsSeat;
-            let currentInfantsLap = initialInfantsLap;
-
-
-            // Pobieranie elementów DOM
-            const topBarRoute = document.getElementById('top-bar-route');
-            const topBarPassengers = document.getElementById('top-bar-passengers');
-            const departureFlightHeading = document.getElementById('departure-flight-heading');
-            const returnFlightHeading = document.getElementById('return-flight-heading');
-            const departureDateList = document.getElementById('departure-date-list');
-            const returnDateList = document.getElementById('return-date-list');
-            const departureFlightListings = document.getElementById('departure-flight-listings');
-            const returnFlightListings = document.getElementById('return-flight-listings');
-            const noDepartureFlightsMessage = document.getElementById('no-departure-flights-message');
-            const noReturnFlightsMessage = document.getElementById('no-return-flights-message');
-            const departureClassRestrictionMessage = document.getElementById('departure-class-restriction-message');
-            const returnClassRestrictionMessage = document.getElementById('return-class-restriction-message');
-            const departureFlightsSection = document.getElementById('departure-flights-section');
-            const returnFlightsSection = document.getElementById('return-flights-section');
-            const editSearchToggle = document.getElementById('edit-search-toggle');
-            const editSearchDetails = document.getElementById('edit-search-details');
-            const updateSearchBtn = document.getElementById('update-search-btn');
-            const cancelEditBtn = document.getElementById('cancel-edit-btn');
-
-            // Nowe elementy inputów w sekcji edycji wyszukiwania
-            const editDepartureCity = document.getElementById('editDepartureCity');
-            const editArrivalCity = document.getElementById('editArrivalCity');
-            const editDepartureDate = document.getElementById('editDepartureDate');
-            const editReturnDate = document.getElementById('editReturnDate');
-            const editClassPassengers = document.getElementById('editClassPassengers');
-
-            // Ustawienia dla modala wyboru miasta
-            const citySelectionModal = document.getElementById('citySelectionModal'); // Modal z index.html
-            const cityListItems = citySelectionModal.querySelectorAll('.city-list li');
-            let currentEditCityInput = null; // Przechowuje aktywne pole miasta w edycji
-
-            // Ustawienia dla modala kalendarza
-            const calendarModal = document.getElementById('calendarModal'); // Modal z index.html
-            const calendarContainer = document.getElementById('calendar-container');
-            let currentEditCalendarInput = null; // Przechowuje aktywne pole daty w edycji
-            let currentEditSelectedDepartureDate = null;
-            let currentEditSelectedReturnDate = null;
-
-            // Ustawienia dla modala klasy/pasażerów
-            const travelDetailsModal = document.getElementById('travelDetailsModal'); // Modal z index.html
-            const classButtons = travelDetailsModal.querySelectorAll('.class-button');
-            const passengerCounts = {
-                adults: initialAdults, teenagers: initialTeenagers, children: initialChildren, 'infants-seat': initialInfantsSeat, 'infants-lap': initialInfantsLap
-            };
-            const quantityControls = travelDetailsModal.querySelectorAll('.quantity-control button');
-            const confirmPassengersBtn = travelDetailsModal.querySelector('.confirm-passengers-btn');
-            let currentEditSelectedClass = initialSelectedClass;
-
-
-            // --- Funkcje pomocnicze ---
-
-            function closeAllModals() {
-                document.querySelectorAll('.modal').forEach(modal => {
-                    modal.style.display = 'none';
-                });
-            }
-
-            // Funkcja do formatowania daty na DD. MM. RRRR
-            function formatDate(dateString) {
-                const date = new Date(dateString);
-                const day = String(date.getDate()).padStart(2, '0');
-                const month = String(date.getMonth() + 1).padStart(2, '0'); // Miesiące są 0-11
-                const year = date.getFullYear();
-                return `${day}.${month}.${year}`;
-            }
-
-            // Funkcja do formatowania daty na Dzień, DD miesiąca
-            function formatDayAndMonth(date) {
-                const dayNames = ["Nie", "Pon", "Wt", "Śr", "Czw", "Pt", "Sob"];
-                const monthNamesShort = ["Sty", "Lut", "Mar", "Kwi", "Maj", "Cze", "Lip", "Sie", "Wrz", "Paź", "Lis", "Gru"];
-                const dayOfWeek = dayNames[date.getDay()];
-                const dayOfMonth = date.getDate();
-                const monthName = monthNamesShort[date.getMonth()];
-                return {
-                    dayOfWeek: dayOfWeek,
-                    dayOfMonth: dayOfMonth,
-                    monthName: monthName
-                };
-            }
-
-            // --- Dane lotów (Symulacja dla Gdańsk -> Warszawa) ---
-            const simulatedFlights = [
-                { // Lot Gdańsk -> Warszawa
-                    from: "Gdańsk", // BEZ KODU LOTNISKA
-                    to: "Warszawa", // BEZ KODU LOTNISKA
-                    flightNumber: "VIS101",
-                    departureTime: "05:00",
-                    arrivalTime: "05:55",
-                    duration: "0h 55min",
-                    basePrice: 199, // Bazowa cena
-                    restrictedClasses: [], // Brak ograniczeń dla tego lotu, jeśli chcemy go zawsze pokazywać
-                    operator: "VIS Airlines",
-                    // Symulowane ceny dla różnych dat (możesz edytować)
-                    dailyPrices: {
-                        "2025-07-13": 199, "2025-07-14": 210, "2025-07-15": 205, "2025-07-16": 220, "2025-07-17": 195, "2025-07-18": 230, "2025-07-19": 200,
-                        "2025-07-20": 199, "2025-07-21": 210, "2025-07-22": 205, "2025-07-23": 220, "2025-07-24": 195, "2025-07-25": 230, "2025-07-26": 200,
-                        "2025-07-27": 199, "2025-07-28": 210, "2025-07-29": 205, "2025-07-30": 220, "2025-07-31": 195, "2025-08-01": 230, "2025-08-02": 200
-                        // Możesz dodać więcej dat i cen
-                    }
+        // Dane symulowanych lotów
+        const simulatedFlights = [
+            { // Lot Gdańsk -> Warszawa
+                from: "Gdańsk",
+                to: "Warszawa",
+                flightNumber: "VIS101",
+                departureTime: "05:00",
+                arrivalTime: "05:55",
+                duration: "0h 55min",
+                basePrice: 199,
+                restrictedClasses: [], // Brak ograniczeń dla tego lotu
+                operator: "VIS Airlines",
+                dailyPrices: { // Ceny dla przykładowych dat (DD.MM.RRRR)
+                    "13.07.2025": 199, "14.07.2025": 210, "15.07.2025": 205, "16.07.2025": 220, "17.07.2025": 195, "18.07.2025": 230, "19.07.2025": 200,
+                    "20.07.2025": 199, "21.07.2025": 210, "22.07.2025": 205, "23.07.2025": 220, "24.07.2025": 195, "25.07.2025": 230, "26.07.2025": 200,
+                    "27.07.2025": 199, "28.07.2025": 210, "29.07.2025": 205, "30.07.2025": 220, "31.07.2025": 195, "01.08.2025": 230, "02.08.2025": 200,
                 }
-            ];
+            },
+            { // Lot Warszawa -> Gdańsk
+                from: "Warszawa",
+                to: "Gdańsk",
+                flightNumber: "VIS102",
+                departureTime: "06:30",
+                arrivalTime: "07:25",
+                duration: "0h 55min",
+                basePrice: 210,
+                restrictedClasses: [],
+                operator: "VIS Airlines",
+                dailyPrices: {
+                    "13.07.2025": 210, "14.07.2025": 200, "15.07.2025": 215, "16.07.2025": 225, "17.07.2025": 205, "18.07.2025": 235, "19.07.2025": 210,
+                    "20.07.2025": 210, "21.07.2025": 200, "22.07.2025": 215, "23.07.2025": 225, "24.07.2025": 205, "25.07.2025": 235, "26.07.2025": 210,
+                    "27.07.2025": 210, "28.07.2025": 200, "29.07.2025": 215, "30.07.2025": 225, "31.07.2025": 205, "01.08.2025": 235, "02.08.2025": 210,
+                }
+            },
+            { // Lot Gdańsk -> Warszawa (inny lot, inna godzina)
+                from: "Gdańsk",
+                to: "Warszawa",
+                flightNumber: "VIS103",
+                departureTime: "12:00",
+                arrivalTime: "12:55",
+                duration: "0h 55min",
+                basePrice: 250,
+                restrictedClasses: ['Premium Economy'], // Przykładowe ograniczenie
+                operator: "VIS Airlines",
+                dailyPrices: {
+                    "13.07.2025": 250, "14.07.2025": 260, "15.07.2025": 245, "16.07.2025": 270, "17.07.2025": 240, "18.07.2025": 280, "19.07.2025": 255,
+                }
+            },
+            { // Lot Warszawa -> Gdańsk (inny lot, inna godzina)
+                from: "Warszawa",
+                to: "Gdańsk",
+                flightNumber: "VIS104",
+                departureTime: "18:00",
+                arrivalTime: "18:55",
+                duration: "0h 55min",
+                basePrice: 240,
+                restrictedClasses: ['Business'], // Przykładowe ograniczenie
+                operator: "VIS Airlines",
+                dailyPrices: {
+                    "13.07.2025": 240, "14.07.2025": 230, "15.07.2025": 250, "16.07.2025": 260, "17.07.2025": 235, "18.07.2025": 270, "19.07.2025": 245,
+                }
+            }
+            // Możesz dodać więcej lotów tutaj
+        ];
 
-            // --- Generowanie dynamicznych elementów ---
+        // --- Zmienne globalne do przechowywania stanu wyszukiwania ---
+        let currentDepartureCity;
+        let currentArrivalCity;
+        let currentDepartureDate; // Format DD.MM.RRRR
+        let currentReturnDate = null; // Format DD.MM.RRRR
+        let currentSelectedClass = "Economy";
+        let currentAdults = 1;
+        let currentTeenagers = 0;
+        let currentChildren = 0;
+        let currentInfantsSeat = 0;
+        let currentInfantsLap = 0;
 
-            // Funkcja renderująca loty dla danej daty i kierunku
-            function renderFlights(dateStr, direction, containerElement, noFlightsMsgElement, classRestrictionMsgElement) {
-                containerElement.innerHTML = ''; // Wyczyść poprzednie loty
-                noFlightsMsgElement.classList.add('hidden');
-                classRestrictionMsgElement.classList.add('hidden');
 
-                const targetFrom = direction === 'departure' ? currentDepartureCity : currentArrivalCity;
-                const targetTo = direction === 'departure' ? currentArrivalCity : currentDepartureCity;
+        // --- Elementy DOM ---
+        const topBarRoute = document.getElementById('topBarRoute');
+        const topBarDates = document.getElementById('topBarDates');
+        const topBarClass = document.getElementById('topBarClass');
+        const topBarPassengers = document.getElementById('topBarPassengers');
 
-                const foundFlights = simulatedFlights.filter(flight =>
-                    flight.from === targetFrom &&
-                    flight.to === targetTo
+        const departureFlightHeading = document.getElementById('departureFlightHeading');
+        const returnFlightHeading = document.getElementById('returnFlightHeading');
+
+        const departureDateList = document.getElementById('departureDateSlider');
+        const returnDateList = document.getElementById('returnDateSlider');
+        const departureFlightListings = document.getElementById('departure-flight-listings');
+        const returnFlightListings = document.getElementById('return-flight-listings');
+
+        const noDepartureFlightsMessage = document.getElementById('noDepartureFlightsMessage');
+        const noReturnFlightsMessage = document.getElementById('noReturnFlightsMessage');
+        const departureClassRestrictionMessage = document.getElementById('departureClassRestrictionMessage');
+        const returnClassRestrictionMessage = document.getElementById('returnClassRestrictionMessage');
+
+        const returnFlightsSection = document.getElementById('returnFlightsSection');
+
+        // --- Modale i ich elementy (do edycji wyszukiwania) ---
+        const editSearchBtn = document.getElementById('editSearchBtn');
+        const editSearchModal = document.getElementById('editSearchModal');
+        const editSearchModalCloseBtn = editSearchModal.querySelector('.close-button');
+        const editFlightSearchForm = document.getElementById('editFlightSearchForm');
+
+        const editDepartureCitySelect = document.getElementById('editDepartureCity');
+        const editArrivalCitySelect = document.getElementById('editArrivalCity');
+        const editDepartureDateInput = document.getElementById('editDepartureDate');
+        const editReturnDateInput = document.getElementById('editReturnDate');
+
+        const editClassPassengersBtn = document.getElementById('editClassPassengersBtn');
+        const editSelectedClassSpan = document.getElementById('editSelectedClass');
+        const editSelectedPassengersSpan = document.getElementById('editSelectedPassengers');
+
+        const editClassPassengersModal = document.getElementById('editClassPassengersModal');
+        const editClassPassengersModalCloseBtn = editClassPassengersModal.querySelector('.close-button');
+        const editConfirmPassengersBtn = document.getElementById('editConfirmPassengersBtn');
+
+        let currentEditClass = "Economy"; // Domyślna wartość dla modala edycji
+        let currentEditAdults = 1;
+        let currentEditTeenagers = 0;
+        let currentEditChildren = 0;
+        let currentEditInfantsSeat = 0;
+        let currentEditInfantsLap = 0;
+
+
+        // --- Funkcje pomocnicze ---
+
+        // Funkcja pomocnicza do wyodrębniania nazwy miasta z formatu "Miasto (KOD)"
+        function extractCityName(cityString) {
+            if (!cityString) return '';
+            const match = cityString.match(/^(.*?)\s*\(.+\)$/);
+            return match ? match[1].trim() : cityString.trim();
+        }
+
+        // Funkcja do formatowania daty na DD.MM.RRRR
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString); // dateString w formacie YYYY-MM-DD
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}.${month}.${year}`;
+        }
+
+        // Funkcja do konwersji daty z DD.MM.RRRR na YYYY-MM-DD (dla input type="date")
+        function convertDateToInputFormat(dateString) {
+            if (!dateString) return '';
+            const parts = dateString.split('.');
+            return `${parts[2]}-${parts[1]}-${parts[0]}`;
+        }
+
+        // Funkcja do pobierania parametrów z URL
+        function getQueryParams() {
+            const params = {};
+            window.location.search.substring(1).split('&').forEach(param => {
+                const parts = param.split('=');
+                params[decodeURIComponent(parts[0])] = decodeURIComponent(parts[1] || '');
+            });
+            return params;
+        }
+
+        // Funkcja do aktualizacji wyświetlanej liczby pasażerów i klasy
+        function updatePassengersAndClassDisplay(selectedClassSpan, selectedPassengersSpan, adults, teenagers, children, infantsSeat, infantsLap, selectedClass) {
+            const totalPassengers = adults + teenagers + children + infantsSeat + infantsLap;
+            selectedClassSpan.textContent = `LOT ${selectedClass} Class`;
+            let passengersText = `${totalPassengers} pasażer`;
+            if (totalPassengers > 1 && totalPassengers < 5) {
+                passengersText = `${totalPassengers} pasażerów`;
+            } else if (totalPassengers >= 5 || totalPassengers === 0) { // Dla 0 i od 5 w górę, użyj "pasażerów"
+                 passengersText = `${totalPassengers} pasażerów`;
+            }
+            selectedPassengersSpan.textContent = passengersText;
+        }
+
+        // Funkcja do otwierania modala
+        function openModal(modalElement) {
+            modalElement.style.display = 'block';
+        }
+
+        // Funkcja do zamykania modala
+        function closeModal(modalElement) {
+            modalElement.style.display = 'none';
+        }
+
+        // Funkcja do setupu modali edycji wyszukiwania (używana zarówno na index.html jak i flights.html)
+        function setupEditSearchModals() {
+            // Obsługa modala edycji wyszukiwania
+            editSearchBtn.addEventListener('click', () => {
+                // Ustaw wartości w formularzu edycji na aktualne
+                editDepartureCitySelect.value = `${currentDepartureCity} (${currentDepartureCity.substring(0,3).toUpperCase()})`;
+                editArrivalCitySelect.value = `${currentArrivalCity} (${currentArrivalCity.substring(0,3).toUpperCase()})`;
+                editDepartureDateInput.value = convertDateToInputFormat(currentDepartureDate);
+                editReturnDateInput.value = currentReturnDate ? convertDateToInputFormat(currentReturnDate) : '';
+
+                // Ustaw stan dla modala pasażerów w edycji
+                currentEditClass = currentSelectedClass;
+                currentEditAdults = currentAdults;
+                currentEditTeenagers = currentTeenagers;
+                currentEditChildren = currentChildren;
+                currentEditInfantsSeat = currentInfantsSeat;
+                currentEditInfantsLap = currentInfantsLap;
+
+                updatePassengersAndClassDisplay(
+                    editSelectedClassSpan,
+                    editSelectedPassengersSpan,
+                    currentEditAdults, currentEditTeenagers, currentEditChildren, currentEditInfantsSeat, currentEditInfantsLap,
+                    currentEditClass
                 );
 
-                if (foundFlights.length === 0) {
-                    noFlightsMsgElement.classList.remove('hidden');
-                    return;
-                }
+                openModal(editSearchModal);
+            });
 
-                let classRestricted = false;
-                let flightsDisplayed = false;
+            editSearchModalCloseBtn.addEventListener('click', () => {
+                closeModal(editSearchModal);
+            });
 
-                foundFlights.forEach(flight => {
-                    if (flight.restrictedClasses.includes(currentSelectedClass)) {
-                        classRestricted = true;
-                        return; // Nie pokazuj lotu, jeśli klasa jest ograniczona
+            // Obsługa otwierania modala wyboru klasy/pasażerów z poziomu edycji
+            editClassPassengersBtn.addEventListener('click', () => {
+                // Ustawiamy wartości inputów w modal_edit na aktualny stan
+                document.getElementById('editAdults').value = currentEditAdults;
+                document.getElementById('editTeenagers').value = currentEditTeenagers;
+                document.getElementById('editChildren').value = currentEditChildren;
+                document.getElementById('editInfantsSeat').value = currentEditInfantsSeat;
+                document.getElementById('editInfantsLap').value = currentEditInfantsLap;
+
+                // Ustawiamy zaznaczoną klasę
+                editClassPassengersModal.querySelectorAll('.class-option').forEach(btn => {
+                    if (btn.dataset.class === currentEditClass) {
+                        btn.classList.add('selected');
+                    } else {
+                        btn.classList.remove('selected');
                     }
-
-                    const price = flight.dailyPrices[dateStr] || flight.basePrice; // Pobierz cenę dla konkretnej daty lub bazową
-
-                    const flightCard = document.createElement('div');
-                    flightCard.classList.add('flight-card');
-                    flightCard.innerHTML = `
-                        <div class="flight-segment">
-                            <div class="flight-time-info">
-                                <div class="flight-times">
-                                    <span>${flight.departureTime}</span>
-                                    <span>&ndash;</span>
-                                    <span>${flight.arrivalTime}</span>
-                                </div>
-                                <div class="flight-route-duration">
-                                    <div class="flight-route">${flight.from} (${flight.from.substring(0, 3).toUpperCase()}) &rarr; ${flight.to} (${flight.to.substring(0, 3).toUpperCase()})</div>
-                                    <div class="flight-duration">${flight.duration}</div>
-                                </div>
-                            </div>
-                            <div class="flight-operator">${flight.operator}</div>
-                        </div>
-                        <div class="flight-details-bottom">
-                            <div class="flight-price">${price} PLN</div>
-                            <button class="select-flight-btn">Wybierz lot</button>
-                        </div>
-                    `;
-                    containerElement.appendChild(flightCard);
-                    flightsDisplayed = true;
-
-                    flightCard.querySelector('.select-flight-btn').addEventListener('click', () => {
-                        alert(`Wybrano lot ${flight.flightNumber} z ${flight.from} do ${flight.to} dnia ${formatDate(dateStr)} o ${flight.departureTime} za ${price} PLN! Przejście do następnego etapu.`);
-                        // Tutaj można by przekierować na stronę podsumowania/płatności
-                    });
                 });
 
-                if (!flightsDisplayed && classRestricted) {
-                    classRestrictionMsgElement.classList.remove('hidden');
-                } else if (!flightsDisplayed) {
-                    noFlightsMsgElement.classList.remove('hidden');
-                }
-            }
+                openModal(editClassPassengersModal);
+            });
 
-            // Funkcja generująca i obsługująca daty w sliderze
-            function renderDateSlider(targetDate, dateListElement, direction, selectedCallback) {
-                dateListElement.innerHTML = '';
-                const today = new Date();
-                today.setHours(0,0,0,0);
+            editClassPassengersModalCloseBtn.addEventListener('click', () => {
+                closeModal(editClassPassengersModal);
+            });
 
-                for (let i = -3; i <= 3; i++) { // 7 dni: 3 dni wstecz, dzisiaj, 3 dni w przód
-                    const date = new Date(targetDate);
-                    date.setDate(date.getDate() + i);
-                    date.setHours(0,0,0,0);
+            editClassPassengersModal.querySelectorAll('.class-option').forEach(button => {
+                button.addEventListener('click', () => {
+                    editClassPassengersModal.querySelectorAll('.class-option').forEach(btn => btn.classList.remove('selected'));
+                    button.classList.add('selected');
+                    currentEditClass = button.dataset.class;
+                });
+            });
 
-                    const formatted = formatDayAndMonth(date);
-                    const dateStr = date.toISOString().split('T')[0]; // Format YYYY-MM-DD
+            editClassPassengersModal.querySelectorAll('.quantity-control button').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const input = event.target.closest('.quantity-control').querySelector('input');
+                    let value = parseInt(input.value);
+                    const type = input.dataset.type;
 
-                    const dateItem = document.createElement('div');
-                    dateItem.classList.add('date-item');
-                    dateItem.innerHTML = `
-                        <div class="day-name">${formatted.dayOfWeek}</div>
-                        <div class="day-number">${formatted.dayOfMonth} ${formatted.monthName}</div>
-                        <div class="price">${simulatedFlights[0].dailyPrices[dateStr] || simulatedFlights[0].basePrice} PLN</div>
-                    `;
-                    dateItem.dataset.date = dateStr;
+                    if (event.target.classList.contains('minus-btn')) {
+                        value = Math.max(input.min, value - 1);
+                    } else {
+                        value = value + 1;
+                    }
+                    input.value = value;
 
-                    // Wyłącz daty z przeszłości
-                    if (date < today) {
-                         dateItem.classList.add('disabled');
-                         dateItem.style.pointerEvents = 'none';
-                         dateItem.querySelector('.price').textContent = '-'; // Brak ceny dla przeszłości
-                         dateItem.style.opacity = '0.6';
+                    // Zaktualizuj tymczasowe zmienne edycji
+                    switch (type) {
+                        case 'adults': currentEditAdults = value; break;
+                        case 'teenagers': currentEditTeenagers = value; break;
+                        case 'children': currentEditChildren = value; break;
+                        case 'infantsSeat': currentEditInfantsSeat = value; break;
+                        case 'infantsLap': currentEditInfantsLap = value; break;
                     }
 
-
-                    dateItem.addEventListener('click', () => {
-                        // Usuń zaznaczenie z poprzednio wybranej daty
-                        dateListElement.querySelectorAll('.date-item').forEach(item => item.classList.remove('selected'));
-                        // Zaznacz klikniętą datę
-                        dateItem.classList.add('selected');
-                        selectedCallback(dateStr); // Wywołaj callback z wybraną datą
-                    });
-                    dateListElement.appendChild(dateItem);
-                }
-                // Domyślnie zaznacz środkową datę (lub datę z URL, jeśli jest dostępna i mieści się w sliderze)
-                const defaultSelectedDateElement = dateListElement.querySelector(`[data-date="${targetDate.toISOString().split('T')[0]}"]`);
-                if (defaultSelectedDateElement && !defaultSelectedDateElement.classList.contains('disabled')) {
-                    defaultSelectedDateElement.classList.add('selected');
-                } else {
-                    // Jeśli data z URL nie jest w zakresie wyświetlanych 7 dni lub jest nieaktywna, znajdź pierwszą niedostępną datę
-                     for(let i=0; i<dateListElement.children.length; i++){
-                        if(!dateListElement.children[i].classList.contains('disabled')){
-                            dateListElement.children[i].classList.add('selected');
-                            selectedCallback(dateListElement.children[i].dataset.date);
-                            break;
+                    // Logika ograniczenia niemowląt na kolanach do liczby dorosłych
+                    if (type === 'adults' || type === 'infantsLap') {
+                        const infantsLapInput = document.getElementById('editInfantsLap');
+                        if (currentEditInfantsLap > currentEditAdults) {
+                            currentEditInfantsLap = currentEditAdults;
+                            infantsLapInput.value = currentEditInfantsLap;
                         }
-                     }
-                }
-            }
+                    }
+                });
+            });
 
+            editConfirmPassengersBtn.addEventListener('click', () => {
+                // Po potwierdzeniu z modala edycji pasażerów, zaktualizuj wyświetlanie w przycisku edycji
+                updatePassengersAndClassDisplay(
+                    editSelectedClassSpan,
+                    editSelectedPassengersSpan,
+                    currentEditAdults, currentEditTeenagers, currentEditChildren, currentEditInfantsSeat, currentEditInfantsLap,
+                    currentEditClass
+                );
+                closeModal(editClassPassengersModal);
+            });
 
-            // --- Inicjalizacja strony ---
+            // Obsługa formularza edycji wyszukiwania
+            editFlightSearchForm.addEventListener('submit', (event) => {
+                event.preventDefault();
 
-            function initializePage() {
-                // Ustaw nagłówki i podsumowanie
-                // Użyj oryginalnych wartości z URL dla topBarRoute, aby zachować format z kodem lotniska
-                topBarRoute.textContent = `${initialDepartureCity} → ${initialArrivalCity}`;
-                const totalPassengers = currentAdults + currentTeenagers + currentChildren + currentInfantsSeat + currentInfantsLap;
-                topBarPassengers.textContent = `${totalPassengers} pasażerów`;
+                // Zaktualizuj globalne zmienne wyszukiwania danymi z edycji
+                currentDepartureCity = extractCityName(editDepartureCitySelect.value);
+                currentArrivalCity = extractCityName(editArrivalCitySelect.value);
+                currentDepartureDate = formatDate(editDepartureDateInput.value);
+                currentReturnDate = editReturnDateInput.value ? formatDate(editReturnDateInput.value) : null;
+                currentSelectedClass = currentEditClass;
+                currentAdults = currentEditAdults;
+                currentTeenagers = currentEditTeenagers;
+                currentChildren = currentEditChildren;
+                currentInfantsSeat = currentEditInfantsSeat;
+                currentInfantsLap = currentEditInfantsLap;
+
+                // Zaktualizuj wyświetlanie na górnym pasku podsumowania
+                updateSummaryDisplay();
+
+                // Zaktualizuj nagłówki sekcji lotów
                 departureFlightHeading.textContent = `Loty z ${currentDepartureCity} (${currentDepartureCity.substring(0, 3).toUpperCase()}) do ${currentArrivalCity} (${currentArrivalCity.substring(0, 3).toUpperCase()})`;
-
-                if (initialReturnDate) {
+                if (currentReturnDate) {
                     returnFlightsSection.classList.remove('hidden');
                     returnFlightHeading.textContent = `Loty z ${currentArrivalCity} (${currentArrivalCity.substring(0, 3).toUpperCase()}) do ${currentDepartureCity} (${currentDepartureCity.substring(0, 3).toUpperCase()})`;
                 } else {
                     returnFlightsSection.classList.add('hidden');
                 }
 
-                // Renderuj slidery dat i loty
-                let depDate = new Date(currentDepartureDate.split('.').reverse().join('-')); // Konwertuj DD.MM.RRRR na RRRR-MM-DD
-                renderDateSlider(depDate, departureDateList, 'departure', (selectedDateStr) => {
-                    currentDepartureDate = formatDate(selectedDateStr); // Zapisz sformatowaną datę
-                    renderFlights(selectedDateStr, 'departure', departureFlightListings, noDepartureFlightsMessage, departureClassRestrictionMessage);
-                });
-                // Ręcznie wywołaj renderFlights dla domyślnej daty wylotu (tej, która zostanie zaznaczona w sliderze)
-                const selectedDepDateElement = departureDateList.querySelector('.date-item.selected');
-                if (selectedDepDateElement) {
-                    renderFlights(selectedDepDateElement.dataset.date, 'departure', departureFlightListings, noDepartureFlightsMessage, departureClassRestrictionMessage);
+
+                // Przeładuj loty dla nowych kryteriów
+                renderFlights(convertDateToInputFormat(currentDepartureDate), 'departure', departureFlightListings, noDepartureFlightsMessage, departureClassRestrictionMessage);
+                if (currentReturnDate) {
+                    renderFlights(convertDateToInputFormat(currentReturnDate), 'return', returnFlightListings, noReturnFlightsMessage, returnClassRestrictionMessage);
                 }
 
+                closeModal(editSearchModal);
+            });
 
-                if (initialReturnDate) {
-                    let retDate = new Date(currentReturnDate.split('.').reverse().join('-'));
-                    renderDateSlider(retDate, returnDateList, 'return', (selectedDateStr) => {
-                        currentReturnDate = formatDate(selectedDateStr);
-                        renderFlights(selectedDateStr, 'return', returnFlightListings, noReturnFlightsMessage, returnClassRestrictionMessage);
-                    });
-                     // Ręcznie wywołaj renderFlights dla domyślnej daty powrotu
-                    const selectedRetDateElement = returnDateList.querySelector('.date-item.selected');
-                    if (selectedRetDateElement) {
-                        renderFlights(selectedRetDateElement.dataset.date, 'return', returnFlightListings, noReturnFlightsMessage, returnClassRestrictionMessage);
-                    }
+            // Zamykanie modali po kliknięciu poza nimi
+            window.addEventListener('click', (event) => {
+                if (event.target === editSearchModal) {
+                    closeModal(editSearchModal);
                 }
+                if (event.target === editClassPassengersModal) {
+                    closeModal(editClassPassengersModal);
+                }
+            });
+        }
 
-                // Inicjalizacja modali (te same funkcje co na index.html)
-                setupEditSearchModals();
 
+        // Funkcja do renderowania slidera dat
+        function renderDateSlider(startDate, containerElement, direction, onDateSelect) {
+            containerElement.innerHTML = ''; // Wyczyść poprzednie daty
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Zresetuj czas, aby porównywać tylko daty
+
+            // Ustaw datę początkową na dzisiejszą, jeśli startDate jest wcześniejsza niż dzisiejsza
+            // lub ustaw ją tak, aby zawsze pokazywać datę bieżącego wyszukiwania, jeśli istnieje
+            let startRenderingDate = new Date(startDate);
+            // Ensure the startRenderingDate is not before today for display purposes,
+            // unless the original search date *is* in the past.
+            if (startRenderingDate < today && formatDate(startRenderingDate.toISOString().slice(0,10)) !== formatDate(today.toISOString().slice(0,10))) {
+                 startRenderingDate = new Date(today);
             }
 
-            initializePage();
 
-            // --- Obsługa edycji wyszukiwania ---
-
-            editSearchToggle.addEventListener('click', () => {
-                editSearchDetails.classList.toggle('hidden');
-                // Ustaw bieżące wartości w polach edycji (UŻYJ ORYGINALNYCH WARTOŚCI DLA INPUTÓW)
-                editDepartureCity.value = initialDepartureCity; // Użyj initial, by zachować (GDN)
-                editArrivalCity.value = initialArrivalCity;   // Użyj initial, by zachować (WAW)
-                editDepartureDate.value = currentDepartureDate;
-                editReturnDate.value = currentReturnDate || ''; // Puste jeśli brak
-                updateEditClassPassengersInput();
-
-                // Przygotuj daty dla kalendarza w modalu edycji
-                currentEditSelectedDepartureDate = currentDepartureDate ? new Date(currentDepartureDate.split('.').reverse().join('-')) : null;
-                currentEditSelectedReturnDate = currentReturnDate ? new Date(currentReturnDate.split('.').reverse().join('-')) : null;
-                // Upewnij się, że liczniki pasażerów w modalu są zgodne z bieżącymi
-                document.getElementById('adults-count').textContent = passengerCounts.adults;
-                document.getElementById('teenagers-count').textContent = passengerCounts.teenagers;
-                document.getElementById('children-count').textContent = passengerCounts.children;
-                document.getElementById('infants-seat-count').textContent = passengerCounts['infants-seat'];
-                document.getElementById('infants-lap-count').textContent = passengerCounts['infants-lap'];
-
-                // Ustaw wybrana klasę
-                classButtons.forEach(btn => {
-                    if (btn.dataset.class === currentSelectedClass) {
-                        btn.classList.add('selected');
-                    } else {
-                        btn.classList.remove('selected');
-                    }
-                });
-                currentEditSelectedClass = currentSelectedClass; // Zaktualizuj zmienną dla modala
-            });
-
-            cancelEditBtn.addEventListener('click', () => {
-                editSearchDetails.classList.add('hidden');
-            });
-
-            updateSearchBtn.addEventListener('click', () => {
-                // Zaktualizuj globalne zmienne kryteriów
-                // Przetwarzaj nazwy miast przed aktualizacją currentDepartureCity/currentArrivalCity
-                initialDepartureCity = editDepartureCity.value; // Zaktualizuj oryginalne, bo wrócą do URL
-                initialArrivalCity = editArrivalCity.value;   // Zaktualizuj oryginalne, bo wrócą do URL
-
-                currentDepartureCity = extractCityName(editDepartureCity.value); // Zawsze używaj wyodrębnionej nazwy dla logiki lotów
-                currentArrivalCity = extractCityName(editArrivalCity.value);     // Zawsze używaj wyodrębnionej nazwy dla logiki lotów
-
-                currentDepartureDate = editDepartureDate.value;
-                currentReturnDate = editReturnDate.value;
-                currentSelectedClass = currentEditSelectedClass; // Zaktualizuj z wartości z modala
-                currentAdults = passengerCounts.adults;
-                currentTeenagers = passengerCounts.teenagers;
-                currentChildren = passengerCounts.children;
-                currentInfantsSeat = passengerCounts['infants-seat'];
-                currentInfantsLap = passengerCounts['infants-lap'];
-
-                // Ponownie zainicjuj całą stronę, aby odzwierciedlić nowe kryteria
-                initializePage();
-                editSearchDetails.classList.add('hidden'); // Ukryj sekcję edycji po aktualizacji
-            });
-
-
-            function setupEditSearchModals() {
-                // Miasta
-                editDepartureCity.addEventListener('click', () => {
-                    closeAllModals();
-                    currentEditCityInput = editDepartureCity;
-                    citySelectionModal.style.display = 'block';
-                });
-                editArrivalCity.addEventListener('click', () => {
-                    closeAllModals();
-                    currentEditCityInput = editArrivalCity;
-                    citySelectionModal.style.display = 'block';
-                });
-                cityListItems.forEach(item => {
-                    item.addEventListener('click', () => {
-                        if (currentEditCityInput) {
-                            currentEditCityInput.value = item.textContent; // Ustaw pełną nazwę z kodem
-                            citySelectionModal.style.display = 'none';
-                        }
-                    });
-                });
-
-                // Daty
-                editDepartureDate.addEventListener('click', () => {
-                    closeAllModals();
-                    currentEditCalendarInput = editDepartureDate;
-                    renderEditCalendar();
-                    calendarModal.style.display = 'block';
-                });
-                editReturnDate.addEventListener('click', () => {
-                    closeAllModals();
-                    currentEditCalendarInput = editReturnDate;
-                    renderEditCalendar();
-                    calendarModal.style.display = 'block';
-                });
-
-                // Klasa/Pasażerowie
-                editClassPassengers.addEventListener('click', () => {
-                    closeAllModals();
-                    travelDetailsModal.style.display = 'block';
-                    // Upewnij się, że liczniki i wybrana klasa są poprawne w modalu
-                    document.getElementById('adults-count').textContent = passengerCounts.adults;
-                    document.getElementById('teenagers-count').textContent = passengerCounts.teenagers;
-                    document.getElementById('children-count').textContent = passengerCounts.children;
-                    document.getElementById('infants-seat-count').textContent = passengerCounts['infants-seat'];
-                    document.getElementById('infants-lap-count').textContent = passengerCounts['infants-lap'];
-
-                    classButtons.forEach(btn => {
-                        if (btn.dataset.class === currentEditSelectedClass) {
-                            btn.classList.add('selected');
-                        } else {
-                            btn.classList.remove('selected');
-                        }
-                    });
-                });
-
-                confirmPassengersBtn.addEventListener('click', () => {
-                    if (passengerCounts.adults < 1) {
-                        alert("Musisz wybrać co najmniej jednego dorosłego pasażera.");
-                        return;
-                    }
-                    travelDetailsModal.style.display = 'none';
-                    updateEditClassPassengersInput();
-                });
-
-                 // Funkcja do aktualizacji inputa klasy/pasażerów w sekcji edycji
-                function updateEditClassPassengersInput() {
-                    let totalPassengers = 0;
-                    for (const type in passengerCounts) {
-                        totalPassengers += passengerCounts[type];
-                    }
-                    let summaryText = '';
-                    if (currentEditSelectedClass) {
-                        summaryText += `${currentEditSelectedClass}`;
-                    }
-                    if (totalPassengers > 0) {
-                        if (summaryText) summaryText += ", ";
-                        summaryText += `${totalPassengers} pasażerów`;
-                    } else {
-                         if (summaryText) summaryText += ", ";
-                         summaryText += `0 pasażerów`;
-                    }
-                    editClassPassengers.value = summaryText || "Wybierz klasę i liczbę pasażerów";
-                }
-
-
-                // Logika renderowania kalendarza (powielona z index.html, ale dostosowana do edycji)
-                let tempCalendarDate = new Date();
-                tempCalendarDate.setDate(1);
-
-                function renderEditCalendar() {
-                    calendarContainer.innerHTML = '';
-
-                    const monthNames = ["Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"];
-                    const dayNames = ["Nie", "Pon", "Wt", "Śr", "Czw", "Pt", "Sob"];
-
-                    const year = tempCalendarDate.getFullYear();
-                    const month = tempCalendarDate.getMonth();
-                    const firstDayOfMonth = new Date(year, month, 1).getDay();
-                    const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-                    const navDiv = document.createElement('div');
-                    navDiv.classList.add('calendar-nav');
-                    const prevMonthBtn = document.createElement('button');
-                    prevMonthBtn.textContent = '<';
-                    prevMonthBtn.addEventListener('click', () => {
-                        tempCalendarDate.setMonth(tempCalendarDate.getMonth() - 1);
-                        renderEditCalendar();
-                    });
-                    const nextMonthBtn = document.createElement('button');
-                    nextMonthBtn.textContent = '>';
-                    nextMonthBtn.addEventListener('click', () => {
-                        tempCalendarDate.setMonth(tempCalendarDate.getMonth() + 1);
-                        renderEditCalendar();
-                    });
-                    const monthYearSpan = document.createElement('span');
-                    monthYearSpan.classList.add('current-month-year');
-                    monthYearSpan.textContent = `${monthNames[month]} ${year}`;
-                    navDiv.appendChild(prevMonthBtn);
-                    navDiv.appendChild(monthYearSpan);
-                    navDiv.appendChild(nextMonthBtn);
-                    calendarContainer.appendChild(navDiv);
-
-                    const table = document.createElement('table');
-                    const thead = document.createElement('thead');
-                    const tbody = document.createElement('tbody');
-
-                    const headerRow = document.createElement('tr');
-                    dayNames.forEach(day => {
-                        const th = document.createElement('th');
-                        th.textContent = day;
-                        headerRow.appendChild(th);
-                    });
-                    thead.appendChild(headerRow);
-                    table.appendChild(thead);
-
-                    let date = 1;
-                    for (let i = 0; i < 6; i++) {
-                        const row = document.createElement('tr');
-                        for (let j = 0; j < 7; j++) {
-                            const cell = document.createElement('td');
-                            if (i === 0 && j < firstDayOfMonth) {
-                                cell.textContent = '';
-                            } else if (date > daysInMonth) {
-                                cell.textContent = '';
-                            } else {
-                                const cellDate = new Date(year, month, date);
-                                cellDate.setHours(0,0,0,0);
-
-                                const today = new Date();
-                                today.setHours(0,0,0,0);
-                                const maxDate = new Date();
-                                maxDate.setFullYear(maxDate.getFullYear() + 1);
-                                maxDate.setHours(23,59,59,999);
-
-                                cell.textContent = date;
-                                if (cellDate < today || cellDate > maxDate) {
-                                    cell.classList.add('disabled');
-                                    cell.style.pointerEvents = 'none';
-                                } else {
-                                    cell.dataset.date = cellDate.toISOString().split('T')[0];
-                                    cell.addEventListener('click', (event) => {
-                                        const clickedDateString = event.target.dataset.date;
-                                        const clickedDate = new Date(clickedDateString);
-                                        clickedDate.setHours(0,0,0,0);
-
-                                        if (currentEditCalendarInput === editDepartureDate) {
-                                            currentEditSelectedDepartureDate = clickedDate;
-                                            editDepartureDate.value = clickedDate.toLocaleDateString('pl-PL');
-                                            currentEditSelectedReturnDate = null;
-                                            editReturnDate.value = '';
-                                        } else if (currentEditCalendarInput === editReturnDate) {
-                                            if (currentEditSelectedDepartureDate && clickedDate < currentEditSelectedDepartureDate) {
-                                                alert('Data powrotu nie może być wcześniejsza niż data wylotu.');
-                                                return;
-                                            }
-                                            currentEditSelectedReturnDate = clickedDate;
-                                            editReturnDate.value = clickedDate.toLocaleDateString('pl-PL');
-                                        }
-                                        calendarModal.style.display = 'none';
-                                    });
-
-                                    if (currentEditSelectedDepartureDate && cellDate.toDateString() === currentEditSelectedDepartureDate.toDateString()) {
-                                        cell.classList.add('selected');
-                                    } else if (currentEditSelectedReturnDate && cellDate.toDateString() === currentEditSelectedReturnDate.toDateString()) {
-                                        cell.classList.add('selected');
-                                    }
-                                }
-                                date++;
-                            }
-                            row.appendChild(cell);
-                        }
-                        tbody.appendChild(row);
-                        if (date > daysInMonth) break;
-                    }
-                    table.appendChild(tbody);
-                    calendarContainer.appendChild(table);
-                }
-
-                // Nawigacja dropdown (powielona z index.html)
-                const languageIcon = document.getElementById('language-icon');
-                const languageDropdown = document.getElementById('language-dropdown');
-                const currencyIcon = document.getElementById('currency-icon');
-                const currencyDropdown = document.getElementById('currency-dropdown');
-                const accountIcon = document.getElementById('account-icon');
-                const accountDropdown = document.getElementById('account-dropdown');
-
-                function toggleDropdown(dropdownElement) {
-                    document.querySelectorAll('.dropdown-content').forEach(dropdown => {
-                        if (dropdown !== dropdownElement && dropdown.classList.contains('show')) {
-                            dropdown.classList.remove('show');
-                        }
-                    });
-                    dropdownElement.classList.toggle('show');
-                }
-
-                if (languageIcon) {
-                    languageIcon.addEventListener('click', (event) => {
-                        event.stopPropagation();
-                        toggleDropdown(languageDropdown);
-                    });
-                }
-                if (currencyIcon) {
-                    currencyIcon.addEventListener('click', (event) => {
-                        event.stopPropagation();
-                        toggleDropdown(currencyDropdown);
-                    });
-                }
-                if (accountIcon) {
-                    accountIcon.addEventListener('click', (event) => {
-                        event.stopPropagation();
-                        toggleDropdown(accountDropdown);
-                    });
-                }
-
-                document.addEventListener('click', (event) => {
-                    if (languageDropdown && languageDropdown.classList.contains('show') && !languageDropdown.contains(event.target) && event.target !== languageIcon) {
-                        languageDropdown.classList.remove('show');
-                    }
-                    if (currencyDropdown && currencyDropdown.classList.contains('show') && !currencyDropdown.contains(event.target) && event.target !== currencyIcon) {
-                        currencyDropdown.classList.remove('show');
-                    }
-                    if (accountDropdown && accountDropdown.classList.contains('show') && !accountDropdown.contains(event.target) && event.target !== accountIcon) {
-                        accountDropdown.classList.remove('show');
-                    }
-                    if (event.target.classList.contains('modal')) {
-                        event.target.style.display = 'none';
-                    }
-                });
-
-                document.querySelectorAll('.close-button').forEach(button => {
-                    button.addEventListener('click', (event) => {
-                        const modalId = event.target.dataset.modal;
-                        document.getElementById(modalId).style.display = 'none';
-                    });
-                });
+            const dates = [];
+            for (let i = -3; i <= 3; i++) { // Generuj 7 dni (-3 do +3 od daty początkowej)
+                const date = new Date(startRenderingDate);
+                date.setDate(startRenderingDate.getDate() + i);
+                dates.push(date);
             }
 
-            // Obsługa przycisków przewijania dat w sliderze
-            document.getElementById('prev-departure-day').addEventListener('click', () => {
-                const firstDateElement = departureDateList.children[0];
-                if (firstDateElement) {
-                    const firstDate = new Date(firstDateElement.dataset.date);
-                    firstDate.setDate(firstDate.getDate() - 7); // Przewiń o 7 dni wstecz
-                    renderDateSlider(firstDate, departureDateList, 'departure', (selectedDateStr) => {
-                         currentDepartureDate = formatDate(selectedDateStr);
-                         renderFlights(selectedDateStr, 'departure', departureFlightListings, noDepartureFlightsMessage, departureClassRestrictionMessage);
-                    });
+            dates.forEach(date => {
+                const dateStr = date.toISOString().slice(0, 10); // Format YYYY-MM-DD
+                const dayOfMonth = date.getDate();
+                const dayOfWeek = new Intl.DateTimeFormat('pl-PL', { weekday: 'short' }).format(date);
+                const isSelected = formatDate(dateStr) === (direction === 'departure' ? currentDepartureDate : currentReturnDate);
+
+                const dateItem = document.createElement('div');
+                dateItem.classList.add('date-item');
+                if (isSelected) {
+                    dateItem.classList.add('selected');
+                }
+                if (date < today && !isSelected) { // Nie oznaczaj jako "minione", jeśli to aktualnie wybrana data, która jest w przeszłości
+                     dateItem.classList.add('past-date');
+                }
+
+                dateItem.dataset.date = dateStr;
+                dateItem.innerHTML = `
+                    <span class="day-of-week">${dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1).replace('.', '')}</span>
+                    <span class="day-of-month">${dayOfMonth}</span>
+                `;
+                containerElement.appendChild(dateItem);
+
+                dateItem.addEventListener('click', () => {
+                    containerElement.querySelectorAll('.date-item').forEach(item => item.classList.remove('selected'));
+                    dateItem.classList.add('selected');
+                    onDateSelect(dateStr); // Wywołaj callback z wybraną datą
+                });
+            });
+        }
+
+
+        // Funkcja do renderowania lotów
+        function renderFlights(dateStr, direction, containerElement, noFlightsMsgElement, classRestrictionMsgElement) {
+            containerElement.innerHTML = ''; // Wyczyść poprzednie loty
+            noFlightsMsgElement.classList.add('hidden');
+            classRestrictionMsgElement.classList.add('hidden');
+
+            const targetFrom = direction === 'departure' ? currentDepartureCity : currentArrivalCity;
+            const targetTo = direction === 'departure' ? currentArrivalCity : currentDepartureCity;
+            const selectedDateFormatted = formatDate(dateStr); // Konwertuj YYYY-MM-DD na DD.MM.RRRR
+
+            console.log(`Rendering flights for: ${targetFrom} to ${targetTo} on ${selectedDateFormatted} (Direction: ${direction})`); // Debugowanie
+            console.log("Current selected class:", currentSelectedClass); // Debugowanie
+
+            const foundFlights = simulatedFlights.filter(flight => {
+                const matchesRoute = flight.from === targetFrom && flight.to === targetTo;
+                const hasPriceForDate = flight.dailyPrices && flight.dailyPrices[selectedDateFormatted] !== undefined;
+
+                console.log(`  Checking flight ${flight.flightNumber}: ${flight.from} -> ${flight.to}, Date: ${selectedDateFormatted}, Price available: ${hasPriceForDate}`); // Debugowanie
+                return matchesRoute && hasPriceForDate;
+            });
+
+            console.log("Found flights:", foundFlights); // Debugowanie
+
+            if (foundFlights.length === 0) {
+                noFlightsMsgElement.classList.remove('hidden');
+                return;
+            }
+
+            let foundFlightsForClass = false;
+            foundFlights.forEach(flight => {
+                // Sprawdź, czy wybrana klasa jest dozwolona dla tego lotu
+                const isClassAllowed = !flight.restrictedClasses.includes(currentSelectedClass);
+
+                if (isClassAllowed) {
+                    foundFlightsForClass = true; // Znaleziono przynajmniej jeden lot dla wybranej klasy
+                    const price = flight.dailyPrices[selectedDateFormatted];
+
+                    const flightItem = document.createElement('div');
+                    flightItem.classList.add('flight-item');
+                    flightItem.innerHTML = `
+                        <div class="flight-details">
+                            <div class="flight-times">
+                                <span class="time">${flight.departureTime}</span>
+                                <span class="city">${flight.from}</span>
+                            </div>
+                            <div class="flight-duration">
+                                <span class="duration">${flight.duration}</span>
+                                <span class="line">---</span>
+                                <span class="operator">${flight.operator}</span>
+                            </div>
+                            <div class="flight-times">
+                                <span class="time">${flight.arrivalTime}</span>
+                                <span class="city">${flight.to}</span>
+                            </div>
+                        </div>
+                        <div class="flight-price">
+                            <span class="price">${price.toFixed(2)} PLN</span>
+                            <button class="select-flight-btn">Wybierz</button>
+                        </div>
+                    `;
+                    containerElement.appendChild(flightItem);
                 }
             });
 
-            document.getElementById('next-departure-day').addEventListener('click', () => {
-                const lastDateElement = departureDateList.children[departureDateList.children.length - 1];
-                if (lastDateElement) {
-                    const lastDate = new Date(lastDateElement.dataset.date);
-                    lastDate.setDate(lastDate.getDate() + 7); // Przewiń o 7 dni w przód
-                    renderDateSlider(lastDate, departureDateList, 'departure', (selectedDateStr) => {
-                         currentDepartureDate = formatDate(selectedDateStr);
-                         renderFlights(selectedDateStr, 'departure', departureFlightListings, noDepartureFlightsMessage, departureClassRestrictionMessage);
-                    });
-                }
+            // Jeśli po przefiltrowaniu pod kątem klasy nie ma żadnych lotów, wyświetl odpowiedni komunikat
+            if (!foundFlightsForClass && foundFlights.length > 0) { // Tylko jeśli są loty, ale żaden nie pasuje do klasy
+                classRestrictionMsgElement.classList.remove('hidden');
+            } else if (!foundFlightsForClass && foundFlights.length === 0) { // Ten przypadek jest już obsłużony wyżej
+                 noFlightsMsgElement.classList.remove('hidden');
+            }
+        }
+
+
+        // Funkcja aktualizująca wyświetlanie podsumowania wyszukiwania
+        function updateSummaryDisplay() {
+            topBarRoute.textContent = `Trasa: ${currentDepartureCity} (${currentDepartureCity.substring(0, 3).toUpperCase()}) → ${currentArrivalCity} (${currentArrivalCity.substring(0, 3).toUpperCase()})`;
+            topBarDates.textContent = `Daty: ${currentDepartureDate}${currentReturnDate ? ' → ' + currentReturnDate : ''}`;
+            topBarClass.textContent = `Klasa: LOT ${currentSelectedClass} Class`;
+            const totalPassengers = currentAdults + currentTeenagers + currentChildren + currentInfantsSeat + currentInfantsLap;
+            let passengersText = `${totalPassengers} pasażer`;
+            if (totalPassengers > 1 && totalPassengers < 5) {
+                passengersText = `${totalPassengers} pasażerów`;
+            } else if (totalPassengers >= 5 || totalPassengers === 0) { // Dla 0 i od 5 w górę, użyj "pasażerów"
+                 passengersText = `${totalPassengers} pasażerów`;
+            }
+            topBarPassengers.textContent = `Pasażerowie: Dorośli ${currentAdults}, Nastolatkowie ${currentTeenagers}, Dzieci ${currentChildren}, Niemowlęta z miejscem ${currentInfantsSeat}, Niemowlęta ${currentInfantsLap}`;
+
+            // Pokaż lub ukryj sekcję lotów powrotnych
+            if (currentReturnDate) {
+                returnFlightsSection.classList.remove('hidden');
+            } else {
+                returnFlightsSection.classList.add('hidden');
+            }
+        }
+
+
+        // Inicjalizacja strony
+        function initializePage() {
+            const params = getQueryParams();
+
+            // Ustaw zmienne globalne na podstawie URL
+            currentDepartureCity = extractCityName(params.from || '');
+            currentArrivalCity = extractCityName(params.to || '');
+            currentDepartureDate = params.date_from || ''; // DD.MM.RRRR
+            currentReturnDate = params.date_to || null; // DD.MM.RRRR
+            currentSelectedClass = params.class || "Economy";
+            currentAdults = parseInt(params.adults || 1);
+            currentTeenagers = parseInt(params.teenagers || 0);
+            currentChildren = parseInt(params.children || 0);
+            currentInfantsSeat = parseInt(params.infantsSeat || 0);
+            currentInfantsLap = parseInt(params.infantsLap || 0);
+
+
+            // Ustaw nagłówki i podsumowanie
+            updateSummaryDisplay();
+            departureFlightHeading.textContent = `Loty z ${currentDepartureCity} (${currentDepartureCity.substring(0, 3).toUpperCase()}) do ${currentArrivalCity} (${currentArrivalCity.substring(0, 3).toUpperCase()})`;
+            if (currentReturnDate) {
+                returnFlightHeading.textContent = `Loty z ${currentArrivalCity} (${currentArrivalCity.substring(0, 3).toUpperCase()}) do ${currentDepartureCity} (${currentDepartureCity.substring(0, 3).toUpperCase()})`;
+            }
+
+
+            // Renderuj slidery dat i loty
+            // Konwertuj DD.MM.RRRR na YYYY-MM-DD dla Date object
+            let depDateObj = new Date(currentDepartureDate.split('.').reverse().join('-'));
+            renderDateSlider(depDateObj, departureDateList, 'departure', (selectedDateStr) => {
+                currentDepartureDate = formatDate(selectedDateStr); // Zapisz sformatowaną datę
+                renderFlights(selectedDateStr, 'departure', departureFlightListings, noDepartureFlightsMessage, departureClassRestrictionMessage);
             });
+            // Ręcznie wywołaj renderFlights dla domyślnej daty wylotu (tej, która zostanie zaznaczona w sliderze)
+            const initialDepDateStr = depDateObj.toISOString().slice(0, 10); // Format YYYY-MM-DD
+            renderFlights(initialDepDateStr, 'departure', departureFlightListings, noDepartureFlightsMessage, departureClassRestrictionMessage);
 
-            // Te same przyciski dla powrotu, jeśli są widoczne
-            if (document.getElementById('prev-return-day')) {
-                document.getElementById('prev-return-day').addEventListener('click', () => {
-                    const firstDateElement = returnDateList.children[0];
-                    if (firstDateElement) {
-                        const firstDate = new Date(firstDateElement.dataset.date);
-                        firstDate.setDate(firstDate.getDate() - 7);
-                        renderDateSlider(firstDate, returnDateList, 'return', (selectedDateStr) => {
-                             currentReturnDate = formatDate(selectedDateStr);
-                             renderFlights(selectedDateStr, 'return', returnFlightListings, noReturnFlightsMessage, returnClassRestrictionMessage);
-                        });
-                    }
+
+            if (currentReturnDate) {
+                let retDateObj = new Date(currentReturnDate.split('.').reverse().join('-'));
+                renderDateSlider(retDateObj, returnDateList, 'return', (selectedDateStr) => {
+                    currentReturnDate = formatDate(selectedDateStr);
+                    renderFlights(selectedDateStr, 'return', returnFlightListings, noReturnFlightsMessage, returnClassRestrictionMessage);
                 });
+                const initialRetDateStr = retDateObj.toISOString().slice(0, 10); // Format YYYY-MM-DD
+                renderFlights(initialRetDateStr, 'return', returnFlightListings, noReturnFlightsMessage, returnClassRestrictionMessage);
             }
 
-            if (document.getElementById('next-return-day')) {
-                document.getElementById('next-return-day').addEventListener('click', () => {
-                    const lastDateElement = returnDateList.children[returnDateList.children.length - 1];
-                    if (lastDateElement) {
-                        const lastDate = new Date(lastDateElement.dataset.date);
-                        lastDate.setDate(lastDate.getDate() + 7);
-                        renderDateSlider(lastDate, returnDateList, 'return', (selectedDateStr) => {
-                             currentReturnDate = formatDate(selectedDateStr);
-                             renderFlights(selectedDateStr, 'return', returnFlightListings, noReturnFlightsMessage, returnClassRestrictionMessage);
-                        });
-                    }
-                });
-            }
-        });
+            // Inicjalizacja modali edycji wyszukiwania
+            setupEditSearchModals();
+        }
+
+        // Uruchom inicjalizację strony po załadowaniu DOM
+        document.addEventListener('DOMContentLoaded', initializePage);
+
     </script>
 </body>
 </html>
