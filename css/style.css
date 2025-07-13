@@ -16,7 +16,7 @@ body {
     width: 90%;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 20px;
 }
 
 /* Nagłówek */
@@ -32,52 +32,7 @@ body {
     font-weight: 700;
 }
 
-.nav {
-    display: flex;
-    gap: 20px;
-    margin-top: 10px;
-}
-
-.nav-link {
-    color: white;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-/* Wyszukiwarka */
-.search-box {
-    background: white;
-    border-radius: 10px;
-    padding: 30px;
-    margin: 40px 0;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-}
-
-.search-title {
-    color: #003366;
-    margin-bottom: 20px;
-    font-size: 28px;
-}
-
-.input-group {
-    margin-bottom: 20px;
-}
-
-.input-label {
-    display: block;
-    margin-bottom: 8px;
-    color: #0066cc;
-    font-weight: 500;
-}
-
-.input-field {
-    width: 100%;
-    padding: 12px 15px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 16px;
-}
-
+/* Przyciski */
 .btn-primary {
     background-color: #0066cc;
     color: white;
@@ -87,17 +42,25 @@ body {
     font-size: 16px;
     cursor: pointer;
     transition: background 0.3s;
+    display: inline-block;
+    margin-top: 20px;
+    text-decoration: none;
 }
 
 .btn-primary:hover {
     background-color: #0052a3;
 }
 
-/* Stopka */
-.footer {
-    background-color: #003366;
-    color: white;
-    text-align: center;
-    padding: 20px 0;
-    margin-top: 40px;
+/* Karty */
+.flight-card, .extra-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Ukrywanie elementów */
+.hidden {
+    display: none !important;
 }
