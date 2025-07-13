@@ -1,374 +1,218 @@
+/* Ogólne style */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: white; /* Zmienione tło strony na białe */
+    background-color: #f4f4f4;
     color: #333;
-    line-height: 1.6;
-    min-height: 100vh;
 }
 
-/* Style dla paska nawigacyjnego */
+main {
+    max-width: 960px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+/* Nagłówek strony */
+header {
+    background-color: #007bff;
+    color: white;
+    padding: 40px 20px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.5em;
+}
+
+/* Stopka strony */
+footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 30px;
+    background-color: #333;
+    color: white;
+    font-size: 0.9em;
+}
+
+/* Nawigacja (Navbar) */
 .navbar {
+    background-color: #0056b3; /* Ciemniejszy odcień niebieskiego */
+    color: white;
+    padding: 10px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #87CEEB; /* JASNONIEBIESKIE TŁO NAWIGACJI (SkyBlue) */
-    padding: 10px 20px;
-    color: white;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    position: sticky;
-    top: 0;
-    width: 100%;
-    z-index: 1000;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
-    box-sizing: border-box;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-.nav-left, .nav-right {
+.nav-left a, .nav-right .nav-item a {
+    color: white;
+    text-decoration: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.nav-left a:hover, .nav-right .nav-item a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.nav-right {
     display: flex;
     align-items: center;
 }
 
-.nav-left .nav-link {
-    color: white;
-    text-decoration: none;
-    margin-right: 20px;
-    font-weight: bold;
-    padding: 5px 10px;
-    border-radius: 5px;
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.nav-left .nav-link:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-    color: white;
+.nav-item {
+    position: relative;
+    margin-left: 20px;
 }
 
 .nav-icon {
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     cursor: pointer;
-    margin-left: 15px;
-    vertical-align: middle;
-    border-radius: 50%;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.nav-icon:hover {
-    transform: scale(1.1);
-    box-shadow: 0 0 8px rgba(255,255,255,0.7);
-}
-
-/* Style dla rozwijanych menu (dropdown) */
-.nav-item.dropdown {
-    position: relative;
-    display: inline-block;
+    vertical-align: middle; /* Wyrównaj ikonę do środka tekstu */
 }
 
 .dropdown-content {
-    display: none; /* Domyślnie ukryte */
+    display: none;
     position: absolute;
     background-color: #f9f9f9;
-    min-width: 160px;
+    min-width: 120px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
-    right: 0;
-    border-radius: 5px;
-    overflow: hidden;
+    right: 0; /* Wyrównaj do prawej */
+    border-radius: 4px;
+    overflow: hidden; /* Ukryj zaokrąglenie w środku */
 }
 
 .dropdown-content a {
     color: black;
-    padding: 12px 16px;
+    padding: 10px 16px;
     text-decoration: none;
     display: block;
-    transition: background-color 0.3s ease;
+    text-align: left;
 }
 
 .dropdown-content a:hover {
     background-color: #ddd;
 }
 
-/* Widoczność dropdown po kliknięciu JS */
 .dropdown-content.show {
     display: block;
 }
 
-header {
-    padding: 0;
-    min-height: 0;
-    margin: 0;
-    background-color: transparent;
-    color: transparent;
-    display: block;
-}
-
-main {
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #fff;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    border-radius: 8px;
-}
-
+/* Sekcje strony */
 section {
     margin-bottom: 30px;
     padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
     background-color: #fdfdfd;
-    text-align: center;
 }
 
 h2 {
-    color: #0056b3;
-}
-
-button {
-    background-color: #28a745;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1em;
-    margin-top: 15px;
-    transition: background-color 0.3s ease;
-}
-
-button:hover {
-    background-color: #218838;
-}
-
-footer {
+    color: #007bff;
     text-align: center;
-    padding: 20px;
-    margin-top: 40px;
-    background-color: #333;
-    color: white;
-    font-size: 0.9em;
+    margin-bottom: 25px;
+    font-size: 2em;
 }
 
-/* Style dla formularza wyboru lotów */
+/* Formularz wyszukiwania lotów */
+#flight-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Dwie kolumny */
+    gap: 20px; /* Odstępy między elementami */
+    padding: 15px;
+}
+
 .form-group {
-    margin-bottom: 15px;
-    text-align: left;
-    max-width: 400px;
-    margin-left: auto;
-    margin-right: auto;
+    display: flex;
+    flex-direction: column;
 }
 
 .form-group label {
-    display: block;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
     font-weight: bold;
     color: #555;
 }
 
-.form-group input[type="text"], /* Zmieniono na type="text" dla inputów miast i dat */
-.form-group select {
-    width: 100%;
-    padding: 10px;
+.form-group input[type="text"],
+.form-group input[type="date"] {
+    width: calc(100% - 20px); /* Szerokość z uwzględnieniem paddingu */
+    padding: 12px 10px;
     border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
+    border-radius: 5px;
     font-size: 1em;
-    cursor: pointer; /* Zaznacza, że input jest klikalny (otwiera modal) */
+    cursor: pointer; /* Wskazuje, że pole jest klikalne */
+    background-color: #fcfcfc;
 }
 
-
-/* Style dla wyboru klasy i pasażerów w modalu (nowe style) */
-.travel-class-selection {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 20px;
-    flex-wrap: wrap; /* Pozwala na zawijanie przy mniejszych ekranach */
-}
-
-.class-button {
-    background-color: #f0f0f0;
-    color: #333;
-    border: 1px solid #ccc;
-    padding: 10px 15px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 0.9em;
-    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
-}
-
-.class-button:hover {
-    background-color: #e0e0e0;
-}
-
-.class-button.selected {
-    background-color: #007bff; /* Kolor zaznaczenia */
+#flight-form button[type="submit"] {
+    grid-column: 1 / -1; /* Przycisk zajmuje całą szerokość dwóch kolumn */
+    background-color: #28a745; /* Zielony kolor przycisku */
     color: white;
-    border-color: #007bff;
-    box-shadow: 0 2px 5px rgba(0,123,255,0.3);
-}
-
-.class-button.selected::after {
-    content: ' ✓'; /* Ikona zaznaczenia */
-}
-
-.passenger-selection {
-    text-align: left;
-    max-width: 450px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #eee;
-    border-radius: 8px;
-    background-color: #fff;
-    box-shadow: 0 0 5px rgba(0,0,0,0.05);
-}
-
-.passenger-selection h3 {
-    text-align: center;
-    color: #0056b3;
-    margin-bottom: 15px;
-}
-
-.passenger-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    border-bottom: 1px solid #eee;
-}
-
-.passenger-row:last-child {
-    border-bottom: none;
-}
-
-.passenger-row span {
-    display: block;
-    font-weight: bold;
-    color: #555;
-}
-
-.passenger-row span span { /* Dla podtytułu (np. 16+ lat) */
-    font-weight: normal;
-    color: #888;
-    font-size: 0.85em;
-}
-
-.quantity-control {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.quantity-control button {
-    background-color: #f0f0f0;
-    color: #333;
-    border: 1px solid #ccc;
-    border-radius: 50%; /* Okrągłe przyciski */
-    width: 30px;
-    height: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
     font-size: 1.2em;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    margin: 0; /* Reset marginesu z ogólnego buttona */
-    padding: 0; /* Reset paddingu */
-}
-
-.quantity-control button:hover {
-    background-color: #e0e0e0;
-}
-
-.quantity-control span {
-    font-size: 1.1em;
     font-weight: bold;
-    min-width: 25px; /* Minimalna szerokość dla cyfry */
-    text-align: center;
-    color: #333;
+    transition: background-color 0.3s ease;
 }
 
-.info-icon {
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    line-height: 16px;
-    text-align: center;
-    background-color: #bbb;
-    color: white;
-    border-radius: 50%;
-    font-size: 0.8em;
-    font-weight: bold;
-    cursor: help;
-    margin-left: 5px;
+#flight-form button[type="submit"]:hover {
+    background-color: #218838; /* Ciemniejszy zielony na hover */
 }
 
-.confirm-passengers-btn {
-    width: 100%;
-    padding: 12px;
-    margin-top: 25px;
-    background-color: #007bff;
-    color: white;
-    border-radius: 8px;
-    font-size: 1.1em;
-}
-
-.confirm-passengers-btn:hover {
-    background-color: #0056b3;
-}
-
-
-/* Style dla modali (okienek wyskakujących) */
+/* Style Modali (okienek wyskakujących) */
 .modal {
     display: none; /* Domyślnie ukryty */
-    position: fixed; /* Pozycja stała nad wszystkim */
-    z-index: 1001; /* Wyżej niż nawigacja */
+    position: fixed; /* Pozycja stała na ekranie */
+    z-index: 1000; /* Wysoko, by być na wierzchu */
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto; /* Włącza przewijanie, jeśli zawartość jest zbyt duża */
-    background-color: rgba(0,0,0,0.4); /* Półprzezroczyste tło */
-    padding-top: 60px;
+    overflow: auto; /* Włącz przewijanie, jeśli zawartość jest za duża */
+    background-color: rgba(0,0,0,0.6); /* Przyciemnione tło */
+    padding-top: 60px; /* Odsuń od góry */
 }
 
 .modal-content {
     background-color: #fefefe;
-    margin: 5% auto; /* 5% od góry i wyśrodkowane poziomo */
-    padding: 20px;
+    margin: 5% auto; /* 5% od góry, auto po bokach dla wyśrodkowania */
+    padding: 30px;
     border: 1px solid #888;
     width: 80%; /* Szerokość modala */
-    max-width: 600px; /* Maksymalna szerokość */
+    max-width: 700px; /* Maksymalna szerokość dla większych ekranów */
     border-radius: 10px;
     position: relative;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    animation-name: animatemodal;
+    animation-duration: 0.4s;
 }
 
-.modal-content h2 { /* Zastosuj do h2 w modalu klasy/pasazerow */
-    text-align: center;
-    color: #0056b3;
-    margin-bottom: 20px;
+/* Animacja pojawiania się modala */
+@keyframes animatemodal {
+    from {top: -300px; opacity: 0}
+    to {top: 0; opacity: 1}
 }
-
-.modal-content h3 { /* Zastosuj do h3 w modalu wyboru miasta */
-    text-align: center;
-    color: #0056b3;
-    margin-bottom: 20px;
-}
-
 
 .close-button {
     color: #aaa;
     float: right;
     font-size: 28px;
     font-weight: bold;
-    position: absolute;
+    position: absolute; /* Pozycja absolutna wewnątrz modala-content */
+    right: 15px;
     top: 10px;
-    right: 20px;
-    cursor: pointer;
 }
 
 .close-button:hover,
@@ -378,111 +222,296 @@ footer {
     cursor: pointer;
 }
 
-/* Style dla listy miast w modalu */
+.modal h3 {
+    text-align: center;
+    color: #007bff;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+}
+
+/* Style dla listy miast w modalach */
 .city-list {
-    max-height: 400px; /* Ograniczenie wysokości i przewijanie */
-    overflow-y: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Responsywna siatka */
+    gap: 15px;
+    max-height: 400px; /* Ogranicz wysokość listy */
+    overflow-y: auto; /* Włącz przewijanie, jeśli lista jest długa */
     padding-right: 10px; /* Miejsce na scrollbar */
 }
 
-.country-group h4 {
-    background-color: #f2f2f2;
-    padding: 8px 15px;
-    margin: 15px 0 5px;
+.country-group {
+    background-color: #f0f8ff;
+    border: 1px solid #cceeff;
     border-radius: 5px;
-    color: #444;
-    font-size: 1.1em;
-    border-left: 5px solid #007bff;
+    padding: 10px;
 }
 
-.country-group ul {
-    list-style-type: none;
+.country-group h4 {
+    margin-top: 0;
+    color: #0056b3;
+    font-size: 1.1em;
+    border-bottom: 1px solid #cceeff;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+.city-list ul {
+    list-style: none;
     padding: 0;
     margin: 0;
 }
 
-.country-group li {
-    padding: 10px 15px;
+.city-list li {
+    padding: 8px 0;
     cursor: pointer;
-    border-bottom: 1px solid #eee;
     transition: background-color 0.2s ease;
+    border-bottom: 1px dotted #e6f7ff;
 }
 
-.country-group li:last-child {
+.city-list li:last-child {
     border-bottom: none;
 }
 
-.country-group li:hover {
-    background-color: #e9e9e9;
+.city-list li:hover {
+    background-color: #e6f7ff;
+    font-weight: bold;
 }
 
-/* Style dla kalendarza (minimalne, zostanie rozwinięte) */
+/* Style dla kalendarza w modalach */
 #calendar-container {
-    padding: 10px;
+    padding: 15px;
     text-align: center;
+}
+
+.calendar-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.calendar-nav button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    transition: background-color 0.3s ease;
+}
+
+.calendar-nav button:hover {
+    background-color: #0056b3;
+}
+
+.current-month-year {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: #333;
 }
 
 #calendar-container table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
 }
 
 #calendar-container th, #calendar-container td {
-    padding: 8px;
-    border: 1px solid #ddd;
+    padding: 10px;
     text-align: center;
+    border: 1px solid #eee;
 }
 
 #calendar-container th {
-    background-color: #f2f2f2;
-    color: #555;
+    background-color: #f0f0f0;
+    font-weight: bold;
+    color: #666;
 }
 
 #calendar-container td {
+    background-color: #fff;
     cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-#calendar-container td.selected,
-#calendar-container td.range-selected {
-    background-color: #007bff;
-    color: white;
-    border-radius: 50%;
-}
-
-#calendar-container td:hover:not(.disabled) {
-    background-color: #e9e9e9;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    border-radius: 4px; /* Zaokrąglone rogi dla komórek */
 }
 
 #calendar-container td.disabled {
+    background-color: #f9f9f9;
     color: #ccc;
     cursor: not-allowed;
 }
 
-/* Nawigacja w kalendarzu (miesiące/rok) */
-.calendar-nav {
+#calendar-container td.selected {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+    transform: scale(1.1); /* Lekkie powiększenie wybranej daty */
+}
+
+#calendar-container td:not(.disabled):hover {
+    background-color: #e6f7ff;
+    transform: scale(1.05);
+}
+
+/* Style dla wyboru klasy i pasażerów */
+.class-selection {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 30px;
+    flex-wrap: wrap; /* Zawijanie na mniejszych ekranach */
+}
+
+.class-button {
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: all 0.3s ease;
+    color: #555;
+    white-space: nowrap; /* Zapobiegaj łamaniu tekstu */
+}
+
+.class-button:hover {
+    background-color: #e0e0e0;
+}
+
+.class-button.selected {
+    background-color: #007bff;
+    color: white;
+    border-color: #0056b3;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.passenger-type {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
 }
 
-.calendar-nav button {
-    background: none;
-    border: none;
-    font-size: 1.5em;
-    cursor: pointer;
-    color: #007bff;
-    padding: 5px 10px;
+.passenger-type:last-of-type {
+    border-bottom: none;
+    margin-bottom: 20px;
 }
 
-.calendar-nav button:hover {
-    background-color: #f0f0f0;
-}
-
-.current-month-year {
-    font-size: 1.2em;
+.passenger-type label {
     font-weight: bold;
+    flex-grow: 1; /* Pozwala etykiecie zająć dostępną przestrzeń */
+}
+
+.passenger-type .small-text {
+    font-size: 0.8em;
+    color: #888;
+    margin-left: 10px;
+    flex-basis: 120px; /* Ustala stałą szerokość dla tekstu podpowiedzi */
+    text-align: right;
+}
+
+.quantity-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.quantity-control button {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
     color: #333;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%; /* Okrągłe przyciski */
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.quantity-control button:hover {
+    background-color: #e0e0e0;
+    border-color: #999;
+}
+
+.quantity-control span {
+    font-weight: bold;
+    font-size: 1.1em;
+    min-width: 20px; /* Minimalna szerokość, żeby cyfry się nie "skaczące" */
+    text-align: center;
+}
+
+.confirm-passengers-btn {
+    background-color: #007bff;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    width: 100%;
+    margin-top: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.confirm-passengers-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Responsywność */
+@media (max-width: 768px) {
+    #flight-form {
+        grid-template-columns: 1fr; /* Jedna kolumna na mniejszych ekranach */
+    }
+
+    .modal-content {
+        width: 90%;
+        margin: 20px auto;
+        padding: 20px;
+    }
+
+    .nav-left, .nav-right {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .nav-item {
+        margin-left: 0;
+        margin-top: 10px;
+    }
+
+    .dropdown-content {
+        position: static; /* Umożliwia rozwijanie w przepływie dokumentu na mobile */
+        box-shadow: none;
+        width: 100%;
+    }
+
+    .class-selection {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .class-button {
+        width: 100%; /* Przyciski klasy na całą szerokość */
+    }
+}
+
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 2em;
+    }
+
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .nav-right {
+        width: 100%;
+        justify-content: space-around;
+        margin-top: 10px;
+    }
+    .nav-item {
+        margin: 0 5px;
+    }
 }
