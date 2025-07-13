@@ -235,21 +235,49 @@
                     price: 199,
                     restrictedClasses: ["LOT First Class", "LOT Premium Economy"], // Te klasy nie są obsługiwane
                     frequency: "daily" // Codziennie dostępne
+                },
+                { // DODANY NOWY LOT DLA PRZYKŁADU WARSZAWA -> GDAŃSK
+                    from: "Warszawa",
+                    to: "Gdańsk",
+                    departureTime: "07:30",
+                    arrivalTime: "08:25",
+                    duration: "0h 55min",
+                    price: 220,
+                    restrictedClasses: ["LOT First Class"], // Przykładowo, ta klasa nie jest obsługiwana na tej trasie
+                    frequency: "daily"
+                },
+                { // DODANY NOWY LOT DLA PRZYKŁADU WARSZAWA -> KRAKÓW
+                    from: "Warszawa",
+                    to: "Kraków",
+                    departureTime: "09:00",
+                    arrivalTime: "10:00",
+                    duration: "1h 00min",
+                    price: 150,
+                    restrictedClasses: [], // Brak ograniczeń klasowych
+                    frequency: "daily"
+                },
+                { // DODANY NOWY LOT DLA PRZYKŁADU KRAKÓW -> WARSZAWA
+                    from: "Kraków",
+                    to: "Warszawa",
+                    departureTime: "11:00",
+                    arrivalTime: "12:00",
+                    duration: "1h 00min",
+                    price: 160,
+                    restrictedClasses: [],
+                    frequency: "daily"
                 }
-                // Tutaj będziesz dodawać kolejne trasy
             ];
 
             let flightsFound = false;
+            let classRestricted = false;
 
             availableFlights.forEach(flight => {
                 // Sprawdź, czy lot pasuje do wyszukiwania
                 if (departureCity === flight.from && arrivalCity === flight.to) {
                     // Sprawdź ograniczenia klasy
                     if (flight.restrictedClasses.includes(selectedClass)) {
-                        classRestrictionMessage.style.display = 'block';
-                        noFlightsMessage.style.display = 'none';
-                        flightsFound = true; // Znaleziono trasę, ale klasa nie pasuje
-                        return; // Przerwij dalsze przetwarzanie dla tego lotu
+                        classRestricted = true;
+                        return; // Przerwij dalsze przetwarzanie dla tego lotu, ponieważ klasa nie pasuje
                     }
 
                     // Sprawdź daty (dla codziennych lotów, na razie zakładamy, że są dostępne)
@@ -262,7 +290,7 @@
                             <div class="flight-segment">
                                 <div class="flight-time">${flight.departureTime}</div>
                                 <div class="flight-info">
-                                    <div class="flight-route">${flight.from} (${departureCity.substring(0, 3).toUpperCase()}) <span class="arrow">→</span> ${flight.to} (${arrivalCity.substring(0, 3).toUpperCase()})</div>
+                                    <div class="flight-route">${flight.from} (${flight.from.substring(0, 3).toUpperCase()}) <span class="arrow">→</span> ${flight.to} (${flight.to.substring(0, 3).toUpperCase()})</div>
                                     <div class="flight-duration">Czas lotu: ${flight.duration}</div>
                                 </div>
                             </div>
@@ -283,17 +311,18 @@
                 }
             });
 
-            // Wyświetl komunikat o braku lotów tylko jeśli nie znaleziono żadnych pasujących lotów
-            if (!flightsFound) {
-                noFlightsMessage.style.display = 'block';
-                classRestrictionMessage.style.display = 'none'; // Upewnij się, że komunikat o klasie jest ukryty, jeśli to ogólny brak lotów
-            } else if (classRestrictionMessage.style.display === 'block') {
-                // Jeśli foundFlights jest true, ale komunikat o klasie jest wyświetlony, oznacza to, że trasa istnieje, ale klasa nie pasuje
+            // Wyświetl odpowiedni komunikat
+            if (flightsFound && !classRestricted) {
+                noFlightsMessage.style.display = 'none';
+                classRestrictionMessage.style.display = 'none';
+            } else if (classRestricted) {
+                classRestrictionMessage.style.display = 'block';
                 noFlightsMessage.style.display = 'none';
             } else {
-                noFlightsMessage.style.display = 'none'; // Jeśli loty zostały znalezione i wyświetlone
+                noFlightsMessage.style.display = 'block';
                 classRestrictionMessage.style.display = 'none';
             }
+
 
             // Obsługa nawigacji na stronie flights.html (potrzebna ta sama funkcjonalność dropdownów)
             const languageIcon = document.getElementById('language-icon');
