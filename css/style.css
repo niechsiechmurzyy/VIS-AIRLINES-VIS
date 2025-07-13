@@ -40,7 +40,7 @@ footer {
     font-size: 0.9em;
 }
 
-/* Nawigacja (Navbar) */
+/* Nawigacja (Navbar) - Powtórzone z flights.html dla spójności*/
 .navbar {
     background-color: #0056b3; /* Ciemniejszy odcień niebieskiego */
     color: white;
@@ -82,7 +82,7 @@ footer {
 
 .dropdown-content {
     display: none;
-    position: absolute;
+    position: absolute; /* Zmienione na absolute */
     background-color: #f9f9f9;
     min-width: 120px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
@@ -124,7 +124,7 @@ h2 {
     font-size: 2em;
 }
 
-/* Formularz wyszukiwania lotów */
+/* Formularz wyszukiwania lotów (index.html) */
 #flight-form {
     display: grid;
     grid-template-columns: 1fr 1fr; /* Dwie kolumny */
@@ -456,6 +456,11 @@ h2 {
 
 .confirm-passengers-btn:hover {
     background-color: #0056b3;
+}
+
+/* Ukrycie elementu */
+.hidden {
+    display: none !important;
 }
 
 /* Responsywność */
