@@ -3,220 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIS Airlines - Zarezerwuj lot</title>
-    <link rel="icon" href="assets/images/logo.png" type="image/png">
+    <title>VIS Airlines - Zarezerwuj swój lot</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-left">
-            <a href="index.html" class="nav-link">Zarezerwuj lot</a>
-            <a href="#" class="nav-link">Odpraw się</a>
-            <a href="#" class="nav-link">Zarządzaj rezerwacją</a>
+    <header class="header">
+        <div class="top-bar">
+            <div class="container">
+                <div class="top-bar-left">
+                    <a href="index.html" class="logo-link">
+                        <img src="assets/images/logo.png" alt="VIS Airlines Logo" class="logo">
+                    </a>
+                    <nav class="main-nav">
+                        <ul>
+                            <li><a href="index.html" class="active">Zarezerwuj lot</a></li>
+                            <li><a href="#">Odpraw się</a></li>
+                            <li><a href="#">Zarządzaj rezerwacją</a></li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="top-bar-right">
+                    <div class="language-selector">
+                        <img src="assets/images/flag_pl.png" alt="Język" class="icon">
+                        <span>Język</span>
+                        <select>
+                            <option value="pl">Polski</option>
+                            <option value="en">English</option>
+                        </select>
+                    </div>
+                    <div class="currency-selector">
+                        <img src="assets/images/icon_currency.png" alt="Waluta" class="icon">
+                        <span>Waluta</span>
+                        <select>
+                            <option value="PLN">PLN</option>
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                        </select>
+                    </div>
+                    <a href="#" class="account-link">
+                        <img src="assets/images/icon_account.png" alt="Konto" class="icon">
+                        <span>Konto</span>
+                    </a>
+                </div>
+            </div>
         </div>
-        <div class="nav-right">
-            <div class="nav-item dropdown">
-                <img src="assets/images/language-icon.png" alt="Język" class="nav-icon" id="language-icon">
-                <div class="dropdown-content" id="language-dropdown">
-                    <a href="#">Polski</a>
-                    <a href="#">English</a>
-                    <a href="#">Deutsch</a>
-                </div>
-            </div>
-            <div class="nav-item dropdown">
-                <img src="assets/images/currency-icon.png" alt="Waluta" class="nav-icon" id="currency-icon">
-                <div class="dropdown-content" id="currency-dropdown">
-                    <a href="#">PLN</a>
-                    <a href="#">USD</a>
-                    <a href="#">EUR</a>
-                </div>
-            </div>
-            <div class="nav-item dropdown">
-                <img src="assets/images/account-icon.png" alt="Konto" class="nav-icon" id="account-icon">
-                <div class="dropdown-content" id="account-dropdown">
-                    <a href="#" id="login-link">Zaloguj się</a>
-                    <a href="register.html" id="register-link">Zarejestruj się</a>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <header>
-        <h1>Witaj w VIS Airlines!</h1>
     </header>
 
-    <main>
-        <section id="flight-selection">
-            <h2>Znajdź swój lot</h2>
-            <form id="flight-form">
-                <div class="form-group">
-                    <label for="departureCity">Miasto wylotu:</label>
-                    <input type="text" id="departureCity" placeholder="Wybierz miasto" required readonly>
-                </div>
-                <div class="form-group">
-                    <label for="arrivalCity">Miasto przylotu:</label>
-                    <input type="text" id="arrivalCity" placeholder="Wybierz miasto" required readonly>
-                </div>
-                <div class="form-group">
-                    <label for="departureDate">Data wylotu:</label>
-                    <input type="text" id="departureDate" placeholder="dd. mm. rrrr" required readonly>
-                </div>
-                <div class="form-group">
-                    <label for="returnDate">Data powrotu (opcjonalnie):</label>
-                    <input type="text" id="returnDate" placeholder="dd. mm. rrrr" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="classPassengers">Klasa i pasażerowie:</label>
-                    <input type="text" id="classPassengers" placeholder="Wybierz klasę i liczbę pasażerów" required readonly>
-                </div>
-                <button type="submit">Wyszukaj loty</button>
-            </form>
-        </section>
+    <main class="main-content">
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Witaj w VIS Airlines!</h1>
+                <p>Znajdź swój lot</p>
 
-        <div id="citySelectionModal" class="modal">
-            <div class="modal-content">
-                <span class="close-button" data-modal="citySelectionModal">&times;</span>
-                <h3>Wybierz miasto/lotnisko</h3>
-                <div class="city-list">
-                    <div class="country-group">
-                        <h4>Polska</h4>
-                        <ul>
-                            <li data-city="Warszawa">Warszawa (WAW)</li>
-                            <li data-city="Kraków">Kraków (KRK)</li>
-                            <li data-city="Gdańsk">Gdańsk (GDN)</li>
-                            <li data-city="Wrocław">Wrocław (WRO)</li>
-                            <li data-city="Katowice">Katowice (KTW)</li>
-                            <li data-city="Poznań">Poznań (POZ)</li>
-                            <li data-city="Rzeszów">Rzeszów (RZE)</li>
-                            <li data-city="Szczecin">Szczecin (SZZ)</li>
-                            <li data-city="Lublin">Lublin (LUZ)</li>
-                            <li data-city="Bydgoszcz">Bydgoszcz (BZG)</li>
-                            <li data-city="Łódź">Łódź (LCJ)</li>
-                            <li data-city="Olsztyn-Mazury">Olsztyn-Mazury (SZY)</li>
-                            <li data-city="Zielona Góra">Zielona Góra (IEG)</li>
-                            <li data-city="Warszawa Modlin">Warszawa-Modlin (WMI)</li>
-                        </ul>
-                    </div>
-                    <div class="country-group">
-                        <h4>Niemcy</h4>
-                        <ul>
-                            <li data-city="Berlin">Berlin (BER)</li>
-                            <li data-city="Frankfurt">Frankfurt (FRA)</li>
-                            <li data-city="Monachium">Monachium (MUC)</li>
-                        </ul>
-                    </div>
-                    <div class="country-group">
-                        <h4>Wielka Brytania</h4>
-                        <ul>
-                            <li data-city="Londyn">Londyn (LHR)</li>
-                            <li data-city="Manchester">Manchester (MAN)</li>
-                        </ul>
-                    </div>
-                    <div class="country-group">
-                        <h4>Francja</h4>
-                        <ul>
-                            <li data-city="Paryż">Paryż (CDG)</li>
-                            <li data-city="Nicea">Nicea (NCE)</li>
-                        </ul>
-                    </div>
-                    <div class="country-group">
-                        <h4>Włochy</h4>
-                        <ul>
-                            <li data-city="Rzym">Rzym (FCO)</li>
-                            <li data-city="Mediolan">Mediolan (MXP)</li>
-                        </ul>
-                    </div>
+                <div class="search-form-container">
+                    <form id="flightSearchForm" class="flight-search-form">
+                        <div class="form-group">
+                            <label for="departureCity">Miasto wylotu:</label>
+                            <select id="departureCity" name="from" required>
+                                <option value="">Wybierz miasto</option>
+                                <option value="Gdańsk (GDN)">Gdańsk (GDN)</option>
+                                <option value="Warszawa (WAW)">Warszawa (WAW)</option>
+                                <option value="Kraków (KRK)">Kraków (KRK)</option>
+                                <option value="Wrocław (WRO)">Wrocław (WRO)</option>
+                                <option value="Poznań (POZ)">Poznań (POZ)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="arrivalCity">Miasto przylotu:</label>
+                            <select id="arrivalCity" name="to" required>
+                                <option value="">Wybierz miasto</option>
+                                <option value="Warszawa (WAW)">Warszawa (WAW)</option>
+                                <option value="Gdańsk (GDN)">Gdańsk (GDN)</option>
+                                <option value="Kraków (KRK)">Kraków (KRK)</option>
+                                <option value="Wrocław (WRO)">Wrocław (WRO)</option>
+                                <option value="Poznań (POZ)">Poznań (POZ)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="departureDate">Data wylotu:</label>
+                            <input type="date" id="departureDate" name="date_from" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="returnDate">Data powrotu (opcjonalnie):</label>
+                            <input type="date" id="returnDate" name="date_to">
+                        </div>
+                        <div class="form-group class-passengers-group">
+                            <button type="button" id="classPassengersBtn" class="class-passengers-button">
+                                <span id="selectedClass">LOT Economy Class</span>, <span id="selectedPassengers">1 Pasażer</span>
+                            </button>
+                        </div>
+                        <button type="submit" class="search-flights-btn">Wyszukaj loty</button>
+                    </form>
                 </div>
             </div>
-        </div>
-
-        <div id="calendarModal" class="modal">
-            <div class="modal-content">
-                <span class="close-button" data-modal="calendarModal">&times;</span>
-                <h3>Wybierz datę</h3>
-                <div id="calendar-container">
-                    </div>
-            </div>
-        </div>
-
-        <div id="travelDetailsModal" class="modal">
-            <div class="modal-content">
-                <span class="close-button" data-modal="travelDetailsModal">&times;</span>
-                <h3>Wybierz klasę podróży</h3>
-                <div class="class-selection">
-                    <button class="class-button selected" data-class="LOT Economy Class">LOT Economy Class</button>
-                    <button class="class-button" data-class="LOT Premium Economy">LOT Premium Economy</button>
-                    <button class="class-button" data-class="LOT Business Class">LOT Business Class</button>
-                    <button class="class-button" data-class="LOT First Class">LOT First Class</button>
-                </div>
-
-                <h3>Dodaj pasażerów</h3>
-                <p class="small-text">Sprawdź wiek pasażerów w dniu wylotu</p>
-
-                <div class="passenger-type">
-                    <label>Dorośli</label>
-                    <span class="small-text">16+ lat</span>
-                    <div class="quantity-control">
-                        <button class="minus-btn" data-type="adults">-</button>
-                        <span id="adults-count">1</span>
-                        <button class="plus-btn" data-type="adults">+</button>
-                    </div>
-                </div>
-
-                <div class="passenger-type">
-                    <label>Nastolatkowie</label>
-                    <span class="small-text">12-15 lat</span>
-                    <div class="quantity-control">
-                        <button class="minus-btn" data-type="teenagers">-</button>
-                        <span id="teenagers-count">0</span>
-                        <button class="plus-btn" data-type="teenagers">+</button>
-                    </div>
-                </div>
-
-                <div class="passenger-type">
-                    <label>Dzieci</label>
-                    <span class="small-text">2-11 lat</span>
-                    <div class="quantity-control">
-                        <button class="minus-btn" data-type="children">-</button>
-                        <span id="children-count">0</span>
-                        <button class="plus-btn" data-type="children">+</button>
-                    </div>
-                </div>
-
-                <div class="passenger-type">
-                    <label>Niemowlęta (z miejscem)</label>
-                    <span class="small-text">0-24 miesięcy</span>
-                    <div class="quantity-control">
-                        <button class="minus-btn" data-type="infants-seat">-</button>
-                        <span id="infants-seat-count">0</span>
-                        <button class="plus-btn" data-type="infants-seat">+</button>
-                    </div>
-                </div>
-
-                <div class="passenger-type">
-                    <label>Niemowlęta</label>
-                    <span class="small-text">0-24 miesięcy</span>
-                    <div class="quantity-control">
-                        <button class="minus-btn" data-type="infants-lap">-</button>
-                        <span id="infants-lap-count">0</span>
-                        <button class="plus-btn" data-type="infants-lap">+</button>
-                    </div>
-                </div>
-
-                <button class="confirm-passengers-btn">Potwierdź</button>
-            </div>
-        </div>
-
-        <section id="payment-simulation" style="display: none;">
-            <h2>Symulacja płatności</h2>
-            <p>Tutaj jest tylko test. Żadna płatność nie zostanie dokonana.</p>
-            <button>Dokończ płatność</button>
         </section>
     </main>
 
-    <footer>
-        <p>&copy; 2025 VIS Airlines. Wszystkie prawa zastrzeżone.</p>
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 VIS Airlines. Wszystkie prawa zastrzeżone.</p>
+        </div>
     </footer>
+
+    <div id="classPassengersModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Wybierz klasę podróży</h2>
+            <div class="class-options">
+                <button type="button" class="class-option selected" data-class="Economy">LOT Economy Class</button>
+                <button type="button" class="class-option" data-class="Premium Economy">LOT Premium Economy</button>
+                <button type="button" class="class-option" data-class="Business">LOT Business Class</button>
+            </div>
+
+            <h2>Dodaj pasażerów</h2>
+            <p class="small-text">Sprawdź wiek pasażerów w dniu wylotu</p>
+            <div class="passenger-types">
+                <div class="passenger-type">
+                    <label>Dorośli <span class="small-text">16+ lat</span> <span class="info-icon" title="Osoby w wieku 16 lat lub starsze."><img src="assets/images/icon_info.png" alt="Info"></span></label>
+                    <div class="quantity-control">
+                        <button type="button" class="minus-btn">-</button>
+                        <input type="number" value="1" min="1" id="adults" data-type="adults">
+                        <button type="button" class="plus-btn">+</button>
+                    </div>
+                </div>
+                <div class="passenger-type">
+                    <label>Nastolatkowie <span class="small-text">12-15 lat</span> <span class="info-icon" title="Osoby w wieku 12-15 lat."><img src="assets/images/icon_info.png" alt="Info"></span></label>
+                    <div class="quantity-control">
+                        <button type="button" class="minus-btn">-</button>
+                        <input type="number" value="0" min="0" id="teenagers" data-type="teenagers">
+                        <button type="button" class="plus-btn">+</button>
+                    </div>
+                </div>
+                <div class="passenger-type">
+                    <label>Dzieci <span class="small-text">2-11 lat</span> <span class="info-icon" title="Osoby w wieku 2-11 lat."><img src="assets/images/icon_info.png" alt="Info"></span></label>
+                    <div class="quantity-control">
+                        <button type="button" class="minus-btn">-</button>
+                        <input type="number" value="0" min="0" id="children" data-type="children">
+                        <button type="button" class="plus-btn">+</button>
+                    </div>
+                </div>
+                <div class="passenger-type">
+                    <label>Niemowlęta (z miejscem) <span class="small-text">0-24 miesiące</span> <span class="info-icon" title="Dzieci do 24 miesiąca życia, które będą miały swoje miejsce."><img src="assets/images/icon_info.png" alt="Info"></span></label>
+                    <div class="quantity-control">
+                        <button type="button" class="minus-btn">-</button>
+                        <input type="number" value="0" min="0" id="infantsSeat" data-type="infantsSeat">
+                        <button type="button" class="plus-btn">+</button>
+                    </div>
+                </div>
+                <div class="passenger-type">
+                    <label>Niemowlęta <span class="small-text">0-24 miesiące</span> <span class="info-icon" title="Dzieci do 24 miesiąca życia, które będą podróżować na kolanach dorosłego."> <img src="assets/images/icon_info.png" alt="Info"></span></label>
+                    <div class="quantity-control">
+                        <button type="button" class="minus-btn">-</button>
+                        <input type="number" value="0" min="0" id="infantsLap" data-type="infantsLap">
+                        <button type="button" class="plus-btn">+</button>
+                    </div>
+                </div>
+            </div>
+            <button type="button" id="confirmPassengersBtn">Potwierdź</button>
+        </div>
+    </div>
 
     <script src="js/script.js"></script>
 </body>
