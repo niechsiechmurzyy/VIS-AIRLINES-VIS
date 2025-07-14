@@ -1,4 +1,4 @@
-/* style.css - Kompletna wersja */
+/* css/style.css - Kompletna wersja */
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -11,10 +11,9 @@ body {
 
 /* --- Nagłówek i Nawigacja --- */
 .main-header {
-    /* Główny gradient niebieski */
     background: linear-gradient(135deg, #007bff 0%, #0056b3 50%, #007bff 100%);
     color: white;
-    padding: 15px 0;
+    padding: 15px 0; /* Mniejsze padding, bo wszystko będzie na jednej linii */
     box-shadow: 0 2px 10px rgba(0,0,0,0.2);
     position: relative;
     overflow: hidden; /* Upewnij się, że zawartość nie wychodzi poza header */
@@ -28,7 +27,6 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    /* Wzory dla "plamek/linii" */
     background-image:
         linear-gradient(45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.1) 75%, transparent 75%, transparent),
         linear-gradient(-45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.1) 75%, transparent 75%, transparent),
@@ -39,21 +37,23 @@ body {
     z-index: 0;
 }
 
-/* Treść nagłówka nad pseudoelementem */
-.header-top, .main-nav {
-    position: relative;
-    z-index: 1; /* Upewnia się, że treść jest nad pseudoelementem */
-}
-
-
-.header-top {
+/* NOWA STRUKTURA NAGŁÓWKA */
+.header-content {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* Rozkłada elementy na krańcach */
     align-items: center;
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
-    flex-wrap: wrap;
+    position: relative; /* Ważne dla z-index */
+    z-index: 1; /* Upewnia się, że treść jest nad pseudoelementem */
+}
+
+.logo {
+    position: absolute; /* Pozycjonowanie absolutne do centrowania */
+    left: 50%;
+    transform: translateX(-50%); /* Dokładne centrowanie */
+    z-index: 2; /* Wyżej niż nawigacja */
 }
 
 .logo h1 {
@@ -62,98 +62,45 @@ body {
     font-weight: 900;
     letter-spacing: 2px;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    white-space: nowrap; /* Zapobiega łamaniu "VIS" */
 }
 
-.user-options {
-    display: flex;
-    gap: 15px;
-    align-items: center;
+/* Nowe sekcje nawigacji */
+.main-nav-left, .main-nav-right {
+    flex-grow: 1; /* Pozwala na rozciąganie, aby VIS był na środku */
 }
 
-/* Dropdown (Język/Waluta, Konto) */
-.dropdown {
-    position: relative;
-    display: inline-block;
-}
-
-.dropbtn {
-    background-color: rgba(255, 255, 255, 0.2);
-    color: white;
-    padding: 10px 15px;
-    font-size: 1rem;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.dropbtn:hover {
-    background-color: rgba(255, 255, 255, 0.3);
-}
-
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f9f9f9;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 10; /* Wyższy z-index, aby dropdown był nad wszystkim */
-    border-radius: 5px;
-    overflow: hidden;
-    left: 0; /* Upewnia się, że dropdown pojawia się pod przyciskiem */
-    top: 100%; /* Ustawia dropdown pod przyciskiem */
-}
-
-.dropdown-content a {
-    color: black;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-    transition: background-color 0.2s ease;
-}
-
-.dropdown-content a:hover {
-    background-color: #ddd;
-}
-
-.dropdown:hover .dropdown-content {
-    display: block;
-}
-
-/* Główna nawigacja */
-.main-nav {
-    background-color: rgba(0, 0, 0, 0.2);
-    margin-top: 15px;
-    padding: 10px 0;
-}
-
-.main-nav ul {
+.main-nav-left ul, .main-nav-right ul {
     list-style: none;
     padding: 0;
     margin: 0;
     display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
+    align-items: center;
 }
 
-.main-nav ul li {
-    margin: 0 20px;
+.main-nav-left ul {
+    justify-content: flex-start; /* Elementy po lewej */
 }
 
-.main-nav ul li a {
+.main-nav-right ul {
+    justify-content: flex-end; /* Elementy po prawej */
+}
+
+.main-nav-left ul li, .main-nav-right ul li {
+    margin: 0 15px; /* Mniejszy odstęp między elementami nawigacji */
+}
+
+.main-nav-left ul li a, .main-nav-right ul li a {
     color: white;
     text-decoration: none;
     font-weight: bold;
-    font-size: 1.1rem;
+    font-size: 1rem; /* Mniejsza czcionka, aby zmieściło się na linii */
     padding: 8px 0;
     position: relative;
     transition: color 0.3s ease;
 }
 
-.main-nav ul li a::after {
+.main-nav-left ul li a::after, .main-nav-right ul li a::after {
     content: '';
     position: absolute;
     width: 0;
@@ -165,12 +112,73 @@ body {
     transition: width 0.3s ease;
 }
 
-.main-nav ul li a:hover::after {
+.main-nav-left ul li a:hover::after, .main-nav-right ul li a:hover::after {
     width: 100%;
 }
 
-.main-nav ul li a:hover {
+.main-nav-left ul li a:hover, .main-nav-right ul li a:hover {
     color: #cceeff;
+}
+
+/* User options (język/waluta, konto) */
+.user-options {
+    display: flex;
+    gap: 10px; /* Mniejszy odstęp */
+    align-items: center;
+    position: relative; /* Ważne, aby dropdowny były nad resztą */
+    z-index: 3; /* Najwyższy z-index, aby dropdowny były na wierzchu */
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropbtn {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 8px 12px; /* Mniejszy padding przycisków */
+    font-size: 0.9rem; /* Mniejsza czcionka */
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px; /* Mniejszy odstęp między ikoną a tekstem */
+}
+
+.dropbtn:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 150px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 10;
+    border-radius: 5px;
+    overflow: hidden;
+    left: 0;
+    top: 100%;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 10px 14px; /* Mniejszy padding w dropdownie */
+    text-decoration: none;
+    display: block;
+    transition: background-color 0.2s ease;
+}
+
+.dropdown-content a:hover {
+    background-color: #ddd;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
 }
 
 /* --- Reszta styli --- */
@@ -242,28 +250,39 @@ footer {
 }
 
 /* Responsywność */
-@media (max-width: 768px) {
-    .header-top {
+@media (max-width: 992px) { /* Zmieniono punkt przełamania dla responsywności nagłówka */
+    .header-content {
         flex-direction: column;
+        align-items: center;
         text-align: center;
-        gap: 10px;
+        gap: 15px; /* Odstęp między sekcjami na mniejszych ekranach */
+    }
+
+    .logo {
+        position: static; /* Usuwamy absolutne pozycjonowanie na małych ekranach */
+        transform: none;
+        order: -1; /* Przesuwamy logo na początek kolejności */
+    }
+
+    .main-nav-left, .main-nav-right {
+        flex-grow: 0;
+        width: 100%; /* Rozciągnij na całą szerokość */
+    }
+
+    .main-nav-left ul, .main-nav-right ul {
+        justify-content: center; /* Wyśrodkuj elementy nawigacji */
+        flex-wrap: wrap; /* Pozwól na zawijanie linków */
     }
 
     .user-options {
         margin-top: 10px;
+        justify-content: center;
+        width: 100%;
     }
+}
 
-    .main-nav ul {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .main-nav ul li {
-        margin: 5px 0;
-    }
-
-    main {
-        margin: 20px auto;
-        padding: 15px;
+@media (max-width: 768px) {
+    .main-nav-left ul li, .main-nav-right ul li {
+        margin: 0 10px;
     }
 }
