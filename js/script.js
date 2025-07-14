@@ -1,4 +1,4 @@
-// js/script.js
+// js/script.js - Kompletna wersja
 
 document.addEventListener('DOMContentLoaded', () => {
     // Sprawdza, czy element formularza flightSearchForm istnieje na stronie
