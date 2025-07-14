@@ -1,66 +1,99 @@
-/* Reset */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+/* style.css */
 
 body {
-    font-family: 'Roboto', sans-serif;
-    background-color: #f5f9ff;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
     color: #333;
-    line-height: 1.6;
 }
 
-.container {
-    width: 90%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-/* Nagłówek */
-.header {
-    background-color: #0066cc;
+header {
+    background-color: #007bff;
     color: white;
-    padding: 20px 0;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 1rem 0;
+    text-align: center;
 }
 
-.logo {
-    font-size: 24px;
-    font-weight: 700;
+header h1 {
+    margin: 0;
 }
 
-/* Przyciski */
-.btn-primary {
-    background-color: #0066cc;
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+}
+
+nav ul li {
+    margin: 0 15px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+main {
+    padding: 20px;
+    max-width: 800px;
+    margin: 20px auto;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    border-radius: 8px;
+}
+
+.search-form-container h2 {
+    text-align: center;
+    color: #007bff;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input[type="text"],
+.form-group input[type="date"],
+.form-group input[type="number"],
+.form-group select {
+    width: calc(100% - 22px); /* Odjęcie paddingu i borderu */
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box; /* Ważne dla spójnego rozmiaru */
+}
+
+button[type="submit"] {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background-color: #28a745;
     color: white;
     border: none;
-    padding: 12px 25px;
-    border-radius: 6px;
-    font-size: 16px;
+    border-radius: 4px;
+    font-size: 1.1rem;
     cursor: pointer;
-    transition: background 0.3s;
-    display: inline-block;
-    margin-top: 20px;
-    text-decoration: none;
+    transition: background-color 0.3s ease;
 }
 
-.btn-primary:hover {
-    background-color: #0052a3;
+button[type="submit"]:hover {
+    background-color: #218838;
 }
 
-/* Karty */
-.flight-card, .extra-card {
-    background: white;
-    border-radius: 8px;
+footer {
+    text-align: center;
     padding: 20px;
-    margin-bottom: 15px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-/* Ukrywanie elementów */
-.hidden {
-    display: none !important;
+    margin-top: 30px;
+    background-color: #333;
+    color: white;
 }
