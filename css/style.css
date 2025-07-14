@@ -1,48 +1,164 @@
 /* style.css */
 
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4;
+    background-color: #f0f2f5; /* Delikatny szary */
     color: #333;
+    line-height: 1.6;
 }
 
-header {
-    background-color: #007bff;
+/* --- Nagłówek i Nawigacja --- */
+.main-header {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 50%, #007bff 100%); /* Główny gradient niebieski */
+    /* Dodajemy efekt "plamek/linii" za pomocą wielu gradientów */
+    background-image:
+        linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent),
+        linear-gradient(-45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+        linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+        linear-gradient(135deg, #007bff 0%, #0056b3 50%, #007bff 100%); /* Ponownie główny gradient na końcu */
+    background-size: 20px 20px, 20px 20px, 20px 20px, 20px 20px, cover; /* Rozmiary dla "plamek" i siatki */
+    background-position: 0 0, 10px 0, 0 0, 0 0, 0 0; /* Pozycje dla "plamek" */
+
     color: white;
-    padding: 1rem 0;
-    text-align: center;
+    padding: 15px 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
 }
 
-header h1 {
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    flex-wrap: wrap; /* Aby elementy układały się w nowej linii na mniejszych ekranach */
+}
+
+.logo h1 {
     margin: 0;
+    font-size: 2.8rem; /* Większy rozmiar dla "VIS" */
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
 
-nav ul {
+.user-options {
+    display: flex;
+    gap: 15px; /* Odstęp między dropdownami */
+    align-items: center;
+}
+
+/* Dropdown (Język/Waluta, Konto) */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropbtn {
+    background-color: rgba(255, 255, 255, 0.2); /* Przezroczyste tło */
+    color: white;
+    padding: 10px 15px;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Odstęp między ikoną a tekstem */
+}
+
+.dropbtn:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    border-radius: 5px;
+    overflow: hidden; /* Aby zaokrąglenie działało na całej zawartości */
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    transition: background-color 0.2s ease;
+}
+
+.dropdown-content a:hover {
+    background-color: #ddd;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Główna nawigacja */
+.main-nav {
+    background-color: rgba(0, 0, 0, 0.2); /* Lekko przezroczyste tło dla paska nawigacji */
+    margin-top: 15px; /* Odstęp od górnego paska */
+    padding: 10px 0;
+}
+
+.main-nav ul {
     list-style: none;
     padding: 0;
     margin: 0;
     display: flex;
     justify-content: center;
+    flex-wrap: wrap;
 }
 
-nav ul li {
-    margin: 0 15px;
+.main-nav ul li {
+    margin: 0 20px;
 }
 
-nav ul li a {
+.main-nav ul li a {
     color: white;
     text-decoration: none;
     font-weight: bold;
+    font-size: 1.1rem;
+    padding: 8px 0;
+    position: relative; /* Dla animacji podkreślenia */
+    transition: color 0.3s ease;
 }
 
+.main-nav ul li a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 3px;
+    background-color: white;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    transition: width 0.3s ease;
+}
+
+.main-nav ul li a:hover::after {
+    width: 100%;
+}
+
+.main-nav ul li a:hover {
+    color: #cceeff; /* Jaśniejszy niebieski przy najechaniu */
+}
+
+/* --- Reszta styli (jak poprzednio) --- */
 main {
     padding: 20px;
     max-width: 800px;
-    margin: 20px auto;
+    margin: 40px auto; /* Większy margines od góry */
     background-color: white;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
     border-radius: 8px;
 }
 
@@ -50,50 +166,83 @@ main {
     text-align: center;
     color: #007bff;
     margin-bottom: 30px;
+    font-size: 2rem;
 }
 
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
     font-weight: bold;
+    color: #555;
 }
 
 .form-group input[type="text"],
 .form-group input[type="date"],
 .form-group input[type="number"],
 .form-group select {
-    width: calc(100% - 22px); /* Odjęcie paddingu i borderu */
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    box-sizing: border-box; /* Ważne dla spójnego rozmiaru */
+    width: calc(100% - 24px); /* Dostosowanie do paddingu */
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 1rem;
 }
 
 button[type="submit"] {
     display: block;
     width: 100%;
-    padding: 12px;
-    background-color: #28a745;
+    padding: 15px;
+    background-color: #28a745; /* Zielony dla akcji */
     color: white;
     border: none;
-    border-radius: 4px;
-    font-size: 1.1rem;
+    border-radius: 5px;
+    font-size: 1.2rem;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-weight: bold;
 }
 
 button[type="submit"]:hover {
     background-color: #218838;
+    transform: translateY(-2px); /* Lekkie podniesienie przy najechaniu */
 }
 
 footer {
     text-align: center;
-    padding: 20px;
-    margin-top: 30px;
-    background-color: #333;
-    color: white;
+    padding: 25px;
+    margin-top: 50px; /* Większy margines od góry */
+    background-color: #222;
+    color: #bbb;
+    font-size: 0.9rem;
+}
+
+/* Responsywność */
+@media (max-width: 768px) {
+    .header-top {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+
+    .user-options {
+        margin-top: 10px;
+    }
+
+    .main-nav ul {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .main-nav ul li {
+        margin: 5px 0;
+    }
+
+    main {
+        margin: 20px auto;
+        padding: 15px;
+    }
 }
