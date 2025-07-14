@@ -1,17 +1,16 @@
-/* css/style.css - Nagłówek jasno niebieski */
+/* css/style.css - Nagłówek jasno niebieski + style modali */
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f0f2f5; /* Delikatny szary */
+    background-color: #f0f2f5;
     color: #333;
     line-height: 1.6;
 }
 
 /* --- Nagłówek i Nawigacja --- */
 .main-header {
-    /* Zmieniono na jasno niebieski gradient */
     background: linear-gradient(135deg, #87ceeb 0%, #4682b4 50%, #87ceeb 100%);
     color: white;
     padding: 15px 0;
@@ -20,7 +19,6 @@ body {
     overflow: hidden;
 }
 
-/* Pseudoelement do tworzenia efektu plamek/linii w tle */
 .main-header::before {
     content: '';
     position: absolute;
@@ -38,7 +36,6 @@ body {
     z-index: 0;
 }
 
-/* NAGŁÓWEK - Rozciągnięty na całą szerokość */
 .header-content {
     display: flex;
     justify-content: space-between;
@@ -125,7 +122,6 @@ body {
     color: #cceeff;
 }
 
-/* Dropdown (Język/Waluta, Konto) */
 .dropdown {
     position: relative;
     display: inline-block;
@@ -178,7 +174,7 @@ body {
     display: block;
 }
 
-/* --- Reszta styli --- */
+/* --- Sekcja głównego formularza --- */
 main {
     padding: 20px;
     max-width: 800px;
@@ -197,6 +193,7 @@ main {
 
 .form-group {
     margin-bottom: 20px;
+    position: relative; /* Dodane dla pozycjonowania ikon w inputach */
 }
 
 .form-group label {
@@ -206,7 +203,33 @@ main {
     color: #555;
 }
 
-.form-group input[type="text"],
+/* Styl dla inputów z ikonami */
+.input-with-icon {
+    position: relative;
+    width: 100%; /* Aby input wypełniał dostępną przestrzeń */
+}
+
+.input-with-icon input[type="text"] {
+    width: calc(100% - 24px); /* Zachowaj szerokość, uwzględniając padding */
+    padding: 12px;
+    padding-right: 40px; /* Dodatkowy padding, żeby ikona była widoczna */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 1rem;
+    cursor: pointer; /* Zmieni się na kursor wskaźnikowy, bo input będzie klikalny */
+}
+
+.input-with-icon .icon {
+    position: absolute;
+    right: 15px; /* Pozycjonowanie ikony */
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+    pointer-events: none; /* Ikona nie będzie przechwytywać kliknięć */
+}
+
+
 .form-group input[type="date"],
 .form-group input[type="number"],
 .form-group select {
@@ -246,7 +269,123 @@ footer {
     font-size: 0.9rem;
 }
 
-/* Responsywność - dostosowana do nowego układu nagłówka */
+/* --- Style dla Modali (okienek popup) --- */
+
+/* Modal (kontener okienka) */
+.modal {
+    display: none; /* Domyślnie ukryty */
+    position: fixed; /* Zawsze na wierzchu */
+    z-index: 100; /* Wysoko, żeby był nad wszystkim */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* Włącza przewijanie, jeśli zawartość jest zbyt duża */
+    background-color: rgba(0,0,0,0.4); /* Półprzezroczyste tło */
+    padding-top: 60px; /* Odstęp od góry */
+    box-sizing: border-box;
+    justify-content: center; /* Wyśrodkowanie zawartości horyzontalnie */
+    align-items: center; /* Wyśrodkowanie zawartości wertykalnie */
+}
+
+/* Zawartość modala */
+.modal-content {
+    background-color: #fefefe;
+    margin: auto; /* Centruje zawartość */
+    padding: 30px;
+    border: 1px solid #888;
+    width: 80%; /* Szerokość modala */
+    max-width: 500px; /* Maksymalna szerokość */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    position: relative;
+    animation-name: animatetop; /* Animacja pojawiania się */
+    animation-duration: 0.4s;
+}
+
+/* Animacja pojawiania się modala */
+@keyframes animatetop {
+    from {top: -300px; opacity: 0}
+    to {top: 0; opacity: 1}
+}
+
+/* Przycisk zamknięcia */
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute; /* Pozycjonowanie absolutne w prawym górnym rogu */
+    right: 15px;
+    top: 10px;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-content h3 {
+    text-align: center;
+    color: #007bff;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+}
+
+.airport-list-container h4 {
+    color: #555;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+.airport-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 300px; /* Ogranicz wysokość listy lotnisk */
+    overflow-y: auto; /* Dodaj przewijanie, jeśli lista jest długa */
+    border: 1px solid #eee;
+    border-radius: 5px;
+}
+
+.airport-list li {
+    padding: 10px 15px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.2s ease;
+}
+
+.airport-list li:last-child {
+    border-bottom: none;
+}
+
+.airport-list li:hover {
+    background-color: #e9f5ff; /* Podświetlenie po najechaniu */
+}
+
+/* Overlay (ciemne tło za modalem) */
+.modal-overlay {
+    display: none; /* Domyślnie ukryty */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+    z-index: 99; /* Niżej niż modal, ale nad resztą strony */
+}
+
+/* Klasa do pokazywania modali */
+.modal.show, .modal-overlay.show {
+    display: flex; /* Zmieniono na flex dla centrowania */
+}
+
+
+/* Responsywność */
 @media (max-width: 992px) {
     .header-content {
         flex-direction: column;
@@ -279,6 +418,11 @@ footer {
     .user-options .dropdown {
         margin: 5px;
     }
+
+    .modal-content {
+        width: 95%; /* Na mniejszych ekranach modal jest szerszy */
+        padding: 20px;
+    }
 }
 
 @media (max-width: 768px) {
@@ -287,5 +431,8 @@ footer {
     }
     .main-nav-left ul li a, .main-nav-right ul li a {
         font-size: 0.9rem;
+    }
+    .modal {
+        padding-top: 20px;
     }
 }
