@@ -1,4 +1,4 @@
-/* css/style.css - Nagłówek jasno niebieski + style modali */
+/* css/style.css - Nagłówek jasno niebieski + style modali + kalendarz + pasażerowie */
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -193,7 +193,7 @@ main {
 
 .form-group {
     margin-bottom: 20px;
-    position: relative; /* Dodane dla pozycjonowania ikon w inputach */
+    position: relative;
 }
 
 .form-group label {
@@ -203,119 +203,83 @@ main {
     color: #555;
 }
 
-/* Styl dla inputów z ikonami */
 .input-with-icon {
     position: relative;
-    width: 100%; /* Aby input wypełniał dostępną przestrzeń */
+    width: 100%;
 }
 
 .input-with-icon input[type="text"] {
-    width: calc(100% - 24px); /* Zachowaj szerokość, uwzględniając padding */
+    width: calc(100% - 24px);
     padding: 12px;
-    padding-right: 40px; /* Dodatkowy padding, żeby ikona była widoczna */
+    padding-right: 40px;
     border: 1px solid #ccc;
     border-radius: 5px;
     box-sizing: border-box;
     font-size: 1rem;
-    cursor: pointer; /* Zmieni się na kursor wskaźnikowy, bo input będzie klikalny */
+    cursor: pointer;
 }
 
 .input-with-icon .icon {
     position: absolute;
-    right: 15px; /* Pozycjonowanie ikony */
+    right: 15px;
     top: 50%;
     transform: translateY(-50%);
     color: #999;
-    pointer-events: none; /* Ikona nie będzie przechwytywać kliknięć */
+    pointer-events: none;
 }
 
-
-.form-group input[type="date"],
-.form-group input[type="number"],
-.form-group select {
-    width: calc(100% - 24px);
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-sizing: border-box;
-    font-size: 1rem;
+/* Nowe style dla grupy inputów daty */
+.date-inputs-group {
+    display: flex;
+    gap: 15px; /* Odstęp między polami daty */
 }
 
-button[type="submit"] {
-    display: block;
-    width: 100%;
-    padding: 15px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    font-weight: bold;
+.date-inputs-group .input-with-icon {
+    flex: 1; /* Równa szerokość dla obu inputów */
 }
 
-button[type="submit"]:hover {
-    background-color: #218838;
-    transform: translateY(-2px);
-}
-
-footer {
-    text-align: center;
-    padding: 25px;
-    margin-top: 50px;
-    background-color: #222;
-    color: #bbb;
-    font-size: 0.9rem;
-}
-
-/* --- Style dla Modali (okienek popup) --- */
-
-/* Modal (kontener okienka) */
+/* --- Ogólne style dla Modali --- */
 .modal {
-    display: none; /* Domyślnie ukryty */
-    position: fixed; /* Zawsze na wierzchu */
-    z-index: 100; /* Wysoko, żeby był nad wszystkim */
+    display: none;
+    position: fixed;
+    z-index: 100;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto; /* Włącza przewijanie, jeśli zawartość jest zbyt duża */
-    background-color: rgba(0,0,0,0.4); /* Półprzezroczyste tło */
-    padding-top: 60px; /* Odstęp od góry */
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+    padding-top: 60px;
     box-sizing: border-box;
-    justify-content: center; /* Wyśrodkowanie zawartości horyzontalnie */
-    align-items: center; /* Wyśrodkowanie zawartości wertykalnie */
+    justify-content: center;
+    align-items: center;
 }
 
-/* Zawartość modala */
 .modal-content {
     background-color: #fefefe;
-    margin: auto; /* Centruje zawartość */
+    margin: auto;
     padding: 30px;
     border: 1px solid #888;
-    width: 80%; /* Szerokość modala */
-    max-width: 500px; /* Maksymalna szerokość */
+    width: 80%;
+    max-width: 500px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     position: relative;
-    animation-name: animatetop; /* Animacja pojawiania się */
+    animation-name: animatetop;
     animation-duration: 0.4s;
 }
 
-/* Animacja pojawiania się modala */
 @keyframes animatetop {
     from {top: -300px; opacity: 0}
     to {top: 0; opacity: 1}
 }
 
-/* Przycisk zamknięcia */
 .close-button {
     color: #aaa;
     float: right;
     font-size: 28px;
     font-weight: bold;
-    position: absolute; /* Pozycjonowanie absolutne w prawym górnym rogu */
+    position: absolute;
     right: 15px;
     top: 10px;
 }
@@ -334,6 +298,7 @@ footer {
     font-size: 1.8rem;
 }
 
+/* --- Style dla modala lotnisk --- */
 .airport-list-container h4 {
     color: #555;
     margin-top: 20px;
@@ -346,8 +311,8 @@ footer {
     list-style: none;
     padding: 0;
     margin: 0;
-    max-height: 300px; /* Ogranicz wysokość listy lotnisk */
-    overflow-y: auto; /* Dodaj przewijanie, jeśli lista jest długa */
+    max-height: 200px; /* Nieco mniejsza wysokość, aby zmieścić więcej krajów */
+    overflow-y: auto;
     border: 1px solid #eee;
     border-radius: 5px;
 }
@@ -364,28 +329,290 @@ footer {
 }
 
 .airport-list li:hover {
-    background-color: #e9f5ff; /* Podświetlenie po najechaniu */
+    background-color: #e9f5ff;
 }
 
-/* Overlay (ciemne tło za modalem) */
 .modal-overlay {
-    display: none; /* Domyślnie ukryty */
+    display: none;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background-color: rgba(0,0,0,0.4);
-    z-index: 99; /* Niżej niż modal, ale nad resztą strony */
+    z-index: 99;
 }
 
-/* Klasa do pokazywania modali */
 .modal.show, .modal-overlay.show {
-    display: flex; /* Zmieniono na flex dla centrowania */
+    display: flex;
+}
+
+/* --- Style dla Modala Kalendarza --- */
+.datepicker-modal-content {
+    max-width: 600px; /* Szerszy niż modal lotnisk */
+    padding: 20px;
+}
+
+.datepicker-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    background-color: #f0f8ff;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.datepicker-header .nav-btn {
+    background: none;
+    border: 1px solid #007bff;
+    color: #007bff;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.datepicker-header .nav-btn:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+.month-year-display {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.datepicker-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #666;
+}
+
+.datepicker-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    text-align: center;
+}
+
+.datepicker-days div {
+    padding: 10px 5px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.2s, color 0.2s;
+    font-size: 0.95rem;
+    height: 40px; /* Stała wysokość komórki */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.datepicker-days div.empty-day {
+    background-color: transparent;
+    cursor: default;
+}
+
+.datepicker-days div.past-day,
+.datepicker-days div.disabled-day {
+    color: #ccc;
+    cursor: not-allowed;
+    background-color: #f9f9f9;
+}
+
+.datepicker-days div.selectable-day:hover {
+    background-color: #e9f5ff;
+}
+
+.datepicker-days div.selected-departure {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+    border-radius: 50%; /* Okrągły kształt dla wybranej daty */
+}
+
+.datepicker-days div.selected-return {
+    background-color: #28a745; /* Inny kolor dla daty powrotu */
+    color: white;
+    font-weight: bold;
+    border-radius: 50%;
+}
+
+.datepicker-days div.in-range {
+    background-color: #cceeff; /* Kolor dla dni w zakresie między wylotem a powrotem */
+    color: #333;
+    border-radius: 0; /* Kwadratowy kształt dla dni w zakresie */
+}
+.datepicker-days div.selected-departure.in-range,
+.datepicker-days div.selected-return.in-range {
+    border-radius: 50%; /* Zachowaj okrągłe dla krańców zakresu */
 }
 
 
-/* Responsywność */
+.datepicker-selected-dates {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+
+.selected-date-item {
+    text-align: center;
+    flex: 1;
+    position: relative;
+}
+
+.selected-date-item label {
+    display: block;
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.selected-date-item span {
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.clear-date-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    position: absolute;
+    top: -5px;
+    right: 5px;
+    transform: translateX(50%);
+    transition: background-color 0.2s;
+}
+
+.clear-date-btn:hover {
+    background-color: #c82333;
+}
+
+
+.confirm-button {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    margin-top: 25px;
+    transition: background-color 0.3s ease;
+}
+
+.confirm-button:hover {
+    background-color: #0056b3;
+}
+
+/* --- Style dla Modala Pasażerów i Klasy --- */
+.passengers-modal-content {
+    max-width: 450px;
+    padding: 25px;
+}
+
+.passenger-counter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.passenger-counter:last-of-type {
+    border-bottom: none;
+}
+
+.passenger-type h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.passenger-type span {
+    font-size: 0.85rem;
+    color: #777;
+}
+
+.counter-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.counter-controls button {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    color: #333;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.counter-controls button:hover {
+    background-color: #e0e0e0;
+    border-color: #999;
+}
+
+.counter-controls button:disabled {
+    background-color: #f9f9f9;
+    border-color: #eee;
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+.counter-controls .count {
+    font-size: 1.3rem;
+    font-weight: bold;
+    min-width: 30px;
+    text-align: center;
+}
+
+.class-selection {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.class-selection h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.class-selection select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    background-color: white;
+}
+
+/* --- Responsywność --- */
 @media (max-width: 992px) {
     .header-content {
         flex-direction: column;
@@ -420,8 +647,17 @@ footer {
     }
 
     .modal-content {
-        width: 95%; /* Na mniejszych ekranach modal jest szerszy */
+        width: 95%;
         padding: 20px;
+    }
+
+    .datepicker-modal-content, .passengers-modal-content {
+        max-width: 95%; /* Zwiększenie szerokości na małych ekranach */
+    }
+
+    .date-inputs-group {
+        flex-direction: column; /* Ułożenie inputów daty jeden pod drugim na małych ekranach */
+        gap: 10px;
     }
 }
 
@@ -434,5 +670,10 @@ footer {
     }
     .modal {
         padding-top: 20px;
+    }
+    .datepicker-days div {
+        padding: 8px 3px; /* Mniejszy padding dla dni */
+        font-size: 0.85rem;
+        height: 35px;
     }
 }
