@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wyszukiwarka Lotów VIS</title>
+    <title>VIS - Wyszukiwarka Lotów</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
@@ -13,7 +13,7 @@
         <div class="header-content">
             <nav class="main-nav-left">
                 <ul>
-                    <li><a href="#">Rezerwuj lot</a></li>
+                    <li><a href="index.html">Rezerwuj lot</a></li>
                     <li><a href="#">Odpraw się</a></li>
                     <li><a href="#">Zarządzaj rezerwacją</a></li>
                 </ul>
@@ -34,7 +34,6 @@
                             </div>
                         </div>
                     </li>
-
                     <li class="user-options">
                         <div class="dropdown">
                             <button class="dropbtn">
@@ -47,7 +46,6 @@
                             </div>
                         </div>
                     </li>
-
                     <li class="user-options">
                         <div class="dropdown">
                             <button class="dropbtn">
@@ -65,153 +63,149 @@
         </div>
     </header>
 
-    <main>
-        <section class="search-form-container">
-            <h2>Znajdź swój lot</h2>
+    <main class="main-content">
+        <section class="hero-section">
+            <div class="hero-overlay"></div>
+            <div class="hero-text">
+                <h2>Odkryj świat z VIS</h2>
+                <p>Znajdź najlepsze loty w najlepszych cenach</p>
+            </div>
+        </section>
+
+        <section class="search-section">
+            <h2>Wyszukaj swój lot</h2>
             <form id="flightSearchForm">
-                <div class="form-group">
-                    <label for="departure">Skąd:</label>
-                    <div class="input-with-icon">
-                        <input type="text" id="departure" placeholder="Wybierz lotnisko wylotu" readonly required>
-                        <i class="icon fas fa-plane-departure"></i>
-                    </div>
+                <div class="input-group">
+                    <label for="departure">Skąd?</label>
+                    <input type="text" id="departure" placeholder="Miasto lub lotnisko" readonly required>
                 </div>
-
-                <div class="form-group">
-                    <label for="destination">Dokąd:</label>
-                    <div class="input-with-icon">
-                        <input type="text" id="destination" placeholder="Wybierz lotnisko przylotu" readonly required>
-                        <i class="icon fas fa-plane-arrival"></i>
-                    </div>
+                <div class="input-group">
+                    <label for="destination">Dokąd?</label>
+                    <input type="text" id="destination" placeholder="Miasto lub lotnisko" readonly required>
                 </div>
-
-                <div class="form-group date-inputs-group">
-                    <div class="input-with-icon">
-                        <label for="departureDate">Data wylotu:</label>
-                        <input type="text" id="departureDate" placeholder="Wybierz datę wylotu" class="date-input-trigger" readonly required>
-                        <i class="icon fas fa-calendar-alt"></i>
-                    </div>
-                    <div class="input-with-icon">
-                        <label for="returnDate">Data powrotu (opcjonalnie):</label>
-                        <input type="text" id="returnDate" placeholder="Wybierz datę powrotu" class="date-input-trigger" readonly>
-                        <i class="icon fas fa-calendar-alt"></i>
-                    </div>
+                <div class="input-group date-input-group">
+                    <label for="departureDate">Wylot</label>
+                    <input type="text" id="departureDate" placeholder="Wybierz datę" readonly required>
                 </div>
-
-                <div class="form-group">
-                    <label for="passengersAndClass">Pasażerowie i klasa:</label>
-                    <div class="input-with-icon">
-                        <input type="text" id="passengersAndClass" placeholder="1 pasażer, Ekonomiczna" readonly required>
-                        <i class="icon fas fa-users"></i>
-                    </div>
+                <div class="input-group date-input-group">
+                    <label for="returnDate">Powrót</label>
+                    <input type="text" id="returnDate" placeholder="Wybierz datę (opcjonalnie)" readonly>
                 </div>
-                
-                <button type="submit" class="search-flights-btn">Szukaj lotów</button>
+                <div class="input-group">
+                    <label for="passengersAndClass">Pasażerowie i Klasa</label>
+                    <input type="text" id="passengersAndClass" readonly required>
+                </div>
+                <button type="submit" class="search-button">
+                    <i class="fas fa-plane"></i> Szukaj lotów
+                </button>
             </form>
         </section>
     </main>
 
     <footer>
-        </footer>
+        <div class="footer-content">
+            <div class="footer-section about">
+                <h3>O nas</h3>
+                <p>VIS to Twoja brama do podróży marzeń. Znajdź najtańsze loty i ciesz się każdą chwilą podróży.</p>
+            </div>
+            <div class="footer-section links">
+                <h3>Szybkie linki</h3>
+                <ul>
+                    <li><a href="#">Pomoc</a></li>
+                    <li><a href="#">Polityka prywatności</a></li>
+                    <li><a href="#">Regulamin</a></li>
+                    <li><a href="#">Kontakt</a></li>
+                </ul>
+            </div>
+            <div class="footer-section contact">
+                <h3>Kontakt</h3>
+                <p><i class="fas fa-map-marker-alt"></i> Ul. Przykładowa 123, 00-001 Warszawa</p>
+                <p><i class="fas fa-phone"></i> +48 123 456 789</p>
+                <p><i class="fas fa-envelope"></i> info@visflights.pl</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 VIS. Wszelkie prawa zastrzeżone.</p>
+        </div>
+    </footer>
 
     <div id="airportSelectionModal" class="modal">
         <div class="modal-content">
             <span class="close-button">&times;</span>
             <h3>Wybierz lotnisko</h3>
-            <div class="airport-list-container">
-                <h4>Lotniska w Polsce</h4>
-                <ul id="polishAirportList" class="airport-list">
-                    </ul>
-                <h4>Lotniska w Niemczech</h4>
-                <ul id="germanAirportList" class="airport-list">
-                    </ul>
-                <h4>Lotniska we Francji</h4>
-                <ul id="frenchAirportList" class="airport-list">
-                    </ul>
-            </div>
+            <div class="airport-lists">
+                </div>
         </div>
     </div>
 
     <div id="datePickerModal" class="modal">
-        <div class="modal-content datepicker-modal-content">
+        <div class="modal-content">
             <span class="close-button">&times;</span>
-            <h3>Wybierz daty podróży</h3>
-            <div class="datepicker-header">
-                <button id="prevMonthBtn" class="nav-btn"><i class="fas fa-chevron-left"></i></button>
-                <span id="monthYearDisplay" class="month-year-display"></span>
-                <button id="nextMonthBtn" class="nav-btn"><i class="fas fa-chevron-right"></i></button>
+            <h3>Wybierz datę podróży</h3>
+            <div class="date-display">
+                <p>Wylot: <span id="displayDepartureDate">Brak</span></p>
+                <p>Powrót: <span id="displayReturnDate">Brak</span> <button id="clearReturnDateBtn" class="clear-return-btn" style="display:none;"><i class="fas fa-times"></i></button></p>
             </div>
-            <div class="datepicker-weekdays">
-                <div>N</div><div>Pn</div><div>Wt</div><div>Śr</div><div>Cz</div><div>Pt</div><div>Sb</div>
+            <div class="calendar">
+                <div class="calendar-header">
+                    <button id="prevMonthBtn">&lt;</button>
+                    <span id="monthYearDisplay"></span>
+                    <button id="nextMonthBtn">&gt;</button>
+                </div>
+                <div class="calendar-days-grid">
+                    <div class="day-label">Pon</div>
+                    <div class="day-label">Wt</div>
+                    <div class="day-label">Śr</div>
+                    <div class="day-label">Czw</div>
+                    <div class="day-label">Pt</div>
+                    <div class="day-label">Sob</div>
+                    <div class="day-label">Nd</div>
+                    <div id="datepickerDays" class="datepicker-days">
+                        </div>
+                </div>
             </div>
-            <div id="datepickerDays" class="datepicker-days">
-                </div>
-            <div class="datepicker-selected-dates">
-                <div class="selected-date-item">
-                    <label>Wylot:</label>
-                    <span id="displayDepartureDate">Brak</span>
-                </div>
-                <div class="selected-date-item">
-                    <label>Powrót:</label>
-                    <span id="displayReturnDate">Brak</span>
-                    <button id="clearReturnDateBtn" class="clear-date-btn" style="display: none;">&times;</button>
-                </div>
-            </div>
-            <button id="confirmDatesBtn" class="confirm-button">Potwierdź daty</button>
+            <button id="confirmDatesBtn" class="confirm-btn">Potwierdź daty</button>
         </div>
     </div>
 
     <div id="passengersClassModal" class="modal">
-        <div class="modal-content passengers-modal-content">
+        <div class="modal-content">
             <span class="close-button">&times;</span>
             <h3>Pasażerowie i klasa podróży</h3>
-
             <div class="passenger-counter">
-                <div class="passenger-type">
-                    <h4>Dorośli</h4>
-                    <span>powyżej 12 lat</span>
-                </div>
+                <p>Dorośli:</p>
                 <div class="counter-controls">
-                    <button class="minus-btn" data-type="adults">-</button>
-                    <span id="adultsCount" class="count">1</span>
-                    <button class="plus-btn" data-type="adults">+</button>
+                    <button data-type="adults">-</button>
+                    <span id="adultsCount">1</span>
+                    <button data-type="adults">+</button>
                 </div>
             </div>
-
             <div class="passenger-counter">
-                <div class="passenger-type">
-                    <h4>Dzieci</h4>
-                    <span>2-12 lat</span>
-                </div>
+                <p>Dzieci (2-11 lat):</p>
                 <div class="counter-controls">
-                    <button class="minus-btn" data-type="children">-</button>
-                    <span id="childrenCount" class="count">0</span>
-                    <button class="plus-btn" data-type="children">+</button>
+                    <button data-type="children">-</button>
+                    <span id="childrenCount">0</span>
+                    <button data-type="children">+</button>
                 </div>
             </div>
-
             <div class="passenger-counter">
-                <div class="passenger-type">
-                    <h4>Niemowlęta</h4>
-                    <span>poniżej 2 lat, na kolanach</span>
-                </div>
+                <p>Niemowlęta (poniżej 2 lat, na kolanach):</p>
                 <div class="counter-controls">
-                    <button class="minus-btn" data-type="infants">-</button>
-                    <span id="infantsCount" class="count">0</span>
-                    <button class="plus-btn" data-type="infants">+</button>
+                    <button data-type="infants">-</button>
+                    <span id="infantsCount">0</span>
+                    <button data-type="infants">+</button>
                 </div>
             </div>
-
-            <div class="class-selection">
-                <h4>Klasa podróży</h4>
+            <div class="travel-class-select">
+                <label for="modalTravelClass">Klasa podróży:</label>
                 <select id="modalTravelClass">
                     <option value="economy">Ekonomiczna</option>
-                    <option value="premium_economy">Ekonomiczna Premium</option>
+                    <option value="premium_economy">Ekonomiczna Plus</option>
                     <option value="business">Biznes</option>
                     <option value="first">Pierwsza</option>
                 </select>
             </div>
-            <button id="confirmPassengersClassBtn" class="confirm-button">Potwierdź</button>
+            <button id="confirmPassengersClassBtn" class="confirm-btn">Potwierdź</button>
         </div>
     </div>
 
