@@ -196,13 +196,13 @@ document.addEventListener('DOMContentLoaded', () => {
         for (const category in airports) {
             // Utwórz nagłówek dla państwa/kategorii
             const h4 = document.createElement('h4');
-            h4.textContent = categoryNames[category] || category.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()); // Domyślne formatowanie na wypadek braku w categoryNames
+            h4.textContent = categoryNames[category] || category.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
             airportListsContainer.appendChild(h4);
 
             // Utwórz listę lotnisk dla danej kategorii
             const ul = document.createElement('ul');
             ul.classList.add('airport-list');
-            ul.id = `${category}AirportList`; // Dodaj ID dla ułatwienia debugowania
+            ul.id = `${category}AirportList`;
             airportListsContainer.appendChild(ul);
 
             // Dodaj lotniska do listy
@@ -264,7 +264,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         monthYearDisplay.textContent = new Date(currentYear, currentMonth).toLocaleString('pl-PL', { month: 'long', year: 'numeric' });
 
-        // Dodaj puste dni dla wyrównania kalendarza (jeśli miesiąc nie zaczyna się w niedzielę)
         const startDayIndex = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1; 
 
         for (let i = 0; i < startDayIndex; i++) {
@@ -291,7 +290,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 dayDiv.addEventListener('click', () => selectDate(dayDate));
             }
 
-            // Oznaczenie wybranych dat
             if (selectedDepartureDate && dayDate.getTime() === selectedDepartureDate.getTime()) {
                 dayDiv.classList.add('selected-departure');
             }
@@ -299,7 +297,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 dayDiv.classList.add('selected-return');
             }
 
-            // Oznaczenie zakresu (jeśli data powrotu jest wybrana)
             if (selectedDepartureDate && selectedReturnDate && dayDate > selectedDepartureDate && dayDate < selectedReturnDate) {
                 dayDiv.classList.add('in-range');
             }
@@ -307,7 +304,6 @@ document.addEventListener('DOMContentLoaded', () => {
             datepickerDays.appendChild(dayDiv);
         }
 
-        // Aktywacja/dezaktywacja przycisków nawigacji
         const minDateAllowed = new Date();
         minDateAllowed.setDate(minDateAllowed.getDate() -1); 
         minDateAllowed.setHours(0,0,0,0);
@@ -320,7 +316,6 @@ document.addEventListener('DOMContentLoaded', () => {
             prevMonthBtn.disabled = false;
         }
 
-        // Dezaktywuj przycisk Dalej, jeśli nie ma wybranej daty wylotu i minęła data powrotu
         if (selectedDepartureDate && selectedReturnDate && new Date(currentYear, currentMonth, 1) > selectedReturnDate) {
             nextMonthBtn.disabled = true;
         } else {
