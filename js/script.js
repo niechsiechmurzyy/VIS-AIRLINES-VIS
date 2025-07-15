@@ -1,4 +1,4 @@
-// js/script.js - Kalendarz i wybór pasażerów/klasy (POPRAWIONY KALENDARZ)
+// js/script.js - Kalendarz i wybór pasażerów/klasy (POPRAWIONY KALENDARZ i OTWORY MODALI)
 
 document.addEventListener('DOMContentLoaded', () => {
     const flightSearchForm = document.getElementById('flightSearchForm');
@@ -123,9 +123,16 @@ document.addEventListener('DOMContentLoaded', () => {
         modalOverlay.addEventListener('click', (event) => {
             // Zamykaj tylko jeśli kliknięto na overlay, a nie na zawartość modala
             if (event.target === modalOverlay) {
-                closeModal(airportSelectionModal);
-                closeModal(datePickerModal); // Zamyka również kalendarz
-                closeModal(passengersClassModal); // Zamyka również modal pasażerów
+                // Sprawdź, który modal jest otwarty i zamknij go
+                if (airportSelectionModal.classList.contains('show')) {
+                    closeModal(airportSelectionModal);
+                }
+                if (datePickerModal.classList.contains('show')) {
+                    closeModal(datePickerModal);
+                }
+                if (passengersClassModal.classList.contains('show')) {
+                    closeModal(passengersClassModal);
+                }
             }
         });
     }
@@ -143,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-    // --- Obsługa niestandardowego kalendarza (POPRAWIONA) ---
+    // --- Obsługa niestandardowego kalendarza ---
     const datePickerModal = document.getElementById('datePickerModal');
     const closeDatePickerBtn = datePickerModal.querySelector('.close-button');
     const prevMonthBtn = document.getElementById('prevMonthBtn');
@@ -176,9 +183,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Referencje do daty dzisiejszej i rok do przodu (w UTC, aby uniknąć problemów)
+    const today = new Date(); // Używamy lokalnego obiektu Date do pobrania bieżącej daty
     const todayUTC = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
-    const oneYearFromNowUTC = new Date(Date.UTC(today.getFullYear() + 1, today.getMonth(), today.getDate()));
-    
+    const oneYearFromNow = new Date(); // Używamy lokalnego obiektu Date do obliczenia roku do przodu
+    oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+    const oneYearFromNowUTC = new Date(Date.UTC(oneYearFromNow.getFullYear(), oneYearFromNow.getMonth(), oneYearFromNow.getDate()));
+
     const monthNames = [
         "Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec",
         "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"
@@ -243,8 +253,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Dezaktywacja przycisku 'następny miesiąc' jeśli to już miesiąc rok do przodu
-        // (tj. jeśli aktualny miesiąc jest taki sam lub późniejszy niż 'rok do przodu',
-        // i aktualny rok jest tym samym rokiem co 'rok do przodu' lub późniejszy)
         const maxMonth = oneYearFromNow.getMonth();
         const maxYear = oneYearFromNow.getFullYear();
         if ((currentYear === maxYear && currentMonth >= maxMonth) || (currentYear > maxYear)) {
@@ -370,8 +378,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const adultsCountSpan = document.getElementById('adultsCount');
     const childrenCountSpan = document.getElementById('childrenCount');
     const infantsCountSpan = document.getElementById('infantsCount');
+    // POPRAWKA LITERÓWKI TUTAJ:
     const modalTravelClassSelect = document.getElementById('modalTravelClass');
-    const confirmPassengersClassBtn = document = document.getElementById('confirmPassengersClassBtn');
+    const confirmPassengersClassBtn = document.getElementById('confirmPassengersClassBtn'); // Było 'document ='
 
     let adults = 1;
     let children = 0;
@@ -403,10 +412,13 @@ document.addEventListener('DOMContentLoaded', () => {
             passengerText = '1 dorosły';
         } else {
             passengerText = `${totalPassengers} pasażerów`;
-            if (adults > 0) passengerText += ` (${adults} doro${adults > 1 ? 'słych' : 'sły'}`;
-            if (children > 0) passengerText += `, ${children} dzieck${children > 1 ? 'a' : 'o'}`;
-            if (infants > 0) passengerText += `, ${infants} niemowl${infants > 1 ? 'ąt' : 'ę'}`;
-            if (adults > 0 || children > 0 || infants > 0) passengerText += ')';
+            // Tylko dodaj nawiasy, jeśli są jakieś podtypy pasażerów inne niż tylko dorośli
+            if (children > 0 || infants > 0) {
+                passengerText += ` (${adults} doro${adults > 1 ? 'słych' : 'sły'}`;
+                if (children > 0) passengerText += `, ${children} dzieck${children > 1 ? 'a' : 'o'}`;
+                if (infants > 0) passengerText += `, ${infants} niemowl${infants > 1 ? 'ąt' : 'ę'}`;
+                passengerText += ')';
+            }
         }
 
 
@@ -459,7 +471,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Potwierdzenie wyboru pasażerów i klasy
-    if (confirmPassengersClassBtn) {
+    if (confirmPassengersClassBtn) { // TEN IF JEST TERAZ WAŻNY, BO POPRAWIONO INICJALIZACJĘ
         confirmPassengersClassBtn.addEventListener('click', () => {
             updatePassengersAndClassInput(); // Finalna aktualizacja
             closeModal(passengersClassModal);
