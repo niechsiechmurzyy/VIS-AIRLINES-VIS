@@ -66,23 +66,26 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="date">Data wylotu:</label>
-                    <input type="date" id="date" name="date" required>
+                    <label>Daty podróży:</label>
+                    <div class="date-inputs-group">
+                        <div class="input-with-icon">
+                            <input type="text" id="departureDate" name="departureDate" placeholder="Data wylotu" readonly class="date-input-trigger" required>
+                            <i class="fas fa-calendar-alt icon"></i>
+                        </div>
+                        <div class="input-with-icon">
+                            <input type="text" id="returnDate" name="returnDate" placeholder="Data powrotu (opcjonalnie)" readonly class="date-input-trigger">
+                            <i class="fas fa-calendar-alt icon"></i>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="passengers">Liczba osób:</label>
-                    <input type="number" id="passengers" name="passengers" min="1" value="1" required>
-                </div>
 
                 <div class="form-group">
-                    <label for="travelClass">Klasa podróży:</label>
-                    <select id="travelClass" name="travelClass">
-                        <option value="economy">Ekonomiczna</m>
-                        <option value="premium-economy">Premium Ekonomiczna</option>
-                        <option value="business">Biznes</option>
-                        <option value="first">Pierwsza</option>
-                    </select>
+                    <label for="passengersAndClass">Pasażerowie i klasa podróży:</label>
+                    <div class="input-with-icon">
+                        <input type="text" id="passengersAndClass" name="passengersAndClass" placeholder="1 dorosły, Ekonomiczna" readonly data-modal-target="passengersClassModal" required>
+                        <i class="fas fa-users icon"></i>
+                    </div>
                 </div>
 
                 <button type="submit">Szukaj lotów</button>
@@ -100,17 +103,98 @@
             <h3>Wybierz lotnisko</h3>
             <div class="airport-list-container">
                 <h4>Polska</h4>
-                <ul id="polishAirportList" class="airport-list">
-                    </ul>
+                <ul id="polishAirportList" class="airport-list"></ul>
                 <h4>Niemcy</h4>
-                <ul id="germanAirportList" class="airport-list">
-                    </ul>
+                <ul id="germanAirportList" class="airport-list"></ul>
                 <h4>Francja</h4>
-                <ul id="frenchAirportList" class="airport-list">
-                    </ul>
+                <ul id="frenchAirportList" class="airport-list"></ul>
             </div>
         </div>
     </div>
+
+    <div id="datePickerModal" class="modal">
+        <div class="modal-content datepicker-modal-content">
+            <span class="close-button">&times;</span>
+            <h3>Wybierz daty podróży</h3>
+            <div class="datepicker-header">
+                <button id="prevMonthBtn" class="nav-btn"><i class="fas fa-chevron-left"></i></button>
+                <div class="month-year-display" id="monthYearDisplay"></div>
+                <button id="nextMonthBtn" class="nav-btn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+            <div class="datepicker-weekdays">
+                <span>Nd</span><span>Pn</span><span>Wt</span><span>Śr</span><span>Cz</span><span>Pt</span><span>Sb</span>
+            </div>
+            <div class="datepicker-days" id="datepickerDays">
+                </div>
+            <div class="datepicker-selected-dates">
+                <div class="selected-date-item">
+                    <label>Wylot:</label>
+                    <span id="displayDepartureDate">Brak</span>
+                </div>
+                <div class="selected-date-item">
+                    <label>Powrót:</label>
+                    <span id="displayReturnDate">Brak</span>
+                    <button id="clearReturnDateBtn" class="clear-date-btn" style="display: none;">X</button>
+                </div>
+            </div>
+            <button id="confirmDatesBtn" class="confirm-button">Potwierdź daty</button>
+        </div>
+    </div>
+
+    <div id="passengersClassModal" class="modal">
+        <div class="modal-content passengers-modal-content">
+            <span class="close-button">&times;</span>
+            <h3>Wybierz pasażerów i klasę</h3>
+
+            <div class="passenger-counter">
+                <div class="passenger-type">
+                    <h4>Dorośli</h4>
+                    <span>12+ lat</span>
+                </div>
+                <div class="counter-controls">
+                    <button class="minus-btn" data-type="adults">-</button>
+                    <span id="adultsCount" class="count">1</span>
+                    <button class="plus-btn" data-type="adults">+</button>
+                </div>
+            </div>
+
+            <div class="passenger-counter">
+                <div class="passenger-type">
+                    <h4>Dzieci</h4>
+                    <span>2-11 lat</span>
+                </div>
+                <div class="counter-controls">
+                    <button class="minus-btn" data-type="children">-</button>
+                    <span id="childrenCount" class="count">0</span>
+                    <button class="plus-btn" data-type="children">+</button>
+                </div>
+            </div>
+
+            <div class="passenger-counter">
+                <div class="passenger-type">
+                    <h4>Niemowlęta</h4>
+                    <span>poniżej 2 lat</span>
+                </div>
+                <div class="counter-controls">
+                    <button class="minus-btn" data-type="infants">-</button>
+                    <span id="infantsCount" class="count">0</span>
+                    <button class="plus-btn" data-type="infants">+</button>
+                </div>
+            </div>
+
+            <div class="class-selection">
+                <h4>Klasa podróży</h4>
+                <select id="modalTravelClass">
+                    <option value="economy">Ekonomiczna</option>
+                    <option value="premium-economy">Premium Ekonomiczna</option>
+                    <option value="business">Biznes</option>
+                    <option value="first">Pierwsza</option>
+                </select>
+            </div>
+            <button id="confirmPassengersClassBtn" class="confirm-button">Potwierdź</button>
+        </div>
+    </div>
+
     <div id="modalOverlay" class="modal-overlay"></div>
 
     <script src="js/script.js"></script>
