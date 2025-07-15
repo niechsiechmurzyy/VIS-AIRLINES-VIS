@@ -1,4 +1,4 @@
-/* css/style.css - Nagłówek jasno niebieski + style modali + kalendarz + pasażerowie */
+/* css/style.css - Nagłówek jasno niebieski + style modali + kalendarz + pasażerowie + NOWY PRZYCISK i POPRAWIONY DROPDOWN */
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -16,7 +16,7 @@ body {
     padding: 15px 0;
     box-shadow: 0 2px 10px rgba(0,0,0,0.2);
     position: relative;
-    overflow: hidden;
+    /* overflow: hidden; */ /* <-- TA LINIA USUNIĘTA/ZAKOMENTOWANA */
 }
 
 .main-header::before {
@@ -122,9 +122,11 @@ body {
     color: #cceeff;
 }
 
+/* POPRAWKI DLA DROPDOWNÓW */
 .dropdown {
     position: relative;
     display: inline-block;
+    overflow: visible; /* KLUCZOWA ZMIANA */
 }
 
 .dropbtn {
@@ -151,12 +153,18 @@ body {
     background-color: #f9f9f9;
     min-width: 150px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 10;
+    z-index: 100; /* Zwiększ z-index, aby dropdown był nad wszystkim innym */
     border-radius: 5px;
     overflow: hidden;
     left: 0;
-    top: 100%;
+    margin-top: 5px; /* Drobny odstęp od przycisku */
+    transform: translateY(0); /* Zresetuj transformacje, jeśli były */
 }
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
 
 .dropdown-content a {
     color: black;
@@ -168,10 +176,6 @@ body {
 
 .dropdown-content a:hover {
     background-color: #ddd;
-}
-
-.dropdown:hover .dropdown-content {
-    display: block;
 }
 
 /* --- Sekcja głównego formularza --- */
@@ -237,6 +241,56 @@ main {
 .date-inputs-group .input-with-icon {
     flex: 1; /* Równa szerokość dla obu inputów */
 }
+
+/* NOWY STYL DLA PRZYCISKU SZUKAJ LOTÓW */
+.search-flights-btn {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(90deg, #007bff, #0056b3); /* Liniowy gradient */
+    color: white;
+    border: none;
+    border-radius: 8px; /* Zaokrąglone rogi */
+    font-size: 1.25rem; /* Większa czcionka */
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 30px;
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.4); /* Subtelny cień */
+    transition: all 0.3s ease; /* Płynne przejścia */
+    letter-spacing: 1px;
+    text-transform: uppercase; /* Wielkie litery */
+    position: relative;
+    overflow: hidden; /* Do efektu hover */
+}
+
+.search-flights-btn:hover {
+    background: linear-gradient(90deg, #0056b3, #004085); /* Ciemniejszy gradient na hover */
+    box-shadow: 0 6px 15px rgba(0, 123, 255, 0.6); /* Mocniejszy cień */
+    transform: translateY(-2px); /* Lekkie uniesienie */
+}
+
+.search-flights-btn:active {
+    transform: translateY(0); /* Naciśnięcie */
+    box-shadow: 0 2px 5px rgba(0, 123, 255, 0.3);
+}
+
+/* Efekt najechania - błysk */
+.search-flights-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: skewX(-20deg);
+    transition: left 0.7s ease;
+}
+
+.search-flights-btn:hover::before {
+    left: 100%;
+}
+
 
 /* --- Ogólne style dla Modali --- */
 .modal {
@@ -378,6 +432,14 @@ main {
     background-color: #007bff;
     color: white;
 }
+.datepicker-header .nav-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #f0f0f0;
+    color: #ccc;
+    border-color: #eee;
+}
+
 
 .month-year-display {
     font-size: 1.2rem;
