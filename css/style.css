@@ -1,4 +1,4 @@
-/* css/style.css - Nagłówek jasno niebieski + style modali + kalendarz + pasażerowie + NOWY PRZYCISK i POPRAWIONY DROPDOWN */
+/* css/style.css - Nagłówek jasno niebieski + style modali + kalendarz + pasażerowie + NOWY PRZYCISK i POPRAWIONY DROPDOWN + NAPRAWIONY PASEK NAWIGACYJNY */
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -16,7 +16,7 @@ body {
     padding: 15px 0;
     box-shadow: 0 2px 10px rgba(0,0,0,0.2);
     position: relative;
-    /* overflow: hidden; */ /* <-- TA LINIA USUNIĘTA/ZAKOMENTOWANA */
+    /* overflow: hidden; */ /* <-- Nadal usunięte, aby dropdown działał poprawnie */
 }
 
 .main-header::before {
@@ -61,23 +61,25 @@ body {
     white-space: nowrap;
 }
 
-.main-nav-left, .main-nav-right, .user-options {
+/* POPRAWIONY UKŁAD PASKÓW NAWIGACYJNYCH - PRZYWRÓCONE PIERWOTNE USTAWIENIA */
+.main-nav-left {
     display: flex;
     align-items: center;
-}
-
-.main-nav-left {
-    flex-grow: 1;
+    /* Usunięto flex-grow, aby nie rozciągało nawigacji niepotrzebnie */
     justify-content: flex-start;
 }
 
 .main-nav-right {
-    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    /* Usunięto flex-grow, aby nie rozciągało nawigacji niepotrzebnie */
     justify-content: flex-end;
 }
 
 .user-options {
-    margin-left: 20px;
+    margin-left: 20px; /* Nadal zachowujemy odstęp od linku "Zaloguj się" */
+    display: flex;
+    align-items: center;
 }
 
 .main-nav-left ul, .main-nav-right ul {
@@ -122,11 +124,12 @@ body {
     color: #cceeff;
 }
 
-/* POPRAWKI DLA DROPDOWNÓW */
+/* POPRAWKI DLA DROPDOWNÓW (BEZ ZMIAN W STOSUNKU DO POPRZEDNIEJ NAPRAWY) */
 .dropdown {
     position: relative;
     display: inline-block;
-    overflow: visible; /* KLUCZOWA ZMIANA */
+    overflow: visible; /* KLUCZOWA ZMIANA, ABY TREŚĆ NIE BYŁA ODCINANA */
+    z-index: 101; /* Upewniamy się, że dropdown jest najwyżej, wyżej niż .dropdown-content */
 }
 
 .dropbtn {
@@ -153,12 +156,11 @@ body {
     background-color: #f9f9f9;
     min-width: 150px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 100; /* Zwiększ z-index, aby dropdown był nad wszystkim innym */
+    z-index: 100; /* Z-index dla zawartości dropdownu, nieco niżej niż rodzic (.dropdown) */
     border-radius: 5px;
     overflow: hidden;
     left: 0;
     margin-top: 5px; /* Drobny odstęp od przycisku */
-    transform: translateY(0); /* Zresetuj transformacje, jeśli były */
 }
 
 .dropdown:hover .dropdown-content {
@@ -501,8 +503,6 @@ main {
 .datepicker-days div.selected-return {
     background-color: #28a745; /* Inny kolor dla daty powrotu */
     color: white;
-    font-weight: bold;
-    border-radius: 50%;
 }
 
 .datepicker-days div.in-range {
@@ -687,14 +687,7 @@ main {
         margin: 0;
     }
 
-    .main-nav-left, .main-nav-right, .user-options {
-        flex-grow: 0;
-        width: 100%;
-        justify-content: center;
-        margin-left: 0;
-        margin-right: 0;
-    }
-
+    /* Dopasowanie nawigacji w trybie responsywnym */
     .main-nav-left ul, .main-nav-right ul {
         flex-wrap: wrap;
         justify-content: center;
@@ -704,21 +697,17 @@ main {
         margin: 5px 10px;
     }
 
-    .user-options .dropdown {
-        margin: 5px;
-    }
-
     .modal-content {
         width: 95%;
         padding: 20px;
     }
 
     .datepicker-modal-content, .passengers-modal-content {
-        max-width: 95%; /* Zwiększenie szerokości na małych ekranach */
+        max-width: 95%;
     }
 
     .date-inputs-group {
-        flex-direction: column; /* Ułożenie inputów daty jeden pod drugim na małych ekranach */
+        flex-direction: column;
         gap: 10px;
     }
 }
@@ -734,7 +723,7 @@ main {
         padding-top: 20px;
     }
     .datepicker-days div {
-        padding: 8px 3px; /* Mniejszy padding dla dni */
+        padding: 8px 3px;
         font-size: 0.85rem;
         height: 35px;
     }
