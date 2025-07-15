@@ -1,399 +1,358 @@
-/* css/style.css - Nagłówek jasno niebieski + style modali + kalendarz + pasażerowie + NOWY PRZYCISK i POPRAWIONY DROPDOWNY (WIELE) + NAPRAWIONY PASEK NAWIGACYJNY */
+/* style.css */
+
+:root {
+    --primary-color: #007bff;
+    --secondary-color: #6c757d;
+    --accent-color: #28a745;
+    --text-color: #333;
+    --light-bg: #f8f9fa;
+    --white: #ffffff;
+    --border-color: #dee2e6;
+    --box-shadow-light: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f0f2f5;
-    color: #333;
     line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--light-bg);
 }
 
-/* --- Nagłówek i Nawigacja --- */
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #0056b3;
+}
+
+ul {
+    list-style: none;
+}
+
+/* === Nagłówek główny === */
 .main-header {
-    background: linear-gradient(135deg, #87ceeb 0%, #4682b4 50%, #87ceeb 100%);
-    color: white;
+    background-color: var(--primary-color);
+    color: var(--white);
     padding: 15px 0;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    position: relative;
-    /* overflow: hidden; */ /* <-- Nadal usunięte, aby dropdown działał poprawnie */
-}
-
-.main-header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image:
-        linear-gradient(45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.1) 75%, transparent 75%, transparent),
-        linear-gradient(-45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.1) 75%, transparent 75%, transparent),
-        radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.05) 2px, transparent 3px),
-        radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.05) 2px, transparent 3px);
-    background-size: 20px 20px, 20px 20px, 40px 40px, 40px 40px;
-    background-position: 0 0, 10px 0, 0 0, 0 0;
-    z-index: 0;
+    box-shadow: var(--box-shadow-light);
+    position: relative; /* Dla dropdownów */
+    z-index: 1000; /* Upewnij się, że nagłówek jest na wierzchu */
 }
 
 .header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    max-width: 1400px;
-    width: 100%;
-    margin: 0 auto;
-    padding: 0 20px;
-    position: relative;
-    z-index: 1;
-}
-
-.logo {
-    margin: 0 20px;
+    flex-wrap: wrap; /* Pozwala na zawijanie na małych ekranach */
 }
 
 .logo h1 {
     margin: 0;
-    font-size: 2.8rem;
-    font-weight: 900;
+    font-size: 2.2rem;
+    font-weight: 700;
     letter-spacing: 2px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    white-space: nowrap;
+    text-transform: uppercase;
+    color: var(--white);
 }
 
-/* UKŁAD PASKÓW NAWIGACYJNYCH */
-.main-nav-left {
+.main-nav-left ul,
+.main-nav-right ul {
     display: flex;
-    align-items: center;
-    justify-content: flex-start;
+    gap: 25px; /* Większy odstęp */
+    flex-wrap: wrap;
 }
 
-.main-nav-right {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-}
-
-/* ZMIANA: usunięto user-options jako margin-left tutaj, bo będzie na poszczególnych li */
-/* .user-options {
-    margin-left: 20px;
-    display: flex;
-    align-items: center;
-} */
-
-
-.main-nav-left ul, .main-nav-right ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    align-items: center;
-}
-
-.main-nav-left ul li {
-    margin: 0 15px;
-}
-/* Dodajemy margin-left dla każdego elementu li w prawej nawigacji, aby oddzielić dropdowny */
-.main-nav-right ul li {
-    margin: 0 0 0 15px; /* Tylko lewy margines, aby dropdowny były od siebie oddalone */
-}
-
-
-.main-nav-left ul li a, .main-nav-right ul li a {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 1rem;
-    padding: 8px 0;
+.main-nav-left a,
+.main-nav-right a {
+    color: var(--white);
+    font-weight: 500;
+    padding: 5px 0;
     position: relative;
     transition: color 0.3s ease;
 }
 
-.main-nav-left ul li a::after, .main-nav-right ul li a::after {
+.main-nav-left a:hover,
+.main-nav-right a:hover {
+    color: #cceeff; /* Jasniejszy kolor na hover */
+}
+
+/* Podkreślenie na hover */
+.main-nav-left a::after,
+.main-nav-right a::after {
     content: '';
     position: absolute;
     width: 0;
-    height: 3px;
-    background-color: white;
-    left: 50%;
-    bottom: 0;
-    transform: translateX(-50%);
-    transition: width 0.3s ease;
+    height: 2px;
+    bottom: -5px;
+    left: 0;
+    background-color: var(--white);
+    transition: width 0.3s ease-in-out;
 }
 
-.main-nav-left ul li a:hover::after, .main-nav-right ul li a:hover::after {
+.main-nav-left a:hover::after,
+.main-nav-right a:hover::after {
     width: 100%;
 }
 
-.main-nav-left ul li a:hover, .main-nav-right ul li a:hover {
-    color: #cceeff;
-}
 
-/* STYLE DLA DROPDOWNÓW (BEZ ZMIAN W FUNKCJONALNOŚCI) */
+/* === Dropdown w nagłówku === */
 .dropdown {
     position: relative;
     display: inline-block;
-    overflow: visible; /* KLUCZOWA ZMIANA, ABY TREŚĆ NIE BYŁA ODCINANA */
-    z-index: 101; /* Upewniamy się, że dropdown jest najwyżej, wyżej niż .dropdown-content */
 }
 
 .dropbtn {
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: transparent;
     color: white;
-    padding: 8px 12px;
-    font-size: 0.9rem;
+    padding: 8px 10px;
+    font-size: 1rem;
     border: none;
     cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
+    transition: background-color 0.3s ease;
+    border-radius: 4px;
 }
 
 .dropbtn:hover {
-    background-color: rgba(255, 255, 255, 0.3);
+    background-color: rgba(255, 255, 255, 0.2);
 }
 
 .dropdown-content {
     display: none;
     position: absolute;
     background-color: #f9f9f9;
-    min-width: 150px;
+    min-width: 160px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 100; /* Z-index dla zawartości dropdownu, nieco niżej niż rodzic (.dropdown) */
-    border-radius: 5px;
-    overflow: hidden;
+    z-index: 1;
+    border-radius: 4px;
+    overflow: hidden; /* Upewnij się, że zaokrąglenia działają */
+    top: 100%; /* Poniżej przycisku */
     left: 0;
-    margin-top: 5px; /* Drobny odstęp od przycisku */
-    white-space: nowrap; /* Zapobiega łamaniu tekstu w dropdownie */
 }
-
-.dropdown:hover .dropdown-content {
-    display: block;
-}
-
 
 .dropdown-content a {
-    color: black;
-    padding: 10px 14px;
+    color: var(--text-color);
+    padding: 12px 16px;
     text-decoration: none;
     display: block;
-    transition: background-color 0.2s ease;
+    white-space: nowrap; /* Zapobiega zawijaniu tekstu */
+    transition: background-color 0.3s ease;
 }
 
 .dropdown-content a:hover {
     background-color: #ddd;
 }
 
-/* --- Sekcja głównego formularza --- */
-main {
-    padding: 20px;
-    max-width: 800px;
-    margin: 40px auto;
-    background-color: white;
-    box-shadow: 0 0 20px rgba(0,0,0,0.1);
-    border-radius: 8px;
-}
-
-.search-form-container h2 {
-    text-align: center;
-    color: #007bff;
-    margin-bottom: 30px;
-    font-size: 2rem;
-}
-
-.form-group {
-    margin-bottom: 20px;
-    position: relative;
-}
-
-.form-group label {
+.dropdown-content.show { /* Używane przez JS do pokazywania */
     display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-    color: #555;
 }
 
-.input-with-icon {
+
+/* === Sekcja Hero === */
+.hero-section {
     position: relative;
-    width: 100%;
-}
-
-.input-with-icon input[type="text"] {
-    width: calc(100% - 24px);
-    padding: 12px;
-    padding-right: 40px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-sizing: border-box;
-    font-size: 1rem;
-    cursor: pointer;
-}
-
-.input-with-icon .icon {
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #999;
-    pointer-events: none;
-}
-
-/* Nowe style dla grupy inputów daty */
-.date-inputs-group {
+    height: 450px;
+    background: url('../image_5ebd04.jpg') no-repeat center center/cover; /* Upewnij się, że ścieżka do obrazka jest poprawna */
     display: flex;
-    gap: 15px; /* Odstęp między polami daty */
-}
-
-.date-inputs-group .input-with-icon {
-    flex: 1; /* Równa szerokość dla obu inputów */
-}
-
-/* NOWY STYL DLA PRZYCISKU SZUKAJ LOTÓW */
-.search-flights-btn {
-    display: block;
-    width: 100%;
-    padding: 15px;
-    background: linear-gradient(90deg, #007bff, #0056b3); /* Liniowy gradient */
-    color: white;
-    border: none;
-    border-radius: 8px; /* Zaokrąglone rogi */
-    font-size: 1.25rem; /* Większa czcionka */
-    font-weight: bold;
-    cursor: pointer;
-    margin-top: 30px;
-    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.4); /* Subtelny cień */
-    transition: all 0.3s ease; /* Płynne przejścia */
-    letter-spacing: 1px;
-    text-transform: uppercase; /* Wielkie litery */
-    position: relative;
-    overflow: hidden; /* Do efektu hover */
-}
-
-.search-flights-btn:hover {
-    background: linear-gradient(90deg, #0056b3, #004085); /* Ciemniejszy gradient na hover */
-    box-shadow: 0 6px 15px rgba(0, 123, 255, 0.6); /* Mocniejszy cień */
-    transform: translateY(-2px); /* Lekkie uniesienie */
-}
-
-.search-flights-btn:active {
-    transform: translateY(0); /* Naciśnięcie */
-    box-shadow: 0 2px 5px rgba(0, 123, 255, 0.3);
-}
-
-/* Efekt najechania - błysk */
-.search-flights-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.2);
-    transform: skewX(-20deg);
-    transition: left 0.7s ease;
-}
-
-.search-flights-btn:hover::before {
-    left: 100%;
-}
-
-
-/* --- Ogólne style dla Modali --- */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 100;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.4);
-    padding-top: 60px;
-    box-sizing: border-box;
-    justify-content: center;
     align-items: center;
-}
-
-.modal-content {
-    background-color: #fefefe;
-    margin: auto;
-    padding: 30px;
-    border: 1px solid #888;
-    width: 80%;
-    max-width: 500px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    position: relative;
-    animation-name: animatetop;
-    animation-duration: 0.4s;
-}
-
-@keyframes animatetop {
-    from {top: -300px; opacity: 0}
-    to {top: 0; opacity: 1}
-}
-
-.close-button {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    position: absolute;
-    right: 15px;
-    top: 10px;
-}
-
-.close-button:hover,
-.close-button:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-.modal-content h3 {
+    justify-content: center;
+    color: var(--white);
     text-align: center;
-    color: #007bff;
-    margin-bottom: 20px;
-    font-size: 1.8rem;
 }
 
-/* --- Style dla modala lotnisk --- */
-.airport-list-container h4 {
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Ciemniejsza nakładka */
+}
+
+.hero-text {
+    position: relative;
+    z-index: 1;
+    animation: fadeIn 1.5s ease-out; /* Animacja pojawiania się */
+}
+
+.hero-text h2 {
+    font-size: 3.5rem;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+}
+
+.hero-text p {
+    font-size: 1.5rem;
+    font-weight: 300;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* === Sekcja wyszukiwania === */
+.search-section {
+    background-color: var(--white);
+    max-width: 900px;
+    margin: -80px auto 40px; /* Przesunięcie w górę, aby nachodziło na hero */
+    padding: 30px 40px;
+    border-radius: 12px;
+    box-shadow: var(--box-shadow-light);
+    z-index: 100; /* Nad hero overlay */
+    position: relative;
+}
+
+.search-section h2 {
+    text-align: center;
+    color: var(--primary-color);
+    margin-bottom: 30px;
+    font-size: 2.2rem;
+}
+
+#flightSearchForm {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group label {
+    margin-bottom: 8px;
+    font-weight: 600;
     color: #555;
-    margin-top: 20px;
-    margin-bottom: 10px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 5px;
 }
 
-.airport-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    max-height: 200px; /* Nieco mniejsza wysokość, aby zmieścić więcej krajów */
-    overflow-y: auto;
-    border: 1px solid #eee;
-    border-radius: 5px;
+.input-group input[type="text"] {
+    padding: 12px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    width: 100%;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer; /* Wskazuje, że pole jest klikalne */
+    background-color: #fcfcfc;
 }
 
-.airport-list li {
-    padding: 10px 15px;
+.input-group input[type="text"]:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+    outline: none;
+}
+
+.search-button {
+    grid-column: 1 / -1; /* Rozciąga przycisk na całą szerokość siatki */
+    padding: 15px 30px;
+    background-color: var(--accent-color);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    font-weight: 600;
     cursor: pointer;
-    border-bottom: 1px solid #eee;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
 }
 
-.airport-list li:last-child {
-    border-bottom: none;
+.search-button:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
 }
 
-.airport-list li:hover {
-    background-color: #e9f5ff;
+.search-button i {
+    font-size: 1.3rem;
 }
 
+
+/* === Stopka === */
+footer {
+    background-color: #343a40; /* Ciemny kolor tła */
+    color: var(--white);
+    padding: 40px 0 20px;
+    font-size: 0.9rem;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 30px; /* Odstępy między sekcjami stopki */
+}
+
+.footer-section {
+    flex: 1; /* Pozwala na elastyczne rozciąganie */
+    min-width: 250px; /* Minimalna szerokość sekcji */
+}
+
+.footer-section h3 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+}
+
+.footer-section p,
+.footer-section ul {
+    margin-bottom: 10px;
+}
+
+.footer-section ul {
+    padding: 0;
+}
+
+.footer-section ul li {
+    margin-bottom: 8px;
+}
+
+.footer-section a {
+    color: #cceeff;
+    transition: color 0.3s ease;
+}
+
+.footer-section a:hover {
+    color: var(--white);
+}
+
+.footer-section i {
+    margin-right: 8px;
+    color: #cceeff;
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #495057;
+    color: #adb5bd;
+}
+
+
+/* === Modale === */
 .modal-overlay {
     display: none;
     position: fixed;
@@ -401,222 +360,286 @@ main {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.4);
-    z-index: 99;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 1040; /* Poniżej modala, ale nad resztą strony */
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
-.modal.show, .modal-overlay.show {
-    display: flex;
+.modal-overlay.show {
+    display: block;
+    opacity: 1;
 }
 
-/* --- Style dla Modala Kalendarza --- */
-.datepicker-modal-content {
-    max-width: 600px; /* Szerszy niż modal lotnisk */
-    padding: 20px;
+.modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--white);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    z-index: 1050; /* Nad overlayem */
+    max-width: 600px;
+    width: 90%; /* Szerokość na małych ekranach */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    overflow-y: auto; /* Włącz przewijanie w modalach, jeśli treść jest długa */
+    max-height: 90vh; /* Ogranicz wysokość modala */
 }
 
-.datepicker-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    background-color: #f0f8ff;
-    padding: 10px;
-    border-radius: 5px;
+.modal.show {
+    display: block;
+    opacity: 1;
+    visibility: visible;
 }
 
-.datepicker-header .nav-btn {
-    background: none;
-    border: 1px solid #007bff;
-    color: #007bff;
-    padding: 8px 12px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1.1rem;
-    transition: background-color 0.2s, color 0.2s;
+.modal-content {
+    position: relative;
 }
 
-.datepicker-header .nav-btn:hover {
-    background-color: #007bff;
-    color: white;
-}
-.datepicker-header .nav-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    background-color: #f0f0f0;
-    color: #ccc;
-    border-color: #eee;
-}
-
-
-.month-year-display {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: #333;
-}
-
-.datepicker-weekdays {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
+.modal-content h3 {
+    margin-top: 0;
+    margin-bottom: 25px;
+    color: var(--primary-color);
     text-align: center;
-    font-weight: bold;
-    margin-bottom: 10px;
-    color: #666;
+    font-size: 1.8rem;
 }
 
-.datepicker-days {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
-    text-align: center;
-}
-
-.datepicker-days div {
-    padding: 10px 5px;
+.close-button {
+    position: absolute;
+    top: -15px; /* Przesunięte lekko poza padding modala */
+    right: -15px; /* Przesunięte lekko poza padding modala */
+    font-size: 2rem;
     cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.2s, color 0.2s;
-    font-size: 0.95rem;
-    height: 40px; /* Stała wysokość komórki */
+    color: #aaa;
+    background: var(--white);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: color 0.3s ease, background-color 0.3s ease;
 }
 
-.datepicker-days div.empty-day {
+.close-button:hover {
+    color: #777;
+    background-color: #f0f0f0;
+}
+
+
+/* === Style dla modala lotnisk === */
+.airport-lists {
+    max-height: 400px; /* Maksymalna wysokość, aby umożliwić przewijanie */
+    overflow-y: auto; /* Włącz przewijanie pionowe */
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px;
+    background-color: var(--light-bg);
+}
+
+.airport-lists h4 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    color: #333;
+    font-size: 1.2em;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 8px;
+    font-weight: 600;
+}
+
+.airport-lists h4:first-child {
+    margin-top: 0; /* Pierwszy nagłówek bez górnego marginesu */
+}
+
+.airport-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px 0; /* Dodaj margines pod każdą listą, aby oddzielić od kolejnego nagłówka */
+}
+
+.airport-list li {
+    padding: 10px 15px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    color: #444;
+    font-size: 1rem;
+}
+
+.airport-list li:last-child {
+    border-bottom: none;
+}
+
+.airport-list li:hover {
+    background-color: #e9f5ff; /* Jasnoniebieski na hover */
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+
+/* === Style dla modala kalendarza === */
+.date-display {
+    background-color: #e9f5ff;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+    border: 1px solid #cceeff;
+}
+
+.date-display p {
+    margin: 5px 0;
+    font-size: 1.1em;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.date-display span {
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.clear-return-btn {
+    background: none;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    font-size: 1em;
+    padding: 0 5px;
+    transition: color 0.2s ease;
+}
+
+.clear-return-btn:hover {
+    color: #c82333;
+}
+
+.calendar {
+    margin-bottom: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: var(--white);
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--primary-color);
+    color: var(--white);
+    padding: 10px 15px;
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+
+.calendar-header button {
     background-color: transparent;
-    cursor: default;
+    color: var(--white);
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px 10px;
+    transition: background-color 0.2s ease;
+    border-radius: 4px;
 }
 
-.datepicker-days div.past-day,
-.datepicker-days div.disabled-day {
-    color: #ccc;
+.calendar-header button:hover:not(:disabled) {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.calendar-header button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.calendar-days-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    padding: 10px;
+}
+
+.day-label {
+    font-weight: bold;
+    color: #777;
+    padding: 8px 0;
+    font-size: 0.9em;
+}
+
+.datepicker-days {
+    display: contents; /* Umożliwia elementy 'day' na bezpośrednie bycie częścią gridu */
+}
+
+.datepicker-days > div { /* Styl dla każdego dnia */
+    padding: 10px 5px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    font-size: 0.95rem;
+}
+
+.datepicker-days .past-day {
+    color: #bbb;
     cursor: not-allowed;
     background-color: #f9f9f9;
 }
 
-.datepicker-days div.selectable-day:hover {
-    background-color: #e9f5ff;
+.datepicker-days .selectable-day:hover:not(.selected-departure):not(.selected-return):not(.in-range) {
+    background-color: #e0e0e0;
 }
 
-.datepicker-days div.selected-departure {
-    background-color: #007bff;
-    color: white;
+.datepicker-days .selected-departure,
+.datepicker-days .selected-return {
+    background-color: var(--primary-color);
+    color: var(--white);
     font-weight: bold;
-    border-radius: 50%; /* Okrągły kształt dla wybranej daty */
 }
 
-.datepicker-days div.selected-return {
-    background-color: #28a745; /* Inny kolor dla daty powrotu */
-    color: white;
-}
-
-.datepicker-days div.in-range {
-    background-color: #cceeff; /* Kolor dla dni w zakresie między wylotem a powrotem */
+.datepicker-days .in-range {
+    background-color: #cceeff; /* Kolor dla zakresu między datami */
     color: #333;
-    border-radius: 0; /* Kwadratowy kształt dla dni w zakresie */
-}
-.datepicker-days div.selected-departure.in-range,
-.datepicker-days div.selected-return.in-range {
-    border-radius: 50%; /* Zachowaj okrągłe dla krańców zakresu */
+    border-radius: 0; /* Bez zaokrąglenia, aby tworzyć ciągłość */
 }
 
-
-.datepicker-selected-dates {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 20px;
-    padding: 15px;
-    background-color: #f5f5f5;
-    border-radius: 8px;
-    border: 1px solid #eee;
+.datepicker-days .selected-departure.in-range {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
 }
-
-.selected-date-item {
-    text-align: center;
-    flex: 1;
-    position: relative;
+.datepicker-days .selected-return.in-range {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
 }
-
-.selected-date-item label {
-    display: block;
-    font-weight: bold;
-    color: #555;
-    margin-bottom: 5px;
-}
-
-.selected-date-item span {
-    font-size: 1.1rem;
-    color: #333;
-}
-
-.clear-date-btn {
-    background-color: #dc3545;
-    color: white;
-    border: none;
+.datepicker-days .selected-departure:not(.in-range),
+.datepicker-days .selected-return:not(.in-range) {
     border-radius: 50%;
-    width: 25px;
-    height: 25px;
-    font-size: 0.8rem;
-    cursor: pointer;
-    position: absolute;
-    top: -5px;
-    right: 5px;
-    transform: translateX(50%);
-    transition: background-color 0.2s;
-}
-
-.clear-date-btn:hover {
-    background-color: #c82333;
 }
 
 
-.confirm-button {
-    display: block;
-    width: 100%;
-    padding: 12px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 1.1rem;
-    cursor: pointer;
-    margin-top: 25px;
-    transition: background-color 0.3s ease;
-}
-
-.confirm-button:hover {
-    background-color: #0056b3;
-}
-
-/* --- Style dla Modala Pasażerów i Klasy --- */
-.passengers-modal-content {
-    max-width: 450px;
-    padding: 25px;
-}
-
+/* === Style dla modala pasażerów i klasy === */
 .passenger-counter {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
-    padding: 10px 0;
-    border-bottom: 1px solid #eee;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f0f0f0;
 }
 
-.passenger-counter:last-of-type {
-    border-bottom: none;
-}
-
-.passenger-type h4 {
-    margin: 0;
-    font-size: 1.1rem;
+.passenger-counter p {
+    font-weight: 500;
     color: #333;
-}
-
-.passenger-type span {
-    font-size: 0.85rem;
-    color: #777;
 }
 
 .counter-controls {
@@ -626,116 +649,174 @@ main {
 }
 
 .counter-controls button {
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
-    color: #333;
     width: 35px;
     height: 35px;
     border-radius: 50%;
-    font-size: 1.2rem;
+    border: 1px solid var(--primary-color);
+    background-color: var(--white);
+    color: var(--primary-color);
+    font-size: 1.5rem;
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     cursor: pointer;
-    transition: background-color 0.2s, border-color 0.2s;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .counter-controls button:hover {
-    background-color: #e0e0e0;
-    border-color: #999;
+    background-color: var(--primary-color);
+    color: var(--white);
 }
 
-.counter-controls button:disabled {
-    background-color: #f9f9f9;
-    border-color: #eee;
-    color: #ccc;
-    cursor: not-allowed;
-}
-
-.counter-controls .count {
-    font-size: 1.3rem;
+.counter-controls span {
+    font-size: 1.2rem;
     font-weight: bold;
-    min-width: 30px;
+    min-width: 25px; /* Aby cyfry nie "skakały" */
     text-align: center;
 }
 
-.class-selection {
-    margin-top: 30px;
-    padding-top: 20px;
-    border-top: 1px solid #eee;
+.travel-class-select {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
 }
 
-.class-selection h4 {
-    margin-top: 0;
+.travel-class-select label {
     margin-bottom: 10px;
-    color: #333;
+    font-weight: 600;
+    color: #555;
 }
 
-.class-selection select {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+.travel-class-select select {
+    padding: 10px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
     font-size: 1rem;
-    background-color: white;
+    background-color: var(--white);
+    cursor: pointer;
+    appearance: none; /* Ukrywa domyślne strzałki selecta */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='%236c757d' d='M9.293 12.95a1.001 1.001 0 0 0 1.414 0l4.243-4.243a1 1 0 0 0-1.414-1.414L10 10.828 6.071 6.901a1 1 0 1 0-1.414 1.414z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 1em;
 }
 
-/* --- Responsywność --- */
+.travel-class-select select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+.confirm-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--accent-color);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 25px;
+    transition: background-color 0.3s ease;
+}
+
+.confirm-btn:hover {
+    background-color: #218838;
+}
+
+
+/* === Responsywność === */
 @media (max-width: 992px) {
     .header-content {
         flex-direction: column;
-        align-items: center;
         text-align: center;
         gap: 15px;
     }
 
-    .logo {
-        margin: 0;
-    }
-
-    /* Dopasowanie nawigacji w trybie responsywnym */
     .main-nav-left ul, .main-nav-right ul {
-        flex-wrap: wrap;
         justify-content: center;
+        width: 100%;
     }
 
-    .main-nav-left ul li, .main-nav-right ul li {
-        margin: 5px 10px;
-    }
-    /* Zapewniamy odstęp między dropdownami nawet na małych ekranach */
-    .main-nav-right ul li {
-        margin: 5px 10px;
+    .main-nav-left, .main-nav-right {
+        width: 100%;
     }
 
+    .search-section {
+        margin: -50px 20px 40px;
+        padding: 25px;
+    }
 
-    .modal-content {
+    #flightSearchForm {
+        grid-template-columns: 1fr; /* Jeden element w kolumnie na małych ekranach */
+    }
+
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .footer-section {
+        min-width: unset; /* Usuń minimalną szerokość */
+    }
+
+    .modal {
         width: 95%;
         padding: 20px;
     }
 
-    .datepicker-modal-content, .passengers-modal-content {
-        max-width: 95%;
-    }
-
-    .date-inputs-group {
-        flex-direction: column;
-        gap: 10px;
+    .close-button {
+        top: -10px;
+        right: -10px;
+        font-size: 1.8rem;
+        width: 35px;
+        height: 35px;
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 576px) {
     .logo h1 {
-        font-size: 2.2rem;
+        font-size: 1.8rem;
     }
-    .main-nav-left ul li a, .main-nav-right ul li a {
+
+    .hero-text h2 {
+        font-size: 2.5rem;
+    }
+
+    .hero-text p {
+        font-size: 1.2rem;
+    }
+
+    .search-section h2 {
+        font-size: 1.8rem;
+    }
+
+    .input-group input[type="text"] {
+        padding: 10px 12px;
         font-size: 0.9rem;
     }
-    .modal {
-        padding-top: 20px;
+
+    .search-button {
+        font-size: 1rem;
+        padding: 12px 20px;
     }
-    .datepicker-days div {
-        padding: 8px 3px;
-        font-size: 0.85rem;
-        height: 35px;
+
+    .modal-content h3 {
+        font-size: 1.5rem;
+    }
+
+    .passenger-counter p, .counter-controls span {
+        font-size: 1rem;
+    }
+    .counter-controls button {
+        width: 30px;
+        height: 30px;
+        font-size: 1.2rem;
+    }
+
+    .travel-class-select select, .confirm-btn {
+        font-size: 1rem;
+        padding: 10px 12px;
     }
 }
