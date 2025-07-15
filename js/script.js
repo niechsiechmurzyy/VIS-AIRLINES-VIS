@@ -1,4 +1,4 @@
-// js/script.js - Kalendarz i wybór pasażerów/klasy
+// js/script.js - Kalendarz i wybór pasażerów/klasy (POPRAWIONY KALENDARZ)
 
 document.addEventListener('DOMContentLoaded', () => {
     const flightSearchForm = document.getElementById('flightSearchForm');
@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-    // --- Obsługa niestandardowego kalendarza ---
+    // --- Obsługa niestandardowego kalendarza (POPRAWIONA) ---
     const datePickerModal = document.getElementById('datePickerModal');
     const closeDatePickerBtn = datePickerModal.querySelector('.close-button');
     const prevMonthBtn = document.getElementById('prevMonthBtn');
@@ -162,12 +162,23 @@ document.addEventListener('DOMContentLoaded', () => {
     let selectedDepartureDate = null;
     let selectedReturnDate = null;
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Ustaw na początek dnia dla porównań
-    const oneYearFromNow = new Date();
-    oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
-    oneYearFromNow.setHours(0, 0, 0, 0);
+    // Pomocnicza funkcja do tworzenia daty bez problemów ze strefą czasową
+    function createDateKey(year, month, day) {
+        // Tworzy datę w formacie 'YYYY-MM-DD'
+        return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    }
 
+    // Pomocnicza funkcja do konwersji 'YYYY-MM-DD' na obiekt Date (północ UTC)
+    function parseDateKeyToDate(dateKey) {
+        if (!dateKey) return null;
+        const [year, month, day] = dateKey.split('-').map(Number);
+        return new Date(Date.UTC(year, month - 1, day));
+    }
+
+    // Referencje do daty dzisiejszej i rok do przodu (w UTC, aby uniknąć problemów)
+    const todayUTC = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+    const oneYearFromNowUTC = new Date(Date.UTC(today.getFullYear() + 1, today.getMonth(), today.getDate()));
+    
     const monthNames = [
         "Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec",
         "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"
@@ -194,27 +205,29 @@ document.addEventListener('DOMContentLoaded', () => {
             dayDiv.textContent = day;
             dayDiv.classList.add('calendar-day');
 
-            const date = new Date(currentYear, currentMonth, day);
-            date.setHours(0, 0, 0, 0); // Ustaw na początek dnia dla porównań
+            // Tworzymy datę w UTC dla porównań
+            const dateForComparison = new Date(Date.UTC(currentYear, currentMonth, day));
+            const dateKey = createDateKey(currentYear, currentMonth, day);
+            dayDiv.dataset.dateKey = dateKey; // Przechowujemy datę jako klucz YYYY-MM-DD
 
-            if (date < today || date > oneYearFromNow) {
+            // Sprawdzenie, czy dzień jest przeszły lub poza zakresem rok do przodu
+            if (dateForComparison < todayUTC || dateForComparison > oneYearFromNowUTC) {
                 dayDiv.classList.add('disabled-day');
             } else {
                 dayDiv.classList.add('selectable-day');
-                dayDiv.dataset.date = date.toISOString().split('T')[0]; // Format YYYY-MM-DD
             }
 
             // Oznaczenie wybranych dat
-            if (selectedDepartureDate && date.getTime() === selectedDepartureDate.getTime()) {
+            if (selectedDepartureDate && dateForComparison.getTime() === selectedDepartureDate.getTime()) {
                 dayDiv.classList.add('selected-departure');
             }
-            if (selectedReturnDate && date.getTime() === selectedReturnDate.getTime()) {
+            if (selectedReturnDate && dateForComparison.getTime() === selectedReturnDate.getTime()) {
                 dayDiv.classList.add('selected-return');
             }
 
             // Oznaczenie dni w zakresie
             if (selectedDepartureDate && selectedReturnDate &&
-                date > selectedDepartureDate && date < selectedReturnDate) {
+                dateForComparison > selectedDepartureDate && dateForComparison < selectedReturnDate) {
                 dayDiv.classList.add('in-range');
             }
 
@@ -222,10 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Zaktualizuj stan przycisków nawigacyjnych
-        const firstAvailableDate = new Date(today);
-        firstAvailableDate.setDate(1); // Ustaw na 1. dzień bieżącego miesiąca dla porównania z aktualnym miesiącem kalendarza
-
-        // Poprawka: Dezaktywacja przycisku 'poprzedni miesiąc' jeśli aktualny miesiąc to bieżący miesiąc
+        // Dezaktywacja przycisku 'poprzedni miesiąc' jeśli aktualny miesiąc kalendarza to bieżący miesiąc
         if (currentYear === today.getFullYear() && currentMonth === today.getMonth()) {
             prevMonthBtn.disabled = true;
         } else {
@@ -233,20 +243,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Dezaktywacja przycisku 'następny miesiąc' jeśli to już miesiąc rok do przodu
+        // (tj. jeśli aktualny miesiąc jest taki sam lub późniejszy niż 'rok do przodu',
+        // i aktualny rok jest tym samym rokiem co 'rok do przodu' lub późniejszy)
         const maxMonth = oneYearFromNow.getMonth();
         const maxYear = oneYearFromNow.getFullYear();
         if ((currentYear === maxYear && currentMonth >= maxMonth) || (currentYear > maxYear)) {
-            nextMonthBtn.disabled = true;
+             nextMonthBtn.disabled = true;
         } else {
-            nextMonthBtn.disabled = false;
+             nextMonthBtn.disabled = false;
         }
-
+        
         updateDisplayDates(); // Zaktualizuj wyświetlanie wybranych dat
     }
 
     function updateDisplayDates() {
-        displayDepartureDate.textContent = selectedDepartureDate ? selectedDepartureDate.toLocaleDateString('pl-PL') : 'Brak';
-        displayReturnDate.textContent = selectedReturnDate ? selectedReturnDate.toLocaleDateString('pl-PL') : 'Brak';
+        // Formatowanie daty do wyświetlenia w lokalnej strefie czasowej
+        const formatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+        displayDepartureDate.textContent = selectedDepartureDate ? selectedDepartureDate.toLocaleDateString('pl-PL', formatOptions) : 'Brak';
+        displayReturnDate.textContent = selectedReturnDate ? selectedReturnDate.toLocaleDateString('pl-PL', formatOptions) : 'Brak';
         clearReturnDateBtn.style.display = selectedReturnDate ? 'block' : 'none';
     }
 
@@ -254,17 +268,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const dateInputTriggers = document.querySelectorAll('.date-input-trigger');
     dateInputTriggers.forEach(input => {
         input.addEventListener('click', () => {
-            // Zresetuj kalendarz do bieżącego miesiąca przy otwarciu
-            const now = new Date();
-            currentMonth = now.getMonth();
-            currentYear = now.getFullYear();
-
-            // Ustaw wartości w polach daty w formularzu na te z JS
+            // Ustaw kalendarz na miesiąc daty wylotu, jeśli jest już wybrana
             if (selectedDepartureDate) {
-                departureDateInput.value = selectedDepartureDate.toLocaleDateString('pl-PL');
-            }
-            if (selectedReturnDate) {
-                returnDateInput.value = selectedReturnDate.toLocaleDateString('pl-PL');
+                currentMonth = selectedDepartureDate.getUTCMonth();
+                currentYear = selectedDepartureDate.getUTCFullYear();
+            } else {
+                // W przeciwnym razie zresetuj do bieżącego miesiąca
+                const now = new Date();
+                currentMonth = now.getMonth();
+                currentYear = now.getFullYear();
             }
 
             renderCalendar();
@@ -298,18 +310,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // Wybór daty
     if (datepickerDays) {
         datepickerDays.addEventListener('click', (event) => {
-            const clickedDay = event.target.closest('.selectable-day');
-            if (clickedDay) {
-                const dateString = clickedDay.dataset.date;
-                const clickedDate = new Date(dateString);
-                clickedDate.setHours(0, 0, 0, 0); // Upewnij się, że czas jest zresetowany
+            const clickedDayDiv = event.target.closest('.selectable-day');
+            if (clickedDayDiv) {
+                const dateKey = clickedDayDiv.dataset.dateKey;
+                const clickedDate = parseDateKeyToDate(dateKey); // Konwertuj klucz na datę UTC
 
-                if (!selectedDepartureDate || clickedDate.getTime() === selectedDepartureDate.getTime() || (selectedDepartureDate && clickedDate < selectedDepartureDate)) {
-                    // Wybrano datę wylotu (pierwszy wybór, ponowny wybór tej samej daty, lub data wcześniejsza niż obecny wylot)
+                if (!selectedDepartureDate || clickedDate.getTime() === selectedDepartureDate.getTime()) {
+                    // Jeśli nie ma daty wylotu lub kliknięto na już wybraną datę wylotu
+                    // Ustaw tę datę jako datę wylotu i zresetuj powrót
                     selectedDepartureDate = clickedDate;
-                    selectedReturnDate = null; // Resetuj datę powrotu
+                    selectedReturnDate = null;
+                } else if (clickedDate < selectedDepartureDate) {
+                    // Jeśli kliknięto datę wcześniejszą niż obecny wylot
+                    // Ustaw tę datę jako nowy wylot i zresetuj powrót
+                    selectedDepartureDate = clickedDate;
+                    selectedReturnDate = null;
                 } else if (clickedDate > selectedDepartureDate) {
-                    // Wybrano datę powrotu
+                    // Jeśli kliknięto datę późniejszą niż wylot
+                    // Ustaw ją jako datę powrotu
                     selectedReturnDate = clickedDate;
                 }
                 renderCalendar(); // Ponownie wyrenderuj, aby odświeżyć zaznaczenia
@@ -329,12 +347,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (confirmDatesBtn) {
         confirmDatesBtn.addEventListener('click', () => {
             if (selectedDepartureDate) {
+                // Formatujemy daty do wyświetlenia w inputach formularza
                 departureDateInput.value = selectedDepartureDate.toLocaleDateString('pl-PL');
-                // Jeśli jest tylko data wylotu, pole powrotu jest puste
                 if (selectedReturnDate) {
                     returnDateInput.value = selectedReturnDate.toLocaleDateString('pl-PL');
                 } else {
-                    returnDateInput.value = ''; // Upewnij się, że jest puste
+                    returnDateInput.value = '';
                 }
                 closeModal(datePickerModal);
             } else {
@@ -353,7 +371,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const childrenCountSpan = document.getElementById('childrenCount');
     const infantsCountSpan = document.getElementById('infantsCount');
     const modalTravelClassSelect = document.getElementById('modalTravelClass');
-    const confirmPassengersClassBtn = document.getElementById('confirmPassengersClassBtn');
+    const confirmPassengersClassBtn = document = document.getElementById('confirmPassengersClassBtn');
 
     let adults = 1;
     let children = 0;
@@ -378,9 +396,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updatePassengersAndClassInput() {
         let passengerText = '';
-        if (adults > 0) passengerText += `${adults} dorosły${adults > 1 ? 'ch' : ''}`;
-        if (children > 0) passengerText += `, ${children} dziecko${children > 1 ? 'ta' : ''}`;
-        if (infants > 0) passengerText += `, ${infants} niemowlę${infants > 1 ? 'ta' : ''}`;
+        let totalPassengers = adults + children + infants;
+        
+        // Zmieniona logika wyświetlania, aby była bardziej zwięzła
+        if (totalPassengers === 1 && adults === 1 && children === 0 && infants === 0) {
+            passengerText = '1 dorosły';
+        } else {
+            passengerText = `${totalPassengers} pasażerów`;
+            if (adults > 0) passengerText += ` (${adults} doro${adults > 1 ? 'słych' : 'sły'}`;
+            if (children > 0) passengerText += `, ${children} dzieck${children > 1 ? 'a' : 'o'}`;
+            if (infants > 0) passengerText += `, ${infants} niemowl${infants > 1 ? 'ąt' : 'ę'}`;
+            if (adults > 0 || children > 0 || infants > 0) passengerText += ')';
+        }
+
 
         const classText = modalTravelClassSelect.options[modalTravelClassSelect.selectedIndex].text;
         passengersAndClassInput.value = `${passengerText}, ${classText}`;
@@ -450,15 +478,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const departure = departureInput.value;
             const destination = destinationInput.value;
-            const departureDate = departureDateInput.value; // Nowa wartość
-            const returnDate = returnDateInput.value; // Nowa wartość (może być pusta)
-            // Passengers i travelClass są już aktualizowane globalnie
+            // Daty wylotu i powrotu bierzemy z obiektów Date
+            const departureDateString = selectedDepartureDate ? selectedDepartureDate.toISOString().split('T')[0] : ''; // Format YYYY-MM-DD
+            const returnDateString = selectedReturnDate ? selectedReturnDate.toISOString().split('T')[0] : ''; // Format YYYY-MM-DD
 
             const searchParams = {
                 departure: departure,
                 destination: destination,
-                departureDate: departureDate,
-                returnDate: returnDate,
+                departureDate: departureDateString,
+                returnDate: returnDateString,
                 adults: adults,
                 children: children,
                 infants: infants,
