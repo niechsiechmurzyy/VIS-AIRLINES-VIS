@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
         { type: 'A320 NEO', fromCode: 'ALC', toCode: 'WAW', departureTime: '17:00', arrivalTime: '20:25', durationMinutes: 265, priceBase: 300, flightNumber: 'FR679' }, // Alicante
         { type: 'A320 NEO', fromCode: 'WAW', toCode: 'KRK', departureTime: '21:10', arrivalTime: '22:05', durationMinutes: 55, priceBase: 100, flightNumber: 'LO789' },
         { type: 'A320 NEO', fromCode: 'KRK', toCode: 'WAW', departureTime: '23:00', arrivalTime: '23:55', durationMinutes: 55, priceBase: 100, flightNumber: 'LO790' }
-        // Dodaj więcej połączeń, jeśli chcesz
     ];
 
     // Mapa kodów IATA do pełnych nazw (dla wyświetlania) - jak w script.js
@@ -175,15 +174,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (isRoundTrip) {
                     const returnConn = availableConnections.find(
                         c => c.fromCode === params.destinationCode && c.toCode === params.departureCode &&
-                             timeToMinutes(c.departureTime) > timeToMinutes(conn.arrivalTime) + MIN_LAYOVER_MINUTES // Odpowiedni czas na przesiadkę
+                             timeToMinutes(c.departureTime) > timeToMinutes(conn.arrivalTime) + MIN_LAYOVER_MINUTES
                     );
                     
                     if (returnConn) {
                         flight.details.push(createFlightSegment(returnConn, 'return', params.retDate, params));
-                        flight.price = Math.round((finalPrice + getPassengerBasePrice(returnConn.priceBase, params)) * 1.8 / 5) * 5; // Łączna cena za obie strony z modyfikatorem
+                        flight.price = Math.round((finalPrice + getPassengerBasePrice(returnConn.priceBase, params)) * 1.8 / 5) * 5;
                         flight.totalDurationMinutes += returnConn.durationMinutes;
                         results.push(flight);
                     }
+                    // Jeśli nie ma lotu powrotnego, ten lot bezpośredni nie zostanie dodany do wyników (dla lotu w obie strony)
                 } else { // Lot w jedną stronę
                     results.push(flight);
                 }
@@ -191,12 +191,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // 2. Szukanie lotów z jedną przesiadką (w jedną stronę)
+        // Szukamy tylko jeśli lot bezpośredni nie został znaleziony dla danej trasy
+        // Albo jeśli chcemy zawsze dawać opcje z przesiadką (teraz dla uproszczenia dodajemy zawsze, ale to można zmienić)
         availableConnections.forEach(firstLeg => {
+            // Pierwszy segment musi zaczynać się w mieście wylotu
             if (firstLeg.fromCode === params.departureCode) {
                 availableConnections.forEach(secondLeg => {
+                    // Drugi segment musi zaczynać się tam, gdzie kończy się pierwszy (przesiadka)
+                    // I kończyć się w mieście docelowym
+                    // I nie może być tym samym lotem
                     if (firstLeg.toCode === secondLeg.fromCode &&
                         secondLeg.toCode === params.destinationCode &&
-                        firstLeg !== secondLeg) // Upewnij się, że to nie ten sam lot
+                        firstLeg !== secondLeg)
                     {
                         const layoverStartMinutes = timeToMinutes(firstLeg.arrivalTime);
                         const layoverEndMinutes = timeToMinutes(secondLeg.departureTime);
@@ -234,43 +240,48 @@ document.addEventListener('DOMContentLoaded', () => {
                             // Jeśli szukamy lotu w obie strony, spróbuj znaleźć lot powrotny z przesiadką
                             if (isRoundTrip) {
                                 // Szukamy analogicznej trasy powrotnej
-                                const returnFirstLeg = availableConnections.find(
+                                const returnFirstLegCandidates = availableConnections.filter(
                                     c => c.fromCode === params.destinationCode && c.toCode === secondLeg.fromCode
                                 );
-                                const returnSecondLeg = availableConnections.find(
-                                    c => c.fromCode === firstLeg.toCode && c.toCode === params.departureCode &&
-                                         returnFirstLeg && c.fromCode === returnFirstLeg.toCode && // Upewnij się, że to kontynuacja
-                                         timeToMinutes(c.departureTime) > timeToMinutes(returnFirstLeg.arrivalTime) + MIN_LAYOVER_MINUTES
-                                );
-                                
-                                if (returnFirstLeg && returnSecondLeg) {
-                                     const returnLayoverDuration = timeToMinutes(returnSecondLeg.departureTime) - timeToMinutes(returnFirstLeg.arrivalTime);
-                                     if (returnLayoverDuration < 0) returnLayoverDuration += 24 * 60;
 
-                                     if (returnLayoverDuration >= MIN_LAYOVER_MINUTES && returnLayoverDuration <= MAX_LAYOVER_MINUTES) {
-                                        flight.details.push({
-                                            type: 'return',
-                                            fromCode: params.destinationCode, // Start powrotu
-                                            toCode: params.departureCode,     // Cel powrotu
-                                            fromName: getAirportFullName(params.destinationCode),
-                                            toName: getAirportFullName(params.departureCode),
-                                            date: params.retDate,
-                                            segments: [
-                                                createFlightSegment(returnFirstLeg, 'return-segment-1', params.retDate, params, true),
-                                                {
-                                                    type: 'layover',
-                                                    locationCode: returnFirstLeg.toCode,
-                                                    locationName: getAirportFullName(returnFirstLeg.toCode),
-                                                    duration: formatDuration(returnLayoverDuration)
-                                                },
-                                                createFlightSegment(returnSecondLeg, 'return-segment-2', params.retDate, params, true)
-                                            ],
-                                            totalDuration: formatDuration(returnFirstLeg.durationMinutes + returnSecondLeg.durationMinutes + returnLayoverDuration)
-                                        });
-                                        flight.price += Math.round((getPassengerBasePrice(returnFirstLeg.priceBase, params) + getPassengerBasePrice(returnSecondLeg.priceBase, params)) * currentClassMultiplier * 1.8 / 5) * 5;
-                                        flight.totalDurationMinutes += (returnFirstLeg.durationMinutes + returnSecondLeg.durationMinutes + returnLayoverDuration);
-                                        results.push(flight);
-                                     }
+                                // Iteruj przez potencjalne pierwsze nogi powrotne
+                                for (const returnFirstLeg of returnFirstLegCandidates) {
+                                    const returnSecondLeg = availableConnections.find(
+                                        c => c.fromCode === returnFirstLeg.toCode && c.toCode === params.departureCode &&
+                                             timeToMinutes(c.departureTime) > timeToMinutes(returnFirstLeg.arrivalTime) + MIN_LAYOVER_MINUTES
+                                    );
+
+                                    if (returnSecondLeg) {
+                                        const returnLayoverDuration = timeToMinutes(returnSecondLeg.departureTime) - timeToMinutes(returnFirstLeg.arrivalTime);
+                                        if (returnLayoverDuration < 0) returnLayoverDuration += 24 * 60;
+
+                                        if (returnLayoverDuration >= MIN_LAYOVER_MINUTES && returnLayoverDuration <= MAX_LAYOVER_MINUTES) {
+                                            const combinedFlight = { ...flight }; // Kopiuj obiekt lotu tam
+                                            combinedFlight.details.push({
+                                                type: 'return',
+                                                fromCode: params.destinationCode,
+                                                toCode: params.departureCode,
+                                                fromName: getAirportFullName(params.destinationCode),
+                                                toName: getAirportFullName(params.departureCode),
+                                                date: params.retDate,
+                                                segments: [
+                                                    createFlightSegment(returnFirstLeg, 'return-segment-1', params.retDate, params, true),
+                                                    {
+                                                        type: 'layover',
+                                                        locationCode: returnFirstLeg.toCode,
+                                                        locationName: getAirportFullName(returnFirstLeg.toCode),
+                                                        duration: formatDuration(returnLayoverDuration)
+                                                    },
+                                                    createFlightSegment(returnSecondLeg, 'return-segment-2', params.retDate, params, true)
+                                                ],
+                                                totalDuration: formatDuration(returnFirstLeg.durationMinutes + returnSecondLeg.durationMinutes + returnLayoverDuration)
+                                            });
+                                            combinedFlight.price += Math.round((getPassengerBasePrice(returnFirstLeg.priceBase, params) + getPassengerBasePrice(returnSecondLeg.priceBase, params)) * currentClassMultiplier * 1.8 / 5) * 5;
+                                            combinedFlight.totalDurationMinutes += (returnFirstLeg.durationMinutes + returnSecondLeg.durationMinutes + returnLayoverDuration);
+                                            results.push(combinedFlight);
+                                            break; // Znaleziono pasujący lot powrotny, przejdź do kolejnego lotu w jedną stronę
+                                        }
+                                    }
                                 }
                             } else { // Lot w jedną stronę z przesiadką
                                 results.push(flight);
@@ -290,7 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (flights.length === 0) {
             noResultsMessage.style.display = 'block';
             flightListDiv.innerHTML = ''; // Upewnij się, że lista jest pusta
-            return;
+            return; // Zakończ funkcję, nic nie renderuj
         }
 
         flightListDiv.innerHTML = ''; 
@@ -302,20 +313,20 @@ document.addEventListener('DOMContentLoaded', () => {
             if (flight.stops > 0) { 
                 flightCard.classList.add('multi-segment');
             }
-            if (flight.details.filter(d => d.type === 'return').length > 0 || (flight.details.length > 0 && flight.details[flight.details.length-1].type === 'return' && flight.details[flight.details.length-1].segments)) {
+            // Sprawdzamy, czy flight.details zawiera obiekt 'return' z 'segments' lub po prostu 'return'
+            if (flight.details.some(d => d.type === 'return')) {
                 flightCard.classList.add('round-trip');
             }
 
-
             let segmentsHtml = '';
             flight.details.forEach(segment => {
-                if (segment.type === 'departure' || segment.type === 'connecting' || segment.type === 'return') {
-                    // Dla lotu w jedną stronę lub pierwszego segmentu powrotnego
+                // Renderowanie lotu tam (departure/connecting)
+                if (segment.type === 'departure' || segment.type === 'connecting') {
                     segmentsHtml += `
-                        <div class="flight-segment ${segment.type === 'return' ? 'return-trip-segment-summary' : ''}">
+                        <div class="flight-segment">
                             <div class="flight-details">
                                 <div class="flight-info">
-                                    <i class="fas ${segment.type === 'departure' || segment.type.startsWith('return-segment') ? 'fa-plane-departure' : 'fa-plane-arrival'}"></i>
+                                    <i class="fas ${segment.type === 'departure' ? 'fa-plane-departure' : 'fa-plane-arrival'}"></i>
                                     <span>${segment.fromName} (${segment.fromCode}) do ${segment.toName} (${segment.toCode})</span>
                                 </div>
                                 <div class="flight-time-duration">
@@ -327,9 +338,18 @@ document.addEventListener('DOMContentLoaded', () => {
                             <p style="font-size:0.9em; color:#777; margin-top:5px;">Data: ${segment.date}</p>
                         </div>
                     `;
-                    // Dodatkowo, jeśli segment.type to 'return' i ma sub-segmenty (dla lotów powrotnych z przesiadką)
-                    if (segment.type === 'return' && segment.segments) {
-                         segmentsHtml += `<h4>Lot powrotny</h4>`;
+                } else if (segment.type === 'layover') {
+                    segmentsHtml += `
+                        <div class="layover-info">
+                            <i class="fas fa-arrows-alt-h"></i> Przesiadka w ${segment.locationName} (${segment.locationCode}) - ${segment.duration}
+                        </div>
+                    `;
+                } else if (segment.type === 'return') { // Obsługa lotu powrotnego (bezpośredniego lub z przesiadkami)
+                    segmentsHtml += `
+                        <div class="flight-segment return-trip-section">
+                            <h4>Lot powrotny: ${segment.fromName} (${segment.fromCode}) do ${segment.toName} (${segment.toCode})</h4>
+                    `;
+                    if (segment.segments) { // Jeśli lot powrotny ma segmenty (przesiadki)
                          segment.segments.forEach(subSegment => {
                             if (subSegment.type === 'layover') {
                                 segmentsHtml += `<div class="layover-info return-layover">
@@ -337,32 +357,39 @@ document.addEventListener('DOMContentLoaded', () => {
                                                 </div>`;
                             } else {
                                 segmentsHtml += `
-                                    <div class="flight-segment">
-                                        <div class="flight-details">
-                                            <div class="flight-info">
-                                                <i class="fas fa-plane-arrival"></i>
-                                                <span>${subSegment.fromName} (${subSegment.fromCode}) do ${subSegment.toName} (${subSegment.toCode})</span>
-                                            </div>
-                                            <div class="flight-time-duration">
-                                                <p><strong>Godzina:</strong> ${subSegment.departureTime} - ${subSegment.arrivalTime}</p>
-                                                <p><strong>Czas lotu:</strong> ${subSegment.duration}</p>
-                                                <p><strong>Linia:</strong> ${subSegment.airline || 'N/A'} (${subSegment.flightNumber || 'N/A'})</p>
-                                            </div>
+                                    <div class="flight-details">
+                                        <div class="flight-info">
+                                            <i class="fas fa-plane-arrival"></i>
+                                            <span>${subSegment.fromName} (${subSegment.fromCode}) do ${subSegment.toName} (${subSegment.toCode})</span>
                                         </div>
-                                        <p style="font-size:0.9em; color:#777; margin-top:5px;">Data: ${segment.date}</p>
+                                        <div class="flight-time-duration">
+                                            <p><strong>Godzina:</strong> ${subSegment.departureTime} - ${subSegment.arrivalTime}</p>
+                                            <p><strong>Czas lotu:</strong> ${subSegment.duration}</p>
+                                            <p><strong>Linia:</strong> ${subSegment.airline || 'N/A'} (${subSegment.flightNumber || 'N/A'})</p>
+                                        </div>
                                     </div>
+                                    <p style="font-size:0.9em; color:#777; margin-top:5px;">Data: ${segment.date}</p>
                                 `;
                             }
                          });
                          segmentsHtml += `<p style="font-size:0.95em; color:#555; margin-top:10px; text-align:right;">Całkowity czas lotu powrotnego: <strong>${segment.totalDuration}</strong></p>`;
-
+                    } else { // Jeśli lot powrotny jest bezpośredni
+                        segmentsHtml += `
+                            <div class="flight-details">
+                                <div class="flight-info">
+                                    <i class="fas fa-plane-arrival"></i>
+                                    <span>${segment.fromName} (${segment.fromCode}) do ${segment.toName} (${segment.toCode})</span>
+                                </div>
+                                <div class="flight-time-duration">
+                                    <p><strong>Godzina:</strong> ${segment.departureTime} - ${segment.arrivalTime}</p>
+                                    <p><strong>Czas lotu:</strong> ${segment.duration}</p>
+                                    <p><strong>Linia:</strong> ${segment.airline || 'N/A'} (${segment.flightNumber || 'N/A'})</p>
+                                </div>
+                            </div>
+                            <p style="font-size:0.9em; color:#777; margin-top:5px;">Data: ${segment.date}</p>
+                        `;
                     }
-                } else if (segment.type === 'layover') {
-                    segmentsHtml += `
-                        <div class="layover-info">
-                            <i class="fas fa-arrows-alt-h"></i> Przesiadka w ${segment.locationName} (${segment.locationCode}) - ${segment.duration}
-                        </div>
-                    `;
+                    segmentsHtml += `</div>`; // Zamykamy return-trip-section
                 }
             });
 
