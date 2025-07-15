@@ -47,72 +47,182 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // === Obsługa wyboru lotniska ===
     const airports = {
-        'polish': [
+        'poland': [
             { code: 'WAW', name: 'Warszawa - Lotnisko Chopina' },
             { code: 'KRK', name: 'Kraków - Lotnisko Balice' },
             { code: 'GDN', name: 'Gdańsk - Lotnisko im. Lecha Wałęsy' },
             { code: 'WRO', name: 'Wrocław - Lotnisko im. Mikołaja Kopernika' },
             { code: 'POZ', name: 'Poznań - Lotnisko Ławica' },
-            { code: 'KTW', name: 'Katowice - Lotnisko Pyrzowice' }
+            { code: 'KTW', name: 'Katowice - Lotnisko Pyrzowice' },
+            { code: 'LCJ', name: 'Łódź - Lotnisko im. Władysława Reymonta' },
+            { code: 'SZZ', name: 'Szczecin - Lotnisko Goleniów' },
+            { code: 'RZE', name: 'Rzeszów - Lotnisko Jasionka' },
+            { code: 'LUZ', name: 'Lublin - Lotnisko Lublin' },
+            { code: 'BZG', name: 'Bydgoszcz - Lotnisko im. Ignacego Jana Paderewskiego' },
+            { code: 'OSZ', name: 'Olsztyn-Mazury - Lotnisko Szymany' },
+            { code: 'IEG', name: 'Zielona Góra - Lotnisko Babimost' }
         ],
-        'german': [
+        'germany': [
             { code: 'BER', name: 'Berlin - Lotnisko Brandenburg' },
             { code: 'FRA', name: 'Frankfurt - Lotnisko we Frankfurcie' },
             { code: 'MUC', name: 'Monachium - Lotnisko im. Franza Josefa Straussa' },
-            { code: 'DUS', name: 'Düsseldorf - Lotnisko w Düsseldorfie' }
+            { code: 'DUS', name: 'Düsseldorf - Lotnisko w Düsseldorfie' },
+            { code: 'HAM', name: 'Hamburg - Lotnisko w Hamburgu' },
+            { code: 'CGN', name: 'Kolonia/Bonn - Lotnisko Kolonia/Bonn' },
+            { code: 'STR', name: 'Stuttgart - Lotnisko w Stuttgarcie' },
+            { code: 'LEJ', name: 'Lipsk/Halle - Lotnisko Lipsk/Halle' },
+            { code: 'BRE', name: 'Brema - Lotnisko w Bremie' },
+            { code: 'DRS', name: 'Drezno - Lotnisko w Dreźnie' }
         ],
-        'french': [
+        'france': [
             { code: 'CDG', name: 'Paryż - Lotnisko Charlesa de Gaulle\'a' },
             { code: 'ORY', name: 'Paryż - Lotnisko Orly' },
             { code: 'NCE', name: 'Nicea - Lotnisko Nicea-Lazurowe Wybrzeże' },
-            { code: 'MRS', name: 'Marsylia - Lotnisko Marsylia Prowansja' }
+            { code: 'MRS', name: 'Marsylia - Lotnisko Marsylia Prowansja' },
+            { code: 'LYS', name: 'Lyon - Lotnisko Lyon-Saint Exupéry' },
+            { code: 'TLS', name: 'Tuluza - Lotnisko Tuluza-Blagnac' },
+            { code: 'BOD', name: 'Bordeaux - Lotnisko Bordeaux-Mérignac' },
+            { code: 'NTE', name: 'Nantes - Lotnisko Nantes Atlantique' }
+        ],
+        'united_kingdom': [
+            { code: 'LHR', name: 'Londyn - Lotnisko Heathrow' },
+            { code: 'LGW', name: 'Londyn - Lotnisko Gatwick' },
+            { code: 'STN', name: 'Londyn - Lotnisko Stansted' },
+            { code: 'MAN', name: 'Manchester - Lotnisko w Manchesterze' },
+            { code: 'EDI', name: 'Edynburg - Lotnisko w Edynburgu' },
+            { code: 'BHX', name: 'Birmingham - Lotnisko w Birmingham' }
+        ],
+        'usa': [
+            { code: 'JFK', name: 'Nowy Jork - Lotnisko JFK' },
+            { code: 'LAX', name: 'Los Angeles - Lotnisko LAX' },
+            { code: 'ORD', name: 'Chicago - Lotnisko O\'Hare' },
+            { code: 'ATL', name: 'Atlanta - Lotnisko Hartsfield-Jackson' },
+            { code: 'DFW', name: 'Dallas/Fort Worth - Lotnisko DFW' },
+            { code: 'DEN', name: 'Denver - Lotnisko Denver' },
+            { code: 'SFO', name: 'San Francisco - Lotnisko San Francisco' }
+        ],
+        'spain': [
+            { code: 'MAD', name: 'Madryt - Lotnisko Barajas' },
+            { code: 'BCN', name: 'Barcelona - Lotnisko El Prat' },
+            { code: 'AGP', name: 'Malaga - Lotnisko Malaga-Costa del Sol' },
+            { code: 'PMI', name: 'Palma de Mallorca - Lotnisko Palma de Mallorca' }
+        ],
+        'italy': [
+            { code: 'FCO', name: 'Rzym - Lotnisko Fiumicino' },
+            { code: 'MXP', name: 'Mediolan - Lotnisko Malpensa' },
+            { code: 'BGY', name: 'Bergamo - Lotnisko Orio al Serio' },
+            { code: 'VCE', name: 'Wenecja - Lotnisko Marco Polo' }
+        ],
+        'netherlands': [
+            { code: 'AMS', name: 'Amsterdam - Lotnisko Schiphol' }
+        ],
+        'denmark': [
+            { code: 'CPH', name: 'Kopenhaga - Lotnisko Kastrup' }
+        ],
+        'norway': [
+            { code: 'OSL', name: 'Oslo - Lotnisko Gardermoen' }
+        ],
+        'finland': [
+            { code: 'HEL', name: 'Helsinki - Lotnisko Helsinki-Vantaa' }
+        ],
+        'czech_republic': [
+            { code: 'PRG', name: 'Praga - Lotnisko im. Václava Havla' }
+        ],
+        'austria': [
+            { code: 'VIE', name: 'Wiedeń - Lotnisko Wiedeń-Schwechat' }
+        ],
+        'switzerland': [
+            { code: 'ZRH', name: 'Zurych - Lotnisko Zurych' }
+        ],
+        'belgium': [
+            { code: 'BRU', name: 'Bruksela - Lotnisko Bruksela' }
+        ],
+        'portugal': [
+            { code: 'LIS', name: 'Lizbona - Lotnisko Lizbona' }
+        ],
+        'greece': [
+            { code: 'ATH', name: 'Ateny - Lotnisko Eleftherios Venizelos' }
+        ],
+        'turkey': [
+            { code: 'IST', name: 'Stambuł - Lotnisko Stambuł' }
+        ],
+        'united_arab_emirates': [
+            { code: 'DXB', name: 'Dubaj - Lotnisko Dubaj' }
+        ],
+        'thailand': [
+            { code: 'BKK', name: 'Bangkok - Lotnisko Suvarnabhumi' }
+        ],
+        'singapore': [
+            { code: 'SIN', name: 'Singapur - Lotnisko Changi' }
+        ],
+        'japan': [
+            { code: 'NRT', name: 'Tokio - Lotnisko Narita' }
+        ],
+        'australia': [
+            { code: 'SYD', name: 'Sydney - Lotnisko Kingsford Smith' }
         ]
     };
 
     function loadAirports() {
-        const polishList = document.getElementById('polishAirportList');
-        const germanList = document.getElementById('germanAirportList');
-        const frenchList = document.getElementById('frenchAirportList');
+        const airportListsContainer = airportSelectionModal.querySelector('.airport-lists');
+        airportListsContainer.innerHTML = ''; // Wyczyść istniejące listy
 
-        polishList.innerHTML = '';
-        germanList.innerHTML = '';
-        frenchList.innerHTML = '';
+        const categoryNames = {
+            'poland': 'Lotniska w Polsce',
+            'germany': 'Lotniska w Niemczech',
+            'france': 'Lotniska we Francji',
+            'united_kingdom': 'Lotniska w Wielkiej Brytanii',
+            'usa': 'Lotniska w USA',
+            'spain': 'Lotniska w Hiszpanii',
+            'italy': 'Lotniska we Włoszech',
+            'netherlands': 'Lotniska w Holandii',
+            'denmark': 'Lotniska w Danii',
+            'norway': 'Lotniska w Norwegii',
+            'finland': 'Lotniska w Finlandii',
+            'czech_republic': 'Lotniska w Czechach',
+            'austria': 'Lotniska w Austrii',
+            'switzerland': 'Lotniska w Szwajcarii',
+            'belgium': 'Lotniska w Belgii',
+            'portugal': 'Lotniska w Portugalii',
+            'greece': 'Lotniska w Grecji',
+            'turkey': 'Lotniska w Turcji',
+            'united_arab_emirates': 'Lotniska w Zjednoczonych Emiratach Arabskich',
+            'thailand': 'Lotniska w Tajlandii',
+            'singapore': 'Lotniska w Singapurze',
+            'japan': 'Lotniska w Japonii',
+            'australia': 'Lotniska w Australii'
+        };
 
-        airports.polish.forEach(airport => {
-            const li = document.createElement('li');
-            li.textContent = `${airport.name} (${airport.code})`;
-            li.dataset.code = airport.code;
-            li.dataset.name = airport.name;
-            li.addEventListener('click', () => selectAirport(airport));
-            polishList.appendChild(li);
-        });
+        for (const category in airports) {
+            // Utwórz nagłówek dla państwa/kategorii
+            const h4 = document.createElement('h4');
+            h4.textContent = categoryNames[category] || category.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()); // Domyślne formatowanie na wypadek braku w categoryNames
+            airportListsContainer.appendChild(h4);
 
-        airports.german.forEach(airport => {
-            const li = document.createElement('li');
-            li.textContent = `${airport.name} (${airport.code})`;
-            li.dataset.code = airport.code;
-            li.dataset.name = airport.name;
-            li.addEventListener('click', () => selectAirport(airport));
-            germanList.appendChild(li);
-        });
+            // Utwórz listę lotnisk dla danej kategorii
+            const ul = document.createElement('ul');
+            ul.classList.add('airport-list');
+            ul.id = `${category}AirportList`; // Dodaj ID dla ułatwienia debugowania
+            airportListsContainer.appendChild(ul);
 
-        airports.french.forEach(airport => {
-            const li = document.createElement('li');
-            li.textContent = `${airport.name} (${airport.code})`;
-            li.dataset.code = airport.code;
-            li.dataset.name = airport.name;
-            li.addEventListener('click', () => selectAirport(airport));
-            frenchList.appendChild(li);
-        });
+            // Dodaj lotniska do listy
+            airports[category].forEach(airport => {
+                const li = document.createElement('li');
+                li.textContent = `${airport.name} (${airport.code})`;
+                li.dataset.code = airport.code;
+                li.dataset.name = airport.name;
+                li.addEventListener('click', () => selectAirport(airport));
+                ul.appendChild(li);
+            });
+        }
     }
 
     function selectAirport(airport) {
         if (activeAirportInput) {
-            // TUTAJ POPRAWKA: Ustawiamy zarówno value jak i dataset.code
             activeAirportInput.value = `${airport.name} (${airport.code})`; 
             activeAirportInput.dataset.code = airport.code; 
             closeModal(airportSelectionModal);
-            activeAirportInput = null; // Resetujemy aktywne pole
+            activeAirportInput = null; 
         }
     }
 
@@ -120,13 +230,13 @@ document.addEventListener('DOMContentLoaded', () => {
     departureInput.addEventListener('click', () => {
         activeAirportInput = departureInput;
         openModal(airportSelectionModal);
-        loadAirports();
+        loadAirports(); 
     });
 
     destinationInput.addEventListener('click', () => {
         activeAirportInput = destinationInput;
         openModal(airportSelectionModal);
-        loadAirports();
+        loadAirports(); 
     });
 
 
@@ -144,7 +254,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentYear = new Date().getFullYear();
     let selectedDepartureDate = null;
     let selectedReturnDate = null;
-    let activeDateInput = null; // Zmienna do śledzenia, które pole daty jest aktywne
+    let activeDateInput = null; 
 
     function renderCalendar() {
         datepickerDays.innerHTML = '';
@@ -155,10 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
         monthYearDisplay.textContent = new Date(currentYear, currentMonth).toLocaleString('pl-PL', { month: 'long', year: 'numeric' });
 
         // Dodaj puste dni dla wyrównania kalendarza (jeśli miesiąc nie zaczyna się w niedzielę)
-        // Dzień tygodnia 0 (niedziela) w JS, ale w kalendarzu chcemy aby poniedziałek był pierwszy
-        // Jeśli pierwszy dzień tygodnia to niedziela (0), traktujemy to jako 6 pustych dni (po sobocie)
-        // Jeśli pierwszy dzień tygodnia to poniedziałek (1), to 0 pustych dni
-        const startDayIndex = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1; // Przesunięcie dla poniedziałku jako pierwszego dnia
+        const startDayIndex = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1; 
 
         for (let i = 0; i < startDayIndex; i++) {
             const emptyDiv = document.createElement('div');
@@ -167,7 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const today = new Date();
-        today.setHours(0, 0, 0, 0); // Ustaw na początek dnia dla porównań
+        today.setHours(0, 0, 0, 0); 
 
         for (let i = 1; i <= daysInMonth; i++) {
             const dayDiv = document.createElement('div');
@@ -175,7 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
             dayDiv.classList.add('selectable-day');
 
             const dayDate = new Date(currentYear, currentMonth, i);
-            dayDate.setHours(0, 0, 0, 0); // Ustaw na początek dnia
+            dayDate.setHours(0, 0, 0, 0); 
 
             if (dayDate < today) {
                 dayDiv.classList.remove('selectable-day');
@@ -202,7 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Aktywacja/dezaktywacja przycisków nawigacji
         const minDateAllowed = new Date();
-        minDateAllowed.setDate(minDateAllowed.getDate() -1); // Dzień wcześniej, aby pozwolić wybrać dzisiejszy dzień
+        minDateAllowed.setDate(minDateAllowed.getDate() -1); 
         minDateAllowed.setHours(0,0,0,0);
 
         const currentCalendarDate = new Date(currentYear, currentMonth, 1);
@@ -224,12 +331,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function selectDate(date) {
         if (!selectedDepartureDate || (selectedDepartureDate && selectedReturnDate) || date < selectedDepartureDate) {
             selectedDepartureDate = date;
-            selectedReturnDate = null; // Resetuj datę powrotu przy nowym wyborze wylotu
+            selectedReturnDate = null; 
         } else if (date > selectedDepartureDate) {
             selectedReturnDate = date;
         }
         updateDateDisplays();
-        renderCalendar(); // Przeładuj kalendarz, aby zaznaczyć nowe daty/zakres
+        renderCalendar(); 
     }
 
     function updateDateDisplays() {
@@ -263,7 +370,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     confirmDatesBtn.addEventListener('click', () => {
-        // TUTAJ POPRAWKA: Ustawiamy zarówno value jak i dataset.date dla obu inputów
         departureDateInput.value = selectedDepartureDate ? selectedDepartureDate.toLocaleDateString('pl-PL') : '';
         departureDateInput.dataset.date = selectedDepartureDate ? selectedDepartureDate.toISOString().split('T')[0] : '';
         
@@ -271,17 +377,16 @@ document.addEventListener('DOMContentLoaded', () => {
         returnDateInput.dataset.date = selectedReturnDate ? selectedReturnDate.toISOString().split('T')[0] : '';
         
         closeModal(datePickerModal);
-        activeDateInput = null; // Resetujemy aktywne pole
+        activeDateInput = null; 
     });
 
     // Otwieranie modala kalendarza
     departureDateInput.addEventListener('click', () => {
         activeDateInput = departureDateInput;
-        // Ustaw początkowy miesiąc kalendarza na miesiąc wybranej daty wylotu, jeśli istnieje
         if (selectedDepartureDate) {
             currentMonth = selectedDepartureDate.getMonth();
             currentYear = selectedDepartureDate.getFullYear();
-        } else { // W przeciwnym razie na bieżący miesiąc
+        } else { 
             currentMonth = new Date().getMonth();
             currentYear = new Date().getFullYear();
         }
@@ -292,14 +397,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     returnDateInput.addEventListener('click', () => {
         activeDateInput = returnDateInput;
-        // Ustaw początkowy miesiąc kalendarza na miesiąc wybranej daty powrotu, jeśli istnieje
         if (selectedReturnDate) {
             currentMonth = selectedReturnDate.getMonth();
             currentYear = selectedReturnDate.getFullYear();
-        } else if (selectedDepartureDate) { // Jeśli jest wylot, ustaw kalendarz na miesiąc wylotu
+        } else if (selectedDepartureDate) { 
             currentMonth = selectedDepartureDate.getMonth();
             currentYear = selectedDepartureDate.getFullYear();
-        } else { // W przeciwnym razie na bieżący miesiąc
+        } else { 
             currentMonth = new Date().getMonth();
             currentYear = new Date().getFullYear();
         }
@@ -326,15 +430,12 @@ document.addEventListener('DOMContentLoaded', () => {
         childrenCountSpan.textContent = children;
         infantsCountSpan.textContent = infants;
 
-        // Synchronizuj licznik niemowląt z dorosłymi - niemowląt nie może być więcej niż dorosłych
         if (infants > adults) {
             infants = adults;
             infantsCountSpan.textContent = infants;
         }
 
-        // Aktualizuj pole input w formularzu głównym
         const totalPassengers = adults + children + infants;
-        // Aktualizuj również travelClass, aby zawsze odzwierciedlało wybraną wartość
         travelClass = modalTravelClassSelect.value;
         const travelClassText = modalTravelClassSelect.options[modalTravelClassSelect.selectedIndex].text;
         passengersAndClassInput.value = `${totalPassengers} pasażer${totalPassengers === 1 ? '' : totalPassengers > 4 ? 'ów' : 'erów'}, ${travelClassText}`;
@@ -344,7 +445,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.counter-controls button').forEach(button => {
         button.addEventListener('click', (event) => {
             const type = event.target.dataset.type;
-            const action = event.target.textContent; // '+' or '-'
+            const action = event.target.textContent; 
 
             if (type === 'adults') {
                 if (action === '+' && adults < 9) adults++;
@@ -353,7 +454,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (action === '+' && children < 9) children++;
                 else if (action === '-' && children > 0) children--;
             } else if (type === 'infants') {
-                if (action === '+' && infants < adults) infants++; // Niemowląt nie może być więcej niż dorosłych
+                if (action === '+' && infants < adults) infants++; 
                 else if (action === '-' && infants > 0) infants--;
             }
             updatePassengerDisplay();
@@ -368,10 +469,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Otwieranie modala pasażerów i klasy po kliknięciu na input
     passengersAndClassInput.addEventListener('click', () => {
-        // Upewnij się, że modalTravelClassSelect ma poprawną wartość po otwarciu
         modalTravelClassSelect.value = travelClass;
         openModal(passengersClassModal);
-        updatePassengerDisplay(); // Upewnij się, że początkowe wartości są wyświetlane
+        updatePassengerDisplay(); 
     });
 
     confirmPassengersClassBtn.addEventListener('click', () => {
@@ -389,14 +489,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const dropdownContent = dropdown.querySelector('.dropdown-content');
 
         dropbtn.addEventListener('click', (event) => {
-            event.stopPropagation(); // Zapobiegaj zamykaniu po kliknięciu w button
-            // Zamknij inne otwarte dropdowny
+            event.stopPropagation(); 
             dropdowns.forEach(otherDropdown => {
                 if (otherDropdown !== dropdown) {
                     otherDropdown.querySelector('.dropdown-content').style.display = 'none';
                 }
             });
-            // Przełącz widoczność aktualnego dropdownu
             dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
         });
     });
@@ -406,7 +504,6 @@ document.addEventListener('DOMContentLoaded', () => {
         dropdowns.forEach(dropdown => {
             const dropdownContent = dropdown.querySelector('.dropdown-content');
             const dropbtn = dropdown.querySelector('.dropbtn');
-            // Jeśli kliknięto poza dropdownem i nie na jego przycisku
             if (!dropbtn.contains(event.target) && !dropdownContent.contains(event.target)) {
                 dropdownContent.style.display = 'none';
             }
@@ -417,41 +514,39 @@ document.addEventListener('DOMContentLoaded', () => {
     // === Obsługa formularza wyszukiwania (przekierowanie do strony wyników) ===
     const flightSearchForm = document.getElementById('flightSearchForm');
     flightSearchForm.addEventListener('submit', (event) => {
-        event.preventDefault(); // Zapobiegaj domyślnemu przesyłaniu formularza
+        event.preventDefault(); 
         
-        // Sprawdź, czy pola lotniska są wypełnione
         if (!departureInput.dataset.code || !destinationInput.dataset.code) {
             alert('Proszę wybrać lotnisko wylotu i przylotu.');
-            return; // Zakończ funkcję, jeśli brakuje danych
+            return; 
         }
-        // Sprawdź, czy daty są wypełnione
         if (!departureDateInput.dataset.date) {
             alert('Proszę wybrać datę wylotu.');
-            return; // Zakończ funkcję, jeśli brakuje danych
+            return; 
         }
 
 
         const departureCode = departureInput.dataset.code; 
         const destinationCode = destinationInput.dataset.code; 
         const departureDate = departureDateInput.dataset.date; 
-        const returnDate = returnDateInput.dataset.date; // Może być puste
+        const returnDate = returnDateInput.dataset.date; 
 
         const params = new URLSearchParams();
         params.append('departure', departureCode);
         params.append('destination', destinationCode);
         params.append('depDate', departureDate);
-        if (returnDate) { // Dodaj datę powrotu tylko jeśli jest wybrana
+        if (returnDate) { 
             params.append('retDate', returnDate);
         }
         params.append('adults', adults);
         params.append('children', children);
         params.append('infants', infants);
-        params.append('class', travelClass); // travelClass jest już zaktualizowany przez updatePassengerDisplay
+        params.append('class', travelClass); 
 
         window.location.href = `results.html?${params.toString()}`;
     });
 
     // Inicjalizacje
-    renderCalendar(); // Renderuj kalendarz przy starcie
+    renderCalendar(); 
 
 });
