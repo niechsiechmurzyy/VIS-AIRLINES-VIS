@@ -1,4 +1,4 @@
-/* css/style.css - Nagłówek jasno niebieski + style modali + kalendarz + pasażerowie + NOWY PRZYCISK i POPRAWIONY DROPDOWN + NAPRAWIONY PASEK NAWIGACYJNY */
+/* css/style.css - Nagłówek jasno niebieski + style modali + kalendarz + pasażerowie + NOWY PRZYCISK i POPRAWIONY DROPDOWNY (WIELE) + NAPRAWIONY PASEK NAWIGACYJNY */
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -61,26 +61,26 @@ body {
     white-space: nowrap;
 }
 
-/* POPRAWIONY UKŁAD PASKÓW NAWIGACYJNYCH - PRZYWRÓCONE PIERWOTNE USTAWIENIA */
+/* UKŁAD PASKÓW NAWIGACYJNYCH */
 .main-nav-left {
     display: flex;
     align-items: center;
-    /* Usunięto flex-grow, aby nie rozciągało nawigacji niepotrzebnie */
     justify-content: flex-start;
 }
 
 .main-nav-right {
     display: flex;
     align-items: center;
-    /* Usunięto flex-grow, aby nie rozciągało nawigacji niepotrzebnie */
     justify-content: flex-end;
 }
 
-.user-options {
-    margin-left: 20px; /* Nadal zachowujemy odstęp od linku "Zaloguj się" */
+/* ZMIANA: usunięto user-options jako margin-left tutaj, bo będzie na poszczególnych li */
+/* .user-options {
+    margin-left: 20px;
     display: flex;
     align-items: center;
-}
+} */
+
 
 .main-nav-left ul, .main-nav-right ul {
     list-style: none;
@@ -90,9 +90,14 @@ body {
     align-items: center;
 }
 
-.main-nav-left ul li, .main-nav-right ul li {
+.main-nav-left ul li {
     margin: 0 15px;
 }
+/* Dodajemy margin-left dla każdego elementu li w prawej nawigacji, aby oddzielić dropdowny */
+.main-nav-right ul li {
+    margin: 0 0 0 15px; /* Tylko lewy margines, aby dropdowny były od siebie oddalone */
+}
+
 
 .main-nav-left ul li a, .main-nav-right ul li a {
     color: white;
@@ -124,7 +129,7 @@ body {
     color: #cceeff;
 }
 
-/* POPRAWKI DLA DROPDOWNÓW (BEZ ZMIAN W STOSUNKU DO POPRZEDNIEJ NAPRAWY) */
+/* STYLE DLA DROPDOWNÓW (BEZ ZMIAN W FUNKCJONALNOŚCI) */
 .dropdown {
     position: relative;
     display: inline-block;
@@ -161,6 +166,7 @@ body {
     overflow: hidden;
     left: 0;
     margin-top: 5px; /* Drobny odstęp od przycisku */
+    white-space: nowrap; /* Zapobiega łamaniu tekstu w dropdownie */
 }
 
 .dropdown:hover .dropdown-content {
@@ -696,6 +702,11 @@ main {
     .main-nav-left ul li, .main-nav-right ul li {
         margin: 5px 10px;
     }
+    /* Zapewniamy odstęp między dropdownami nawet na małych ekranach */
+    .main-nav-right ul li {
+        margin: 5px 10px;
+    }
+
 
     .modal-content {
         width: 95%;
