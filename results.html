@@ -1,1 +1,86 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wyniki Wyszukiwania Lotów - VIS</title>
+    <link rel="stylesheet" href="css/style.css"> <link rel="stylesheet" href="css/results.css"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
 
+    <header class="main-header">
+        <div class="header-content">
+            <nav class="main-nav-left">
+                <ul>
+                    <li><a href="index.html">Rezerwuj lot</a></li> <li><a href="#">Odpraw się</a></li>
+                    <li><a href="#">Zarządzaj rezerwacją</a></li>
+                </ul>
+            </nav>
+            <div class="logo">
+                <h1>VIS</h1>
+            </div>
+            <nav class="main-nav-right">
+                <ul>
+                    <li class="user-options">
+                        <div class="dropdown">
+                            <button class="dropbtn">
+                                <i class="fas fa-user-circle"></i> Konto
+                            </button>
+                            <div class="dropdown-content">
+                                <a href="#">Zaloguj się</a>
+                                <a href="#">Zarejestruj się</a>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="user-options">
+                        <div class="dropdown">
+                            <button class="dropbtn">
+                                <i class="fas fa-globe"></i> Język
+                            </button>
+                            <div class="dropdown-content">
+                                <a href="#">Polski</a>
+                                <a href="#">English</a>
+                                <a href="#">Deutsch</a>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="user-options">
+                        <div class="dropdown">
+                            <button class="dropbtn">
+                                <i class="fas fa-dollar-sign"></i> Waluta
+                            </button>
+                            <div class="dropdown-content">
+                                <a href="#">PLN (Złoty polski)</a>
+                                <a href="#">USD (Dolar amerykański)</a>
+                                <a href="#">EUR (Euro)</a>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="results-main">
+        <section class="search-summary">
+            <h2>Twoje wyszukiwanie</h2>
+            <div id="searchParams">
+                </div>
+            <button class="edit-search-btn" onclick="window.location.href='index.html'">Edytuj wyszukiwanie</button>
+        </section>
+
+        <section class="flight-results">
+            <h2>Dostępne loty</h2>
+            <div id="flightList">
+                <p class="no-results-message" style="display:none;">Brak dostępnych lotów dla podanych kryteriów.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        </footer>
+
+    <script src="js/results.js"></script>
+    <script src="js/script.js"></script> 
+</body>
+</html>
