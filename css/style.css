@@ -160,22 +160,24 @@ body.no-scroll {
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
 }
 
-/* Search Section Styles */
+/* Search Section Styles - Zmieniono na poziomy układ */
 .search-section {
     background-color: white;
     padding: 30px;
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    max-width: 800px; /* Constrain search form width */
+    max-width: 900px; /* Zwiększona szerokość dla układu poziomego */
     margin: 0 auto 40px auto; /* Center and add bottom margin */
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive columns */
-    gap: 20px;
-    align-items: end; /* Align items to the bottom */
+    
+    display: flex; /* Użyj flexbox dla układu poziomego */
+    flex-wrap: wrap; /* Pozwól elementom zawijać się na mniejszych ekranach */
+    justify-content: center; /* Wyśrodkuj elementy w poziomie */
+    align-items: flex-end; /* Wyrównaj elementy do dołu, aby inputy były na tej samej linii */
+    gap: 20px; /* Odstęp między elementami */
 }
 
 .search-section h2 {
-    grid-column: 1 / -1; /* Span across all columns */
+    width: 100%; /* Nagłówek zawsze na pełnej szerokości */
     text-align: center;
     color: #007bff;
     margin-bottom: 25px;
@@ -183,6 +185,8 @@ body.no-scroll {
 }
 
 .input-group {
+    flex: 1; /* Pozwól inputom zajmować dostępną przestrzeń */
+    min-width: 180px; /* Minimalna szerokość inputu przed zawinięciem */
     display: flex;
     flex-direction: column;
 }
@@ -206,7 +210,8 @@ body.no-scroll {
 }
 
 .search-button {
-    grid-column: 1 / -1; /* Span across all columns */
+    /* search-button nie musi być 100% szerokości, jeśli chcesz go w linii */
+    /* Usuń grid-column: 1 / -1; */
     padding: 15px 25px;
     background-color: #28a745; /* Green button */
     color: white;
@@ -220,7 +225,7 @@ body.no-scroll {
     align-items: center;
     justify-content: center;
     gap: 10px;
-    margin-top: 20px;
+    /* margin-top: 20px; - usunięto, aby lepiej dopasować się do linii */
 }
 
 .search-button:hover {
@@ -319,12 +324,19 @@ footer {
     justify-content: center; /* Center horizontally */
     align-items: center; /* Center vertically */
     padding: 20px; /* Padding for small screens */
+    animation: fadeInOverlay 0.3s ease-out; /* Animacja dla overlay'a */
 }
+
+@keyframes fadeInOverlay {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
 
 /* Modal is displayed by JS adding 'display: block' or 'flex' directly */
 .modal {
     display: none; /* Hidden by default, controlled by JS */
-    position: fixed; /* Position it on top of the overlay */
+    position: relative; /* Zmieniono na relative - modal jest dzieckiem overlay, więc nie musi być fixed */
     z-index: 1001; /* Higher than overlay */
     background-color: #fff;
     padding: 30px;
@@ -333,17 +345,15 @@ footer {
     width: 90%;
     max-width: 600px; /* Max width for modals */
     box-sizing: border-box;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    /* Usunięto top/left/transform, bo teraz jest centrowany przez flexbox w overlay */
     animation: fadeIn 0.3s ease-out; /* Simple fade-in effect */
     max-height: 90vh; /* Limit height of modal */
     overflow-y: auto; /* Enable scroll within modal if content is too long */
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translate(-50%, -60%); }
-    to { opacity: 1; transform: translate(-50%, -50%); }
+    from { opacity: 0; transform: translateY(-20px); } /* Lekkie przesunięcie w dół */
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .modal-content h3 {
@@ -382,9 +392,10 @@ footer {
 }
 
 .airport-lists {
-    /* Użyj grid lub flexbox, aby wymusić układ na szerokość */
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* 2 kolumny na dużych ekranach, 1 na małych */
+    /* Pamiętaj, że 'auto-fit' dynamicznie dopasowuje liczbę kolumn.
+       Jeśli zawsze chcesz 2, możesz użyć 'repeat(2, 1fr)' */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
     gap: 20px;
     max-height: 350px; /* Limit height for scroll */
     overflow-y: auto; /* Enable scrolling for airport lists */
@@ -392,9 +403,7 @@ footer {
 }
 
 .airport-column {
-    /* To było wcześniej, ale grid-template-columns jest silniejsze */
-    /* flex: 1; */
-    /* min-width: 250px; */
+    /* Styles for individual columns within the grid */
 }
 
 .airport-column h4 {
@@ -679,12 +688,19 @@ footer {
         font-size: 1em;
     }
 
+    /* Search section na małych ekranach wraca do układu pionowego */
     .search-section {
-        grid-template-columns: 1fr; /* Single column on small screens */
+        flex-direction: column;
+        align-items: stretch; /* Rozciągnij elementy na całą szerokość */
+    }
+
+    .input-group {
+        width: 100%; /* Upewnij się, że inputy zajmują całą szerokość */
     }
 
     .search-button {
         width: 100%;
+        margin-top: 15px; /* Dodaj trochę odstępu */
     }
 
     .footer-content {
