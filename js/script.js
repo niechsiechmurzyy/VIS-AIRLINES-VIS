@@ -78,8 +78,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Funkcje pomocnicze ---
     function openModal(modalElement) {
-        modalElement.style.display = 'block';
-        modalOverlay.style.display = 'flex';
+        modalOverlay.style.display = 'flex'; // Overlay musi być flex, aby centrować modal
+        modalElement.style.display = 'block'; // Modal może być block, bo overlay go centuje
         document.body.classList.add('no-scroll'); // Zapobieganie przewijaniu tła
     }
 
@@ -129,46 +129,59 @@ document.addEventListener('DOMContentLoaded', () => {
         airportListsDiv.innerHTML = '';
         const filteredAirports = Object.entries(airportNames).filter(([code, name]) =>
             code.toLowerCase().includes(filter.toLowerCase()) || name.toLowerCase().includes(filter.toLowerCase())
-        );
+        ).sort((a, b) => a[1].localeCompare(b[1])); // Sortuj alfabetycznie
 
         if (filteredAirports.length === 0) {
             airportListsDiv.innerHTML = '<p style="text-align: center; margin-top: 20px; color: #777;">Brak wyników.</p>';
             return;
         }
 
-        const maxPerColumn = Math.ceil(filteredAirports.length / (window.innerWidth > 768 ? 2 : 1)); // 2 kolumny na dużych, 1 na małych
-        let currentColumn = document.createElement('div');
-        currentColumn.classList.add('airport-column');
-        let ul = document.createElement('ul');
-        currentColumn.appendChild(ul);
-        airportListsDiv.appendChild(currentColumn);
+        // Zawsze twórz dwie kolumny, niezależnie od rozmiaru ekranu.
+        // Jeśli chcesz, aby na małych ekranach był jeden, musisz użyć media queries w CSS
+        // i usunąć logikę dzielenia na kolumny z JS, polegając na grid-template-columns: 1fr;
+        
+        // Dzielimy listę na dwie kolumny
+        const half = Math.ceil(filteredAirports.length / 2);
+        const col1Airports = filteredAirports.slice(0, half);
+        const col2Airports = filteredAirports.slice(half);
 
-        filteredAirports.forEach(([code, name], index) => {
-            if (window.innerWidth > 768 && index > 0 && index % maxPerColumn === 0) {
-                currentColumn = document.createElement('div');
-                currentColumn.classList.add('airport-column');
-                ul = document.createElement('ul');
-                currentColumn.appendChild(ul);
-                airportListsDiv.appendChild(currentColumn);
-            }
+        const createColumn = (airports, title) => {
+            const columnDiv = document.createElement('div');
+            columnDiv.classList.add('airport-column');
+            // Jeśli chcesz nagłówki dla kolumn, możesz je dodać tutaj:
+            // const h4 = document.createElement('h4');
+            // h4.textContent = title;
+            // columnDiv.appendChild(h4);
 
-            const li = document.createElement('li');
-            li.dataset.code = code;
-            li.textContent = `${name} (${code})`;
-            li.addEventListener('click', () => {
-                if (currentAirportSelectionField) {
-                    currentAirportSelectionField.value = `${name} (${code})`;
-                }
-                closeModal();
+            const ul = document.createElement('ul');
+            airports.forEach(([code, name]) => {
+                const li = document.createElement('li');
+                li.dataset.code = code;
+                li.textContent = `${name} (${code})`;
+                li.addEventListener('click', () => {
+                    if (currentAirportSelectionField) {
+                        currentAirportSelectionField.value = `${name} (${code})`;
+                    }
+                    closeModal();
+                });
+                ul.appendChild(li);
             });
-            ul.appendChild(li);
-        });
+            columnDiv.appendChild(ul);
+            return columnDiv;
+        };
+
+        if (col1Airports.length > 0) {
+            airportListsDiv.appendChild(createColumn(col1Airports, 'Lotniska (A-M)'));
+        }
+        if (col2Airports.length > 0) {
+            airportListsDiv.appendChild(createColumn(col2Airports, 'Lotniska (N-Z)'));
+        }
     }
 
     // Otwieranie modalu wyboru lotniska
     departureInput.addEventListener('click', () => {
         currentAirportSelectionField = departureInput;
-        renderAirportList();
+        renderAirportList(); // Wywołaj bez filtra, aby pokazać całą listę
         openModal(airportSelectionModal);
         airportSearchInput.value = ''; // Wyczyść pole wyszukiwania
         airportSearchInput.focus();
@@ -176,7 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     destinationInput.addEventListener('click', () => {
         currentAirportSelectionField = destinationInput;
-        renderAirportList();
+        renderAirportList(); // Wywołaj bez filtra, aby pokazać całą listę
         openModal(airportSelectionModal);
         airportSearchInput.value = '';
         airportSearchInput.focus();
@@ -287,9 +300,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateConfirmButtonState() {
         confirmDatesBtn.disabled = !selectedDepartureDate; // Przycisk aktywny, jeśli wylot wybrany
         if (confirmDatesBtn.disabled) {
-             confirmDatesBtn.classList.remove('confirm-btn'); // Możesz dodać klasę disabled
+             confirmDatesBtn.classList.add('disabled'); // Dodaj klasę disabled
         } else {
-            confirmDatesBtn.classList.add('confirm-btn');
+            confirmDatesBtn.classList.remove('disabled'); // Usuń klasę disabled
         }
     }
 
@@ -402,7 +415,7 @@ document.addEventListener('DOMContentLoaded', () => {
         travelClass = modalTravelClassSelect.value; 
     }
 
-    // Otwieranie modalu pasażerów i klasy
+    // Otwieranie modala pasażerów i klasy
     passengersAndClassInput.addEventListener('click', () => {
         updatePassengerCounters(); // Zaktualizuj modale na podstawie aktualnych wartości
         modalTravelClassSelect.value = travelClass; // Ustaw wybraną klasę
