@@ -1,51 +1,19 @@
-/* style.css */
-
-:root {
-    --primary-color: #007bff;
-    --secondary-color: #6c757d;
-    --accent-color: #28a745;
-    --text-color: #333;
-    --light-bg: #f8f9fa;
-    --white: #ffffff;
-    --border-color: #dee2e6;
-    --box-shadow-light: 0 4px 12px rgba(0,0,0,0.08);
-}
-
-* {
+/* General Body and Container Styles */
+body {
+    font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f7f6; /* Light gray background */
+    color: #333;
     line-height: 1.6;
-    color: var(--text-color);
-    background-color: var(--light-bg);
 }
 
-a {
-    color: var(--primary-color);
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-a:hover {
-    color: #0056b3;
-}
-
-ul {
-    list-style: none;
-}
-
-/* === Nagłówek główny === */
 .main-header {
-    background-color: var(--primary-color);
-    color: var(--white);
+    background-color: #007bff; /* Primary blue color */
+    color: white;
     padding: 15px 0;
-    box-shadow: var(--box-shadow-light);
-    position: relative; /* Dla dropdownów */
-    z-index: 1000; /* Upewnij się, że nagłówek jest na wierzchu */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    position: relative; /* Needed for logo positioning */
 }
 
 .header-content {
@@ -55,59 +23,45 @@ ul {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap; /* Pozwala na zawijanie na małych ekranach */
+}
+
+/* Navigation Styles */
+.main-nav-left ul, .main-nav-right ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 25px; /* Spacing between nav items */
+}
+
+.main-nav-left a, .main-nav-right a, .dropbtn {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.2s ease;
+    padding: 5px 0; /* Add padding for click area */
+    display: block; /* Make it a block for better padding */
+}
+
+.main-nav-left a:hover, .main-nav-right a:hover, .dropbtn:hover {
+    color: #e0e0e0;
+}
+
+/* Logo Styles */
+.logo {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 2.5em;
+    font-weight: bold;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .logo h1 {
     margin: 0;
-    font-size: 2.2rem;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--white);
 }
 
-.main-nav-left ul,
-.main-nav-right ul {
-    display: flex;
-    gap: 25px; /* Większy odstęp */
-    flex-wrap: wrap;
-}
-
-.main-nav-left a,
-.main-nav-right a {
-    color: var(--white);
-    font-weight: 500;
-    padding: 5px 0;
-    position: relative;
-    transition: color 0.3s ease;
-}
-
-.main-nav-left a:hover,
-.main-nav-right a:hover {
-    color: #cceeff; /* Jasniejszy kolor na hover */
-}
-
-/* Podkreślenie na hover */
-.main-nav-left a::after,
-.main-nav-right a::after {
-    content: '';
-    position: absolute;
-    width: 0;
-    height: 2px;
-    bottom: -5px;
-    left: 0;
-    background-color: var(--white);
-    transition: width 0.3s ease-in-out;
-}
-
-.main-nav-left a:hover::after,
-.main-nav-right a:hover::after {
-    width: 100%;
-}
-
-
-/* === Dropdown w nagłówku === */
+/* Dropdown Menu Styles */
 .dropdown {
     position: relative;
     display: inline-block;
@@ -115,63 +69,65 @@ ul {
 
 .dropbtn {
     background-color: transparent;
-    color: white;
-    padding: 8px 10px;
-    font-size: 1rem;
     border: none;
     cursor: pointer;
+    font-size: 1em; /* Match nav font size */
     display: flex;
     align-items: center;
-    gap: 8px;
-    transition: background-color 0.3s ease;
-    border-radius: 4px;
-}
-
-.dropbtn:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+    gap: 8px; /* Space between icon and text */
 }
 
 .dropdown-content {
     display: none;
     position: absolute;
     background-color: #f9f9f9;
-    min-width: 160px;
+    min-width: 180px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
-    border-radius: 4px;
-    overflow: hidden; /* Upewnij się, że zaokrąglenia działają */
-    top: 100%; /* Poniżej przycisku */
-    left: 0;
+    border-radius: 5px;
+    overflow: hidden; /* Ensures border-radius applies to children */
+    right: 0; /* Align dropdown to the right of its parent */
 }
 
 .dropdown-content a {
-    color: var(--text-color);
+    color: #333;
     padding: 12px 16px;
     text-decoration: none;
     display: block;
-    white-space: nowrap; /* Zapobiega zawijaniu tekstu */
-    transition: background-color 0.3s ease;
+    font-weight: normal; /* Override bold from main nav */
 }
 
 .dropdown-content a:hover {
     background-color: #ddd;
+    color: #007bff;
 }
 
-.dropdown-content.show { /* Używane przez JS do pokazywania */
+.dropdown:hover .dropdown-content {
     display: block;
 }
 
 
-/* === Sekcja Hero === */
+/* Main Content and Hero Section */
+.main-content {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
 .hero-section {
     position: relative;
-    height: 450px;
-    background: url('../image_5ebd04.jpg') no-repeat center center/cover; /* Upewnij się, że ścieżka do obrazka jest poprawna */
+    height: 350px; /* Adjust height as needed */
+    background-image: url('../image_5ebd04.jpg'); /* Ensure this path is correct relative to style.css */
+    background-size: cover;
+    background-position: center;
+    border-radius: 10px;
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--white);
+    color: white;
     text-align: center;
+    margin-bottom: 40px;
 }
 
 .hero-overlay {
@@ -180,55 +136,46 @@ ul {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Ciemniejsza nakładka */
+    background-color: rgba(0, 0, 0, 0.5); /* Dark overlay */
+    z-index: 1;
 }
 
 .hero-text {
     position: relative;
-    z-index: 1;
-    animation: fadeIn 1.5s ease-out; /* Animacja pojawiania się */
+    z-index: 2;
 }
 
 .hero-text h2 {
-    font-size: 3.5rem;
-    margin-bottom: 15px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+    font-size: 3em;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
 }
 
 .hero-text p {
-    font-size: 1.5rem;
-    font-weight: 300;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+    font-size: 1.2em;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* === Sekcja wyszukiwania === */
+/* Search Section Styles */
 .search-section {
-    background-color: var(--white);
-    max-width: 900px;
-    margin: -80px auto 40px; /* Przesunięcie w górę, aby nachodziło na hero */
-    padding: 30px 40px;
-    border-radius: 12px;
-    box-shadow: var(--box-shadow-light);
-    z-index: 100; /* Nad hero overlay */
-    position: relative;
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    max-width: 800px; /* Constrain search form width */
+    margin: 0 auto 40px auto; /* Center and add bottom margin */
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive columns */
+    gap: 20px;
+    align-items: end; /* Align items to the bottom */
 }
 
 .search-section h2 {
+    grid-column: 1 / -1; /* Span across all columns */
     text-align: center;
-    color: var(--primary-color);
-    margin-bottom: 30px;
-    font-size: 2.2rem;
-}
-
-#flightSearchForm {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
+    color: #007bff;
+    margin-bottom: 25px;
+    font-size: 2em;
 }
 
 .input-group {
@@ -238,36 +185,31 @@ ul {
 
 .input-group label {
     margin-bottom: 8px;
-    font-weight: 600;
+    font-weight: bold;
     color: #555;
+    font-size: 0.95em;
 }
 
 .input-group input[type="text"] {
-    padding: 12px 15px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    font-size: 1rem;
     width: 100%;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    cursor: pointer; /* Wskazuje, że pole jest klikalne */
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+    box-sizing: border-box; /* Include padding in width */
+    cursor: pointer; /* Indicate clickable input */
     background-color: #fcfcfc;
 }
 
-.input-group input[type="text"]:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
-    outline: none;
-}
-
 .search-button {
-    grid-column: 1 / -1; /* Rozciąga przycisk na całą szerokość siatki */
-    padding: 15px 30px;
-    background-color: var(--accent-color);
-    color: var(--white);
+    grid-column: 1 / -1; /* Span across all columns */
+    padding: 15px 25px;
+    background-color: #28a745; /* Green button */
+    color: white;
     border: none;
-    border-radius: 8px;
-    font-size: 1.2rem;
-    font-weight: 600;
+    border-radius: 5px;
+    font-size: 1.2em;
+    font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
     display: flex;
@@ -282,17 +224,12 @@ ul {
     transform: translateY(-2px);
 }
 
-.search-button i {
-    font-size: 1.3rem;
-}
-
-
-/* === Stopka === */
+/* Footer Styles */
 footer {
-    background-color: #343a40; /* Ciemny kolor tła */
-    color: var(--white);
-    padding: 40px 0 20px;
-    font-size: 0.9rem;
+    background-color: #333;
+    color: white;
+    padding: 40px 0 20px 0;
+    margin-top: 50px;
 }
 
 .footer-content {
@@ -301,28 +238,31 @@ footer {
     padding: 0 20px;
     display: flex;
     justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 30px; /* Odstępy między sekcjami stopki */
+    flex-wrap: wrap; /* Allow sections to wrap */
+    gap: 30px;
 }
 
 .footer-section {
-    flex: 1; /* Pozwala na elastyczne rozciąganie */
-    min-width: 250px; /* Minimalna szerokość sekcji */
+    flex: 1; /* Distribute space evenly */
+    min-width: 250px; /* Minimum width before wrapping */
+    margin-bottom: 20px;
 }
 
 .footer-section h3 {
-    color: var(--primary-color);
+    color: #007bff;
     margin-bottom: 15px;
-    font-size: 1.2rem;
+    font-size: 1.3em;
 }
 
-.footer-section p,
-.footer-section ul {
-    margin-bottom: 10px;
-}
-
-.footer-section ul {
+.footer-section p, .footer-section ul {
+    font-size: 0.95em;
+    color: #bbb;
+    margin: 0;
     padding: 0;
+}
+
+.footer-section ul {
+    list-style: none;
 }
 
 .footer-section ul li {
@@ -330,235 +270,219 @@ footer {
 }
 
 .footer-section a {
-    color: #cceeff;
-    transition: color 0.3s ease;
+    color: #bbb;
+    text-decoration: none;
+    transition: color 0.2s ease;
 }
 
 .footer-section a:hover {
-    color: var(--white);
+    color: white;
 }
 
-.footer-section i {
-    margin-right: 8px;
-    color: #cceeff;
+.footer-section.contact p {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.footer-section.contact i {
+    color: #007bff;
+    font-size: 1.1em;
 }
 
 .footer-bottom {
     text-align: center;
-    margin-top: 30px;
+    border-top: 1px solid #444;
     padding-top: 20px;
-    border-top: 1px solid #495057;
-    color: #adb5bd;
+    margin-top: 30px;
+    font-size: 0.85em;
+    color: #999;
 }
 
 
-/* === Modale === */
+/* MODAL STYLES (REQUIRED FOR YOUR HTML) */
 .modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
     left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
-    z-index: 1040; /* Poniżej modala, ale nad resztą strony */
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.modal-overlay.show {
-    display: block;
-    opacity: 1;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.6); /* Black w/ opacity */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    padding: 20px; /* Padding for small screens */
 }
 
 .modal {
-    display: none;
-    position: fixed;
+    display: none; /* Hidden by default, controlled by JS */
+    position: fixed; /* Position it on top of the overlay */
+    z-index: 1001; /* Higher than overlay */
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    width: 90%;
+    max-width: 600px; /* Max width for modals */
+    box-sizing: border-box;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: var(--white);
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-    z-index: 1050; /* Nad overlayem */
-    max-width: 600px;
-    width: 90%; /* Szerokość na małych ekranach */
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-    overflow-y: auto; /* Włącz przewijanie w modalach, jeśli treść jest długa */
-    max-height: 90vh; /* Ogranicz wysokość modala */
+    animation: fadeIn 0.3s ease-out; /* Simple fade-in effect */
 }
 
-.modal.show {
-    display: block;
-    opacity: 1;
-    visibility: visible;
-}
-
-.modal-content {
-    position: relative;
+@keyframes fadeIn {
+    from { opacity: 0; transform: translate(-50%, -60%); }
+    to { opacity: 1; transform: translate(-50%, -50%); }
 }
 
 .modal-content h3 {
-    margin-top: 0;
-    margin-bottom: 25px;
-    color: var(--primary-color);
     text-align: center;
-    font-size: 1.8rem;
+    color: #007bff;
+    margin-bottom: 25px;
+    font-size: 1.8em;
 }
 
-.close-button {
-    position: absolute;
-    top: -15px; /* Przesunięte lekko poza padding modala */
-    right: -15px; /* Przesunięte lekko poza padding modala */
-    font-size: 2rem;
-    cursor: pointer;
+.modal .close-button {
     color: #aaa;
-    background: var(--white);
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    transition: color 0.3s ease, background-color 0.3s ease;
+    float: right;
+    font-size: 35px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    transition: color 0.2s ease;
 }
 
-.close-button:hover {
-    color: #777;
-    background-color: #f0f0f0;
-}
-
-
-/* === Style dla modala lotnisk === */
-.airport-lists {
-    max-height: 400px; /* Maksymalna wysokość, aby umożliwić przewijanie */
-    overflow-y: auto; /* Włącz przewijanie pionowe */
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 15px;
-    background-color: var(--light-bg);
-}
-
-.airport-lists h4 {
-    margin-top: 20px;
-    margin-bottom: 10px;
+.modal .close-button:hover,
+.modal .close-button:focus {
     color: #333;
-    font-size: 1.2em;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 8px;
-    font-weight: 600;
+    text-decoration: none;
 }
 
-.airport-lists h4:first-child {
-    margin-top: 0; /* Pierwszy nagłówek bez górnego marginesu */
+/* Airport Selection Modal Specific Styles */
+#airportSearchInput {
+    width: calc(100% - 24px); /* Account for padding */
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1em;
 }
 
-.airport-list {
+.airport-lists {
+    display: flex;
+    flex-wrap: wrap; /* Allow lists to wrap */
+    gap: 20px;
+    max-height: 350px; /* Limit height for scroll */
+    overflow-y: auto; /* Enable scrolling for airport lists */
+    padding-right: 10px; /* Space for scrollbar */
+}
+
+.airport-column {
+    flex: 1;
+    min-width: 250px; /* Ensures columns don't get too narrow */
+}
+
+.airport-column h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #007bff;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+.airport-column ul {
     list-style: none;
     padding: 0;
-    margin: 0 0 20px 0; /* Dodaj margines pod każdą listą, aby oddzielić od kolejnego nagłówka */
+    margin: 0;
 }
 
-.airport-list li {
-    padding: 10px 15px;
+.airport-column li {
+    padding: 8px 0;
     cursor: pointer;
-    border-bottom: 1px solid #f0f0f0;
-    transition: background-color 0.2s ease, color 0.2s ease;
-    color: #444;
-    font-size: 1rem;
+    transition: background-color 0.2s ease;
+    border-bottom: 1px dotted #eee;
 }
 
-.airport-list li:last-child {
+.airport-column li:last-child {
     border-bottom: none;
 }
 
-.airport-list li:hover {
-    background-color: #e9f5ff; /* Jasnoniebieski na hover */
-    color: var(--primary-color);
-    font-weight: 500;
+.airport-column li:hover {
+    background-color: #f0f0f0;
+    color: #007bff;
 }
 
-
-/* === Style dla modala kalendarza === */
+/* Date Picker Modal Specific Styles */
 .date-display {
-    background-color: #e9f5ff;
+    text-align: center;
+    margin-bottom: 20px;
+    background-color: #eaf7ff;
     padding: 15px;
     border-radius: 8px;
-    margin-bottom: 20px;
-    text-align: center;
     border: 1px solid #cceeff;
+    font-size: 1.1em;
 }
 
 .date-display p {
     margin: 5px 0;
-    font-size: 1.1em;
-    color: #333;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
 }
 
 .date-display span {
     font-weight: bold;
-    color: var(--primary-color);
+    color: #0056b3;
 }
 
 .clear-return-btn {
     background: none;
     border: none;
     color: #dc3545;
+    font-size: 0.9em;
     cursor: pointer;
-    font-size: 1em;
-    padding: 0 5px;
+    margin-left: 10px;
     transition: color 0.2s ease;
 }
 
 .clear-return-btn:hover {
-    color: #c82333;
+    color: #b02a37;
 }
 
 .calendar {
-    margin-bottom: 20px;
-    border: 1px solid var(--border-color);
+    margin-top: 20px;
+    border: 1px solid #eee;
     border-radius: 8px;
     overflow: hidden;
-    background-color: var(--white);
 }
 
 .calendar-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: var(--primary-color);
-    color: var(--white);
     padding: 10px 15px;
-    font-size: 1.3rem;
+    background-color: #007bff;
+    color: white;
     font-weight: bold;
+    font-size: 1.2em;
 }
 
 .calendar-header button {
-    background-color: transparent;
-    color: var(--white);
+    background: none;
     border: none;
-    font-size: 1.5rem;
+    color: white;
+    font-size: 1.5em;
     cursor: pointer;
     padding: 5px 10px;
     transition: background-color 0.2s ease;
-    border-radius: 4px;
+    border-radius: 5px;
 }
 
-.calendar-header button:hover:not(:disabled) {
+.calendar-header button:hover {
     background-color: rgba(255, 255, 255, 0.2);
-}
-
-.calendar-header button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
 }
 
 .calendar-days-grid {
@@ -570,75 +494,73 @@ footer {
 
 .day-label {
     font-weight: bold;
-    color: #777;
+    color: #555;
     padding: 8px 0;
-    font-size: 0.9em;
+    border-bottom: 1px solid #eee;
 }
 
-.datepicker-days {
-    display: contents; /* Umożliwia elementy 'day' na bezpośrednie bycie częścią gridu */
-}
-
-.datepicker-days > div { /* Styl dla każdego dnia */
+.datepicker-days div {
     padding: 10px 5px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     cursor: pointer;
     transition: background-color 0.2s ease, color 0.2s ease;
-    font-size: 0.95rem;
+    border-radius: 4px;
 }
 
-.datepicker-days .past-day {
-    color: #bbb;
+.datepicker-days div.empty,
+.datepicker-days div.disabled {
     cursor: not-allowed;
+    color: #ccc;
     background-color: #f9f9f9;
 }
 
-.datepicker-days .selectable-day:hover:not(.selected-departure):not(.selected-return):not(.in-range) {
-    background-color: #e0e0e0;
+.datepicker-days div.empty:hover,
+.datepicker-days div.disabled:hover {
+    background-color: #f9f9f9;
+    color: #ccc;
 }
 
-.datepicker-days .selected-departure,
-.datepicker-days .selected-return {
-    background-color: var(--primary-color);
-    color: var(--white);
+
+.datepicker-days div:not(.empty):not(.disabled):hover {
+    background-color: #e6f7ff; /* Light blue on hover */
+    color: #007bff;
+}
+
+.datepicker-days div.selected {
+    background-color: #007bff;
+    color: white;
     font-weight: bold;
 }
 
-.datepicker-days .in-range {
-    background-color: #cceeff; /* Kolor dla zakresu między datami */
-    color: #333;
-    border-radius: 0; /* Bez zaokrąglenia, aby tworzyć ciągłość */
+.datepicker-days div.selected-range {
+    background-color: #92c9ed; /* Lighter blue for range */
+    color: white;
 }
 
-.datepicker-days .selected-departure.in-range {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-}
-.datepicker-days .selected-return.in-range {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-}
-.datepicker-days .selected-departure:not(.in-range),
-.datepicker-days .selected-return:not(.in-range) {
-    border-radius: 50%;
+.datepicker-days div.selected-range.start,
+.datepicker-days div.selected-range.end {
+    background-color: #007bff;
+    color: white;
 }
 
 
-/* === Style dla modala pasażerów i klasy === */
+/* Passengers & Class Modal Specific Styles */
 .passenger-counter {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #f0f0f0;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.passenger-counter:last-of-type {
+    border-bottom: none;
+    margin-bottom: 25px;
 }
 
 .passenger-counter p {
-    font-weight: 500;
+    margin: 0;
+    font-size: 1.1em;
     color: #333;
 }
 
@@ -648,175 +570,133 @@ footer {
     gap: 10px;
 }
 
-.counter-controls button {
+.counter-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 50%; /* Make them round */
     width: 35px;
     height: 35px;
-    border-radius: 50%;
-    border: 1px solid var(--primary-color);
-    background-color: var(--white);
-    color: var(--primary-color);
-    font-size: 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    font-size: 1.5em;
+    line-height: 1; /* For vertical alignment of text */
     cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s ease;
 }
 
-.counter-controls button:hover {
-    background-color: var(--primary-color);
-    color: var(--white);
+.counter-btn:hover {
+    background-color: #0056b3;
 }
 
 .counter-controls span {
-    font-size: 1.2rem;
+    font-size: 1.2em;
     font-weight: bold;
-    min-width: 25px; /* Aby cyfry nie "skakały" */
+    min-width: 25px; /* Ensure space for numbers */
     text-align: center;
 }
 
 .travel-class-select {
     margin-top: 20px;
-    display: flex;
-    flex-direction: column;
+    margin-bottom: 30px;
 }
 
 .travel-class-select label {
+    display: block;
     margin-bottom: 10px;
-    font-weight: 600;
+    font-weight: bold;
     color: #555;
+    font-size: 1.1em;
 }
 
 .travel-class-select select {
-    padding: 10px 15px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    font-size: 1rem;
-    background-color: var(--white);
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+    background-color: #fcfcfc;
     cursor: pointer;
-    appearance: none; /* Ukrywa domyślne strzałki selecta */
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='%236c757d' d='M9.293 12.95a1.001 1.001 0 0 0 1.414 0l4.243-4.243a1 1 0 0 0-1.414-1.414L10 10.828 6.071 6.901a1 1 0 1 0-1.414 1.414z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 10px center;
-    background-size: 1em;
-}
-
-.travel-class-select select:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
 }
 
 .confirm-btn {
+    display: block;
     width: 100%;
-    padding: 12px;
-    background-color: var(--accent-color);
-    color: var(--white);
+    padding: 15px;
+    background-color: #28a745; /* Green */
+    color: white;
     border: none;
-    border-radius: 8px;
-    font-size: 1.1rem;
-    font-weight: 600;
+    border-radius: 5px;
+    font-size: 1.2em;
+    font-weight: bold;
     cursor: pointer;
-    margin-top: 25px;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.2s ease;
+    margin-top: 20px;
 }
 
 .confirm-btn:hover {
     background-color: #218838;
 }
 
-
-/* === Responsywność === */
-@media (max-width: 992px) {
+/* Responsive adjustments */
+@media (max-width: 768px) {
     .header-content {
         flex-direction: column;
-        text-align: center;
         gap: 15px;
     }
 
     .main-nav-left ul, .main-nav-right ul {
+        flex-wrap: wrap;
         justify-content: center;
-        width: 100%;
+        gap: 15px;
     }
 
-    .main-nav-left, .main-nav-right {
-        width: 100%;
+    .logo {
+        position: static;
+        transform: none;
+        margin-top: 15px;
+    }
+
+    .hero-section {
+        height: 250px;
+    }
+
+    .hero-text h2 {
+        font-size: 2em;
+    }
+
+    .hero-text p {
+        font-size: 1em;
     }
 
     .search-section {
-        margin: -50px 20px 40px;
-        padding: 25px;
+        grid-template-columns: 1fr; /* Single column on small screens */
     }
 
-    #flightSearchForm {
-        grid-template-columns: 1fr; /* Jeden element w kolumnie na małych ekranach */
+    .search-button {
+        width: 100%;
     }
 
     .footer-content {
         flex-direction: column;
+        align-items: center;
         text-align: center;
     }
 
     .footer-section {
-        min-width: unset; /* Usuń minimalną szerokość */
-    }
-
-    .modal {
-        width: 95%;
-        padding: 20px;
-    }
-
-    .close-button {
-        top: -10px;
-        right: -10px;
-        font-size: 1.8rem;
-        width: 35px;
-        height: 35px;
+        min-width: unset;
+        width: 100%;
     }
 }
 
-@media (max-width: 576px) {
-    .logo h1 {
-        font-size: 1.8rem;
-    }
-
-    .hero-text h2 {
-        font-size: 2.5rem;
-    }
-
-    .hero-text p {
-        font-size: 1.2rem;
-    }
-
-    .search-section h2 {
-        font-size: 1.8rem;
-    }
-
-    .input-group input[type="text"] {
-        padding: 10px 12px;
-        font-size: 0.9rem;
-    }
-
-    .search-button {
-        font-size: 1rem;
-        padding: 12px 20px;
+@media (max-width: 480px) {
+    .modal {
+        padding: 20px;
     }
 
     .modal-content h3 {
-        font-size: 1.5rem;
-    }
-
-    .passenger-counter p, .counter-controls span {
-        font-size: 1rem;
-    }
-    .counter-controls button {
-        width: 30px;
-        height: 30px;
-        font-size: 1.2rem;
-    }
-
-    .travel-class-select select, .confirm-btn {
-        font-size: 1rem;
-        padding: 10px 12px;
+        font-size: 1.5em;
+        margin-bottom: 15px;
     }
 }
