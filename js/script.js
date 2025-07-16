@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'MUC': 'Monachium - Lotnisko im. Franza Josefa Straussa', 'DUS': 'Düsseldorf - Lotnisko w Düsseldorfie',
         'HAM': 'Hamburg - Lotnisko w Hamburgu', 'CGN': 'Kolonia/Bonn - Lotnisko Kolonia/Bonn',
         'STR': 'Stuttgart - Lotnisko w Stuttgarcie', 'LEJ': 'Lipsk/Halle - Lotnisko Lipsk/Halle',
-        'BRE': 'Brema - Lotnisko w Bremie', 'DRS': 'Drezno - Lotnisko w Dreźnie',
+        'BRE': 'Brema - Lotnisko w Bremie', 'DRS': 'Drezno - Lotnisko w Dreznie',
         'CDG': 'Paryż - Lotnisko Charlesa de Gaulle\'a', 'ORY': 'Paryż - Lotnisko Orly',
         'NCE': 'Nicea - Lotnisko Nicea-Lazurowe Wybrzeże', 'MRS': 'Marsylia - Lotnisko Marsylia Prowansja',
         'LYS': 'Lyon - Lotnisko Lyon-Saint Exupéry', 'TLS': 'Tuluza - Lotnisko Tuluza-Blagnac',
@@ -78,8 +78,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Funkcje pomocnicze ---
     function openModal(modalElement) {
-        modalOverlay.style.display = 'flex'; // Overlay musi być flex, aby centrować modal
-        modalElement.style.display = 'block'; // Modal może być block, bo overlay go centuje
+        // Upewnij się, że overlay jest wyświetlany jako flex, aby centrować modal
+        modalOverlay.style.display = 'flex'; 
+        // Pamiętaj, aby ukryć wszystkie modale, zanim otworzysz jeden, aby uniknąć nakładania się
+        [airportSelectionModal, datePickerModal, passengersClassModal].forEach(modal => {
+            modal.style.display = 'none';
+        });
+        modalElement.style.display = 'block'; // Otwórz konkretny modal
         document.body.classList.add('no-scroll'); // Zapobieganie przewijaniu tła
     }
 
@@ -136,23 +141,13 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Zawsze twórz dwie kolumny, niezależnie od rozmiaru ekranu.
-        // Jeśli chcesz, aby na małych ekranach był jeden, musisz użyć media queries w CSS
-        // i usunąć logikę dzielenia na kolumny z JS, polegając na grid-template-columns: 1fr;
-        
-        // Dzielimy listę na dwie kolumny
         const half = Math.ceil(filteredAirports.length / 2);
         const col1Airports = filteredAirports.slice(0, half);
         const col2Airports = filteredAirports.slice(half);
 
-        const createColumn = (airports, title) => {
+        const createColumn = (airports) => {
             const columnDiv = document.createElement('div');
             columnDiv.classList.add('airport-column');
-            // Jeśli chcesz nagłówki dla kolumn, możesz je dodać tutaj:
-            // const h4 = document.createElement('h4');
-            // h4.textContent = title;
-            // columnDiv.appendChild(h4);
-
             const ul = document.createElement('ul');
             airports.forEach(([code, name]) => {
                 const li = document.createElement('li');
@@ -171,25 +166,25 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         if (col1Airports.length > 0) {
-            airportListsDiv.appendChild(createColumn(col1Airports, 'Lotniska (A-M)'));
+            airportListsDiv.appendChild(createColumn(col1Airports));
         }
         if (col2Airports.length > 0) {
-            airportListsDiv.appendChild(createColumn(col2Airports, 'Lotniska (N-Z)'));
+            airportListsDiv.appendChild(createColumn(col2Airports));
         }
     }
 
     // Otwieranie modalu wyboru lotniska
     departureInput.addEventListener('click', () => {
         currentAirportSelectionField = departureInput;
-        renderAirportList(); // Wywołaj bez filtra, aby pokazać całą listę
+        renderAirportList(); 
         openModal(airportSelectionModal);
-        airportSearchInput.value = ''; // Wyczyść pole wyszukiwania
+        airportSearchInput.value = ''; 
         airportSearchInput.focus();
     });
 
     destinationInput.addEventListener('click', () => {
         currentAirportSelectionField = destinationInput;
-        renderAirportList(); // Wywołaj bez filtra, aby pokazać całą listę
+        renderAirportList();
         openModal(airportSelectionModal);
         airportSearchInput.value = '';
         airportSearchInput.focus();
@@ -213,35 +208,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Funkcja do renderowania kalendarza
     function renderCalendar() {
-        datepickerDays.innerHTML = ''; // Wyczyść poprzednie dni
+        datepickerDays.innerHTML = ''; 
         const today = new Date();
-        today.setHours(0, 0, 0, 0); // Resetuj czas dla porównań
+        today.setHours(0, 0, 0, 0); 
 
         const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
         const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
         monthYearDisplay.textContent = `${firstDayOfMonth.toLocaleString('pl-PL', { month: 'long' })} ${currentYear}`;
 
-        // Oblicz pusty początek tygodnia (poniedziałek = 0, wtorek = 1, ...)
-        let startDayOfWeek = (firstDayOfMonth.getDay() + 6) % 7; // Przesunięcie, aby poniedziałek był pierwszy
+        let startDayOfWeek = (firstDayOfMonth.getDay() + 6) % 7; 
 
-        // Dodaj puste dni przed pierwszym dniem miesiąca
         for (let i = 0; i < startDayOfWeek; i++) {
             const emptyDiv = document.createElement('div');
             emptyDiv.classList.add('empty');
             datepickerDays.appendChild(emptyDiv);
         }
 
-        // Dodaj dni miesiąca
         for (let i = 1; i <= daysInMonth; i++) {
             const dayDiv = document.createElement('div');
             const date = new Date(currentYear, currentMonth, i);
-            date.setHours(0, 0, 0, 0); // Resetuj czas dla porównań
+            date.setHours(0, 0, 0, 0); 
 
             dayDiv.textContent = i;
-            dayDiv.dataset.date = date.toISOString().split('T')[0]; // Format YYYY-MM-DD
+            dayDiv.dataset.date = date.toISOString().split('T')[0]; 
 
-            // Jeśli data jest w przeszłości, zablokuj
             if (date < today) {
                 dayDiv.classList.add('disabled');
             } else {
@@ -250,7 +241,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
-            // Oznacz wybrane daty
             if (selectedDepartureDate && date.getTime() === selectedDepartureDate.getTime()) {
                 dayDiv.classList.add('selected');
             }
@@ -258,7 +248,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 dayDiv.classList.add('selected');
             }
 
-            // Oznacz zakres dat
             if (selectedDepartureDate && selectedReturnDate) {
                 if (date > selectedDepartureDate && date < selectedReturnDate) {
                     dayDiv.classList.add('selected-range');
@@ -270,25 +259,20 @@ document.addEventListener('DOMContentLoaded', () => {
         updateDateDisplay();
     }
 
-    // Obsługa wyboru daty
     function handleDateSelection(date) {
         if (!selectedDepartureDate || (selectedDepartureDate && selectedReturnDate)) {
-            // Resetuj, jeśli już wybrano zakres lub jest to pierwszy wybór
             selectedDepartureDate = date;
             selectedReturnDate = null;
         } else if (date.getTime() < selectedDepartureDate.getTime()) {
-            // Jeśli nowa data jest wcześniejsza niż data wylotu, ustaw ją jako wylot
             selectedDepartureDate = date;
             selectedReturnDate = null;
         } else {
-            // Ustaw jako datę powrotu
             selectedReturnDate = date;
         }
-        renderCalendar(); // Przeładuj kalendarz, aby zaktualizować zaznaczenia
+        renderCalendar(); 
         updateConfirmButtonState();
     }
 
-    // Aktualizacja wyświetlanych dat w modalu
     function updateDateDisplay() {
         displayDepartureDate.textContent = formatDateForDisplay(selectedDepartureDate);
         displayReturnDate.textContent = formatDateForDisplay(selectedReturnDate);
@@ -296,18 +280,15 @@ document.addEventListener('DOMContentLoaded', () => {
         updateConfirmButtonState();
     }
 
-    // Aktywacja przycisku "Potwierdź daty"
     function updateConfirmButtonState() {
-        confirmDatesBtn.disabled = !selectedDepartureDate; // Przycisk aktywny, jeśli wylot wybrany
+        confirmDatesBtn.disabled = !selectedDepartureDate; 
         if (confirmDatesBtn.disabled) {
-             confirmDatesBtn.classList.add('disabled'); // Dodaj klasę disabled
+             confirmDatesBtn.classList.add('disabled'); 
         } else {
-            confirmDatesBtn.classList.remove('disabled'); // Usuń klasę disabled
+            confirmDatesBtn.classList.remove('disabled'); 
         }
     }
 
-
-    // Obsługa przycisków nawigacji miesiąca
     prevMonthBtn.addEventListener('click', () => {
         currentMonth--;
         if (currentMonth < 0) {
@@ -326,13 +307,11 @@ document.addEventListener('DOMContentLoaded', () => {
         renderCalendar();
     });
 
-    // Czyszczenie daty powrotu
     clearReturnDateBtn.addEventListener('click', () => {
         selectedReturnDate = null;
         renderCalendar();
     });
 
-    // Potwierdzenie dat i zamknięcie modala
     confirmDatesBtn.addEventListener('click', () => {
         if (!selectedDepartureDate) {
             alert('Proszę wybrać datę wylotu.');
@@ -343,9 +322,7 @@ document.addEventListener('DOMContentLoaded', () => {
         closeModal();
     });
 
-    // Otwieranie modala daty
     departureDateInput.addEventListener('click', () => {
-        // Ustaw początkowy miesiąc na aktualny wybór lub bieżący
         if (selectedDepartureDate) {
             currentMonth = selectedDepartureDate.getMonth();
             currentYear = selectedDepartureDate.getFullYear();
@@ -359,7 +336,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     returnDateInput.addEventListener('click', () => {
-        // Jeśli jest już data wylotu, ustaw kalendarz na ten miesiąc
         if (selectedDepartureDate) {
             currentMonth = selectedDepartureDate.getMonth();
             currentYear = selectedDepartureDate.getFullYear();
@@ -380,17 +356,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalTravelClassSelect = document.getElementById('modalTravelClass');
     const confirmPassengersClassBtn = document.getElementById('confirmPassengersClassBtn');
 
-    // Obsługa przycisków +/-
     document.querySelectorAll('.passenger-counter .counter-btn').forEach(button => {
         button.addEventListener('click', (e) => {
             const type = e.target.dataset.type;
-            const action = e.target.textContent; // '-' or '+'
+            const action = e.target.textContent; 
 
             switch (type) {
                 case 'adults':
                     if (action === '+' && adults < 9) adults++;
                     else if (action === '-' && adults > 1) adults--;
-                    // Niemowlęta nie mogą być więcej niż dorośli
                     if (infants > adults) infants = adults;
                     break;
                 case 'children':
@@ -398,7 +372,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     else if (action === '-' && children > 0) children--;
                     break;
                 case 'infants':
-                    if (action === '+' && infants < adults) infants++; // Max niemowląt = dorośli
+                    if (action === '+' && infants < adults) infants++; 
                     else if (action === '-' && infants > 0) infants--;
                     break;
             }
@@ -406,30 +380,25 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Aktualizacja liczników w modalu
     function updatePassengerCounters() {
         adultsCountSpan.textContent = adults;
         childrenCountSpan.textContent = children;
         infantsCountSpan.textContent = infants;
-        // Zaktualizuj klasę podróży, gdy licznik się zmienia (aby odświeżyć wyświetlanie)
         travelClass = modalTravelClassSelect.value; 
     }
 
-    // Otwieranie modala pasażerów i klasy
     passengersAndClassInput.addEventListener('click', () => {
-        updatePassengerCounters(); // Zaktualizuj modale na podstawie aktualnych wartości
-        modalTravelClassSelect.value = travelClass; // Ustaw wybraną klasę
+        updatePassengerCounters(); 
+        modalTravelClassSelect.value = travelClass; 
         openModal(passengersClassModal);
     });
 
-    // Zmiana klasy podróży w modalu
     modalTravelClassSelect.addEventListener('change', (e) => {
         travelClass = e.target.value;
     });
 
-    // Potwierdzenie pasażerów i klasy
     confirmPassengersClassBtn.addEventListener('click', () => {
-        updatePassengersAndClassInput(); // Zaktualizuj pole input na głównym formularzu
+        updatePassengersAndClassInput(); 
         closeModal();
     });
 
@@ -437,20 +406,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Obsługa Submita Formularza Głównego ---
     if (flightSearchForm) {
         flightSearchForm.addEventListener('submit', function(event) {
-            event.preventDefault(); // Zatrzymaj domyślne zachowanie formularza
+            event.preventDefault(); 
 
             const departureVal = departureInput.value;
             const destinationVal = destinationInput.value;
-            const depDateVal = departureDateInput.value; // Format DD.MM.RRRR
-            const retDateVal = returnDateInput.value; // Format DD.MM.RRRR (może być puste)
+            const depDateVal = departureDateInput.value; 
+            const retDateVal = returnDateInput.value; 
 
-            // Prosta walidacja, czy pola są wypełnione
             if (!departureVal || !destinationVal || !depDateVal) {
                 alert('Proszę wypełnić wszystkie wymagane pola: Skąd, Dokąd, Data wylotu.');
                 return;
             }
 
-            // Wydobycie kodu IATA z tekstu (np. "Warszawa (WAW)" -> "WAW")
             const getCode = (text) => {
                 const match = text.match(/\(([A-Z]{3})\)/);
                 return match ? match[1] : '';
@@ -464,7 +431,6 @@ document.addEventListener('DOMContentLoaded', () => {
                  return;
             }
 
-            // Tworzenie obiektu URLSearchParams do przekazania parametrów
             const params = new URLSearchParams();
             params.append('departure', departureCode);
             params.append('destination', destinationCode);
@@ -477,12 +443,10 @@ document.addEventListener('DOMContentLoaded', () => {
             params.append('infants', infants);
             params.append('class', travelClass);
 
-            // Przekierowanie do strony wyników z parametrami w URL
             window.location.href = `results.html?${params.toString()}`;
         });
     }
 
     // --- Inicjalizacja przy ładowaniu strony ---
-    // Ustaw początkową wartość w polu pasażerów i klasy
     updatePassengersAndClassInput();
 });
