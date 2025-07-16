@@ -8,6 +8,10 @@ body {
     line-height: 1.6;
 }
 
+body.no-scroll {
+    overflow: hidden; /* Prevent background scroll when modal is open */
+}
+
 .main-header {
     background-color: #007bff; /* Primary blue color */
     color: white;
@@ -310,13 +314,14 @@ footer {
     top: 0;
     width: 100%; /* Full width */
     height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
     background-color: rgba(0,0,0,0.6); /* Black w/ opacity */
+    /* Użyj display: flex, aby wyśrodkować modal wewnątrz overlay'a */
     justify-content: center; /* Center horizontally */
     align-items: center; /* Center vertically */
     padding: 20px; /* Padding for small screens */
 }
 
+/* Modal is displayed by JS adding 'display: block' or 'flex' directly */
 .modal {
     display: none; /* Hidden by default, controlled by JS */
     position: fixed; /* Position it on top of the overlay */
@@ -332,6 +337,8 @@ footer {
     left: 50%;
     transform: translate(-50%, -50%);
     animation: fadeIn 0.3s ease-out; /* Simple fade-in effect */
+    max-height: 90vh; /* Limit height of modal */
+    overflow-y: auto; /* Enable scroll within modal if content is too long */
 }
 
 @keyframes fadeIn {
@@ -375,8 +382,9 @@ footer {
 }
 
 .airport-lists {
-    display: flex;
-    flex-wrap: wrap; /* Allow lists to wrap */
+    /* Użyj grid lub flexbox, aby wymusić układ na szerokość */
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* 2 kolumny na dużych ekranach, 1 na małych */
     gap: 20px;
     max-height: 350px; /* Limit height for scroll */
     overflow-y: auto; /* Enable scrolling for airport lists */
@@ -384,8 +392,9 @@ footer {
 }
 
 .airport-column {
-    flex: 1;
-    min-width: 250px; /* Ensures columns don't get too narrow */
+    /* To było wcześniej, ale grid-template-columns jest silniejsze */
+    /* flex: 1; */
+    /* min-width: 250px; */
 }
 
 .airport-column h4 {
@@ -687,6 +696,11 @@ footer {
     .footer-section {
         min-width: unset;
         width: 100%;
+    }
+
+    /* Na małych ekranach kolumny lotnisk mogą wracać do jednej kolumny */
+    .airport-lists {
+        grid-template-columns: 1fr;
     }
 }
 
