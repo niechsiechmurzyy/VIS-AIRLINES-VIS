@@ -8,9 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const prevDatesBtn = document.getElementById('prevDates');
     const nextDatesBtn = document.getElementById('nextDates');
 
-    let allFoundFlights = []; // Będziemy przechowywać tu wszystkie znalezione loty
+    let allFoundFlights = []; // Będziemy przechowywać tu wszystkie znalezione loty dla danej trasy
 
-    // === Baza danych dostępnych połączeń ===
+    // === Baza danych dostępnych połączeń (na podstawie Twoich danych) ===
+    // WAŻNE: To są loty JEDNOODCINKOWE. Logika będzie je łączyć w trasy.
     const availableConnections = [
         // A220-300
         { type: 'A220-300', fromCode: 'GDN', toCode: 'WAW', departureTime: '05:00', arrivalTime: '05:55', durationMinutes: 55, priceBase: 120, flightNumber: 'LO123' },
@@ -30,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { type: 'A320 NEO', fromCode: 'KRK', toCode: 'WAW', departureTime: '23:00', arrivalTime: '23:55', durationMinutes: 55, priceBase: 100, flightNumber: 'LO790' }
     ];
 
+    // Mapa kodów IATA do pełnych nazw (dla wyświetlania)
     const airportNames = {
         'WAW': 'Warszawa - Lotnisko Chopina', 'KRK': 'Kraków - Lotnisko Balice',
         'GDN': 'Gdańsk - Lotnisko im. Lecha Wałęsy', 'WRO': 'Wrocław - Lotnisko im. Mikołaja Kopernika',
@@ -64,22 +66,23 @@ document.addEventListener('DOMContentLoaded', () => {
         'ZRH': 'Zurych - Lotnisko Zurych', 'BRU': 'Bruksela - Lotnisko Bruksela',
         'LIS': 'Lizbona - Lotnisko Lizbona', 'ATH': 'Ateny - Lotnisko Eleftherios Venizelos',
         'IST': 'Stambuł - Lotnisko Stambuł', 'DXB': 'Dubaj - Lotnisko Dubaj',
-        'BKK': 'Bangkok - Lotnisko Suvarnabhumi', 'SIN': 'Singapur - Lotnisko Changi',
-        'NRT': 'Tokio - Lotnisko Narita', 'SYD': 'Sydney - Lotnisko Kingsford Smith',
-        'ALC': 'Alicante - Lotnisko Alicante-Elche'
+        'BKK': 'Bangkok - Lotnisko Suvarnabhumi', 'SGN': 'Ho Chi Minh - Lotnisko Tan Son Nhat',
+        'SIN': 'Singapur - Lotnisko Changi', 'NRT': 'Tokio - Lotnisko Narita', 
+        'SYD': 'Sydney - Lotnisko Kingsford Smith', 'ALC': 'Alicante - Lotnisko Alicante-Elche'
     };
 
     function getAirportFullName(code) {
         return airportNames[code] || code;
     }
 
+    // Funkcja do pobierania parametrów z URL
     function getUrlParams() {
         const params = new URLSearchParams(window.location.search);
         return {
             departureCode: params.get('departure'),
             destinationCode: params.get('destination'),
-            depDate: params.get('depDate'),
-            retDate: params.get('retDate'),
+            depDate: params.get('depDate'), // Format DD.MM.RRRR
+            retDate: params.get('retDate'), // Format DD.MM.RRRR (może być null)
             adults: parseInt(params.get('adults') || '1'),
             children: parseInt(params.get('children') || '0'),
             infants: parseInt(params.get('infants') || '0'),
@@ -87,6 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
+    // Funkcja do wyświetlania parametrów wyszukiwania
     function displaySearchParams(params) {
         let passengerText = `${params.adults} dorosł${params.adults === 1 ? 'y' : 'ych'}`;
         if (params.children > 0) passengerText += `, ${params.children} dziec${params.children === 1 ? 'ko' : 'i'}`;
@@ -102,6 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
     }
 
+    // Funkcja do konwersji minut na format "Xh Ym"
     function formatDuration(minutes) {
         if (typeof minutes !== 'number' || isNaN(minutes)) {
             return 'N/A';
@@ -111,16 +116,19 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${hours}h ${remainingMinutes}m`;
     }
 
+    // Funkcja do obliczania całkowitej liczby minut od północy dla godziny w formacie HH:MM
     function timeToMinutes(timeStr) {
         if (!timeStr) return 0;
         const [hours, minutes] = timeStr.split(':').map(Number);
         return hours * 60 + minutes;
     }
 
+    // Obliczanie bazowej ceny pasażerów dla danego segmentu
     const getPassengerBasePrice = (basePricePerConnection, params) => {
         return basePricePerConnection * (params.adults + params.children * 0.7 + params.infants * 0.1);
     };
 
+    // Funkcja pomocnicza do tworzenia obiektu segmentu lotu
     function createFlightSegment(conn, type, date, params) {
         return {
             type: type,
@@ -137,46 +145,57 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // === Zaktualizowana logika wyszukiwania lotów (teraz znajduje WSZYSTKIE loty, niezależnie od konkretnej daty) ===
+    // === Zaktualizowana logika wyszukiwania lotów (teraz znajduje WSZYSTKIE loty dla trasy, niezależnie od konkretnej daty) ===
     function findFlights(params) {
         const results = [];
         const isRoundTrip = !!params.retDate;
         const currentClassMultiplier = { 'economy': 1, 'premium_economy': 1.5, 'business': 3, 'first': 5 }[params.travelClass] || 1;
-        const MIN_LAYOVER_MINUTES = 60;
-        const MAX_LAYOVER_MINUTES = 360;
+        const MIN_LAYOVER_MINUTES = 60; // Minimalny czas przesiadki (np. 1 godzina)
+        const MAX_LAYOVER_MINUTES = 360; // Maksymalny czas przesiadki (np. 6 godzin)
 
-        // Szukanie lotów bezpośrednich
+        // console.log('Rozpoczynam wyszukiwanie lotów dla:', params.departureCode, 'do', params.destinationCode);
+
+        // 1. Szukanie lotów bezpośrednich
         availableConnections.forEach(conn => {
             if (conn.fromCode === params.departureCode && conn.toCode === params.destinationCode) {
                 const finalPrice = Math.round(getPassengerBasePrice(conn.priceBase, params) * currentClassMultiplier / 5) * 5;
                 
-                const flight = {
+                // Tworzymy lot "tam"
+                const flightThere = {
                     id: `F${Math.random().toString(36).substr(2, 9)}`,
                     price: finalPrice,
                     totalDurationMinutes: conn.durationMinutes,
                     departureTimeValue: timeToMinutes(conn.departureTime),
                     stops: 0,
-                    details: [createFlightSegment(conn, 'departure', params.depDate, params)]
+                    // Ważne: initialDepDate zostanie użyta do przypisania daty z URL
+                    details: [createFlightSegment(conn, 'departure', params.depDate, params)] 
                 };
 
                 if (isRoundTrip) {
+                    // Szukamy pasującego lotu powrotnego (bezpośredniego)
                     const returnConn = availableConnections.find(
                         c => c.fromCode === params.destinationCode && c.toCode === params.departureCode &&
                              timeToMinutes(c.departureTime) > timeToMinutes(conn.arrivalTime) + MIN_LAYOVER_MINUTES
                     );
+                    
                     if (returnConn) {
-                        flight.details.push(createFlightSegment(returnConn, 'return', params.retDate, params));
-                        flight.price = Math.round((finalPrice + getPassengerBasePrice(returnConn.priceBase, params)) * 1.8 / 5) * 5;
-                        flight.totalDurationMinutes += returnConn.durationMinutes;
-                        results.push(flight);
+                        const roundTripFlight = { ...flightThere }; // Klonujemy lot tam
+                        roundTripFlight.details.push(createFlightSegment(returnConn, 'return', params.retDate, params));
+                        roundTripFlight.price = Math.round((finalPrice + getPassengerBasePrice(returnConn.priceBase, params)) * currentClassMultiplier * 1.8 / 5) * 5; // Mnożnik za RT
+                        roundTripFlight.totalDurationMinutes += returnConn.durationMinutes;
+                        results.push(roundTripFlight);
+                        // console.log('Znaleziono lot bezprzewrotny RT:', roundTripFlight);
+                    } else {
+                        // console.log('Brak pasującego lotu powrotnego bezpośredniego dla:', conn);
                     }
-                } else {
-                    results.push(flight);
+                } else { // Lot w jedną stronę
+                    results.push(flightThere);
+                    // console.log('Znaleziono lot bezprzewrotny OW:', flightThere);
                 }
             }
         });
 
-        // Szukanie lotów z jedną przesiadką
+        // 2. Szukanie lotów z jedną przesiadką
         availableConnections.forEach(firstLeg => {
             if (firstLeg.fromCode === params.departureCode) {
                 availableConnections.forEach(secondLeg => {
@@ -187,7 +206,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         const layoverStartMinutes = timeToMinutes(firstLeg.arrivalTime);
                         const layoverEndMinutes = timeToMinutes(secondLeg.departureTime);
                         let layoverDuration = layoverEndMinutes - layoverStartMinutes;
-                        if (layoverDuration < 0) layoverDuration += 24 * 60;
+                        if (layoverDuration < 0) { // Przesiadka przez północ
+                            layoverDuration += 24 * 60;
+                        }
 
                         if (layoverDuration >= MIN_LAYOVER_MINUTES && layoverDuration <= MAX_LAYOVER_MINUTES) {
                             const totalDuration = firstLeg.durationMinutes + secondLeg.durationMinutes + layoverDuration;
@@ -195,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             const basePriceSecondLeg = getPassengerBasePrice(secondLeg.priceBase, params);
                             const finalPrice = Math.round((basePriceFirstLeg + basePriceSecondLeg) * currentClassMultiplier / 5) * 5;
 
-                            const flight = {
+                            const flightThere = {
                                 id: `C${Math.random().toString(36).substr(2, 9)}`,
                                 price: finalPrice,
                                 totalDurationMinutes: totalDuration,
@@ -214,8 +235,9 @@ document.addEventListener('DOMContentLoaded', () => {
                             };
 
                             if (isRoundTrip) {
+                                // Szukamy analogicznej trasy powrotnej (z przesiadką)
                                 const returnFirstLegCandidates = availableConnections.filter(
-                                    c => c.fromCode === params.destinationCode && c.toCode === secondLeg.fromCode
+                                    c => c.fromCode === params.destinationCode && c.toCode === secondLeg.fromCode // Przesiadka w tym samym miejscu
                                 );
 
                                 for (const returnFirstLeg of returnFirstLegCandidates) {
@@ -229,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                         if (returnLayoverDuration < 0) returnLayoverDuration += 24 * 60;
 
                                         if (returnLayoverDuration >= MIN_LAYOVER_MINUTES && returnLayoverDuration <= MAX_LAYOVER_MINUTES) {
-                                            const combinedFlight = { ...flight };
+                                            const combinedFlight = { ...flightThere }; // Kopiuj obiekt lotu tam
                                             combinedFlight.details.push({
                                                 type: 'return',
                                                 fromCode: params.destinationCode,
@@ -252,12 +274,14 @@ document.addEventListener('DOMContentLoaded', () => {
                                             combinedFlight.price += Math.round((getPassengerBasePrice(returnFirstLeg.priceBase, params) + getPassengerBasePrice(returnSecondLeg.priceBase, params)) * currentClassMultiplier * 1.8 / 5) * 5;
                                             combinedFlight.totalDurationMinutes += (returnFirstLeg.durationMinutes + returnSecondLeg.durationMinutes + returnLayoverDuration);
                                             results.push(combinedFlight);
-                                            break;
+                                            // console.log('Znaleziono lot z przesiadką RT:', combinedFlight);
+                                            break; // Znaleziono pasujący lot powrotny, przejdź do kolejnego lotu w jedną stronę
                                         }
                                     }
                                 }
-                            } else {
-                                results.push(flight);
+                            } else { // Lot w jedną stronę z przesiadką
+                                results.push(flightThere);
+                                // console.log('Znaleziono lot z przesiadką OW:', flightThere);
                             }
                         }
                     }
@@ -265,16 +289,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         
+        // console.log('Wszystkie znalezione loty (surowe):', results);
         return results;
     }
+
 
     // Funkcja do renderowania kart lotów dla DANEJ DATY
     function renderFlightsForDate(flightsToRender, selectedDate) {
         flightListDiv.innerHTML = '';
         noResultsMessage.style.display = 'none';
 
+        // Filtruj loty, które mają w pierwszym segmencie datę wylotu równą selectedDate
         const filteredFlights = flightsToRender.filter(flight => {
-            // Zakładamy, że pierwszy segment w 'details' ma datę wylotu
             return flight.details[0] && flight.details[0].date === selectedDate;
         });
 
@@ -289,12 +315,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (flight.stops > 0) { 
                 flightCard.classList.add('multi-segment');
             }
+            // Sprawdzamy, czy flight.details zawiera obiekt 'return'
             if (flight.details.some(d => d.type === 'return')) {
                 flightCard.classList.add('round-trip');
             }
 
             let segmentsHtml = '';
             flight.details.forEach(segment => {
+                // Renderowanie lotu tam (departure/connecting)
                 if (segment.type === 'departure' || segment.type === 'connecting') {
                     segmentsHtml += `
                         <div class="flight-segment">
@@ -318,12 +346,12 @@ document.addEventListener('DOMContentLoaded', () => {
                             <i class="fas fa-arrows-alt-h"></i> Przesiadka w ${segment.locationName} (${segment.locationCode}) - ${segment.duration}
                         </div>
                     `;
-                } else if (segment.type === 'return') {
+                } else if (segment.type === 'return') { // Obsługa lotu powrotnego (bezpośredniego lub z przesiadkami)
                     segmentsHtml += `
                         <div class="flight-segment return-trip-section">
                             <h4>Lot powrotny: ${segment.fromName} (${segment.fromCode}) do ${segment.toName} (${segment.toCode})</h4>
                     `;
-                    if (segment.segments) {
+                    if (segment.segments) { // Jeśli lot powrotny ma segmenty (przesiadki)
                          segment.segments.forEach(subSegment => {
                             if (subSegment.type === 'layover') {
                                 segmentsHtml += `<div class="layover-info return-layover">
@@ -347,7 +375,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             }
                          });
                          segmentsHtml += `<p style="font-size:0.95em; color:#555; margin-top:10px; text-align:right;">Całkowity czas lotu powrotnego: <strong>${segment.totalDuration}</strong></p>`;
-                    } else {
+                    } else { // Jeśli lot powrotny jest bezpośredni
                         segmentsHtml += `
                             <div class="flight-details">
                                 <div class="flight-info">
@@ -363,7 +391,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <p style="font-size:0.9em; color:#777; margin-top:5px;">Data: ${segment.date}</p>
                         `;
                     }
-                    segmentsHtml += `</div>`;
+                    segmentsHtml += `</div>`; // Zamykamy return-trip-section
                 }
             });
 
@@ -386,11 +414,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${days[d.getDay()]} ${d.getDate()}, ${months[d.getMonth()]}`;
     }
 
-    function formatDateForComparison(date) {
-        const d = new Date(date);
-        const year = d.getFullYear();
-        const month = (d.getMonth() + 1).toString().padStart(2, '0');
-        const day = d.getDate().toString().padStart(2, '0');
+    // Konwersja daty z obiektu Date na format DD.MM.RRRR (dla datasetu i porównań)
+    function formatDateToDDMMYYYY(dateObj) {
+        const year = dateObj.getFullYear();
+        const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+        const day = dateObj.getDate().toString().padStart(2, '0');
         return `${day}.${month}.${year}`;
     }
 
@@ -398,7 +426,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function generateDateStrip(startDateStr, numDays = 7) {
         dateStrip.innerHTML = '';
-        const startDate = new Date(startDateStr.split('.').reverse().join('-')); // Konwertuj dd.mm.rrrr na rrrr-mm-dd
+        // Konwertuj "DD.MM.RRRR" na obiekt Date
+        const parts = startDateStr.split('.');
+        // Ważne: miesiące w JS Date są 0-indeksowane (0=styczeń, 11=grudzień)
+        const startDate = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0])); 
+        
         currentDateRangeStart = new Date(startDate); // Ustaw początek zakresu
 
         for (let i = 0; i < numDays; i++) {
@@ -412,7 +444,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span>${date.getDate()}</span>
                 <span>${months[date.getMonth()]}</span>
             `;
-            dateBtn.dataset.date = formatDateForComparison(date); // Format dd.mm.rrrr
+            dateBtn.dataset.date = formatDateToDDMMYYYY(date); // Format DD.MM.RRRR
 
             dateBtn.addEventListener('click', () => {
                 // Usuń klasę 'active' ze wszystkich przycisków
@@ -439,14 +471,14 @@ document.addEventListener('DOMContentLoaded', () => {
     prevDatesBtn.addEventListener('click', () => {
         if (currentDateRangeStart) {
             currentDateRangeStart.setDate(currentDateRangeStart.getDate() - 7); // Cofnij o 7 dni
-            generateDateStrip(formatDateForComparison(currentDateRangeStart));
+            generateDateStrip(formatDateToDDMMYYYY(currentDateRangeStart));
         }
     });
 
     nextDatesBtn.addEventListener('click', () => {
         if (currentDateRangeStart) {
             currentDateRangeStart.setDate(currentDateRangeStart.getDate() + 7); // Przesuń o 7 dni
-            generateDateStrip(formatDateForComparison(currentDateRangeStart));
+            generateDateStrip(formatDateToDDMMYYYY(currentDateRangeStart));
         }
     });
 
@@ -466,7 +498,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('.date-navigation-wrapper').style.display = 'none'; 
     } else {
         document.querySelector('.date-navigation-wrapper').style.display = 'flex'; // Upewnij się, że pasek jest widoczny
-        generateDateStrip(searchParameters.depDate || formatDateForComparison(new Date())); // Użyj daty z URL lub dzisiejszej
+        generateDateStrip(searchParameters.depDate || formatDateToDDMMYYYY(new Date())); // Użyj daty z URL lub dzisiejszej
         // Renderuj loty dla początkowej daty z parametrów
         renderFlightsForDate(allFoundFlights, searchParameters.depDate);
     }
