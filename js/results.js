@@ -241,14 +241,13 @@ document.addEventListener('DOMContentLoaded', () => {
                                 );
 
                                 for (const returnFirstLeg of returnFirstLegCandidates) {
-                                    const returnSecondLeg = availableConnections.find(
-                                        c => c.fromCode === returnFirstLeg.toCode && c.toCode === params.departureCode &&
-                                             timeToMinutes(c.departureTime) > timeToMinutes(returnFirstLeg.arrivalTime) + MIN_LAYOVER_MINUTES
-                                    );
-
+                                    const returnSecondLeg = availableConnections.filter(
+                                        c => c.fromCode === returnFirstLeg.toCode && c.toCode === params.departureCode 
+                                    ).find(c => timeToMinutes(c.departureTime) > timeToMinutes(returnFirstLeg.arrivalTime) + MIN_LAYOVER_MINUTES); // Ensure enough layover time
+                                    
                                     if (returnSecondLeg) {
                                         const returnLayoverDuration = timeToMinutes(returnSecondLeg.departureTime) - timeToMinutes(returnFirstLeg.arrivalTime);
-                                        if (returnLayoverDuration < 0) returnLayoverDuration += 24 * 60;
+                                        if (returnLayoverDuration < 0) returnLayoverDuration += 24 * 60; // Handle overnight layover
 
                                         if (returnLayoverDuration >= MIN_LAYOVER_MINUTES && returnLayoverDuration <= MAX_LAYOVER_MINUTES) {
                                             const combinedFlight = { ...flightThere }; // Kopiuj obiekt lotu tam
@@ -417,19 +416,27 @@ document.addEventListener('DOMContentLoaded', () => {
     // Konwersja daty z obiektu Date na format DD.MM.RRRR (dla datasetu i porównań)
     function formatDateToDDMMYYYY(dateObj) {
         const year = dateObj.getFullYear();
-        const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+        const month = (dateObj.getMonth() + 1).toString().padStart(2, '0'); // Ważne: miesiące są 0-indexed
         const day = dateObj.getDate().toString().padStart(2, '0');
         return `${day}.${month}.${year}`;
+    }
+
+    // Funkcja do konwersji daty z DD.MM.RRRR na obiekt Date
+    function parseDateFromDDMMYYYY(dateString) {
+        if (!dateString) return null;
+        const parts = dateString.split('.');
+        return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
     }
 
     let currentDateRangeStart = null; // Przechowuje aktualnie wyświetlaną pierwszą datę w pasku
 
     function generateDateStrip(startDateStr, numDays = 7) {
         dateStrip.innerHTML = '';
-        // Konwertuj "DD.MM.RRRR" na obiekt Date
-        const parts = startDateStr.split('.');
-        // Ważne: miesiące w JS Date są 0-indeksowane (0=styczeń, 11=grudzień)
-        const startDate = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0])); 
+        const startDate = parseDateFromDDMMYYYY(startDateStr);
+        if (!startDate) {
+            console.error("Invalid start date provided for generateDateStrip:", startDateStr);
+            return;
+        }
         
         currentDateRangeStart = new Date(startDate); // Ustaw początek zakresu
 
