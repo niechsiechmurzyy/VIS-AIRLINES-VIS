@@ -148,9 +148,7 @@
                     <th>Czas lotu</th>
                     <th>Lotnisko wylotu</th>
                     <th>Lotnisko przylotu</th>
-                   
-
-th>
+                    <th>Cena</th>
                     <th>Akcja</th>
                 </tr>
             </thead>
@@ -178,7 +176,6 @@ th>
             let depTotal = depHours * 60 + depMinutes;
             let arrTotal = arrHours * 60 + arrMinutes;
             if (isTransatlantic) {
-                // Zakładamy, że loty transatlantyckie uwzględniają różnicę czasową (Nowy Jork: -6h, Chicago: -7h, Los Angeles: -9h)
                 if (arrival.includes('Nowy Jork')) arrTotal += 6 * 60;
                 else if (arrival.includes('Chicago')) arrTotal += 7 * 60;
                 else if (arrival.includes('Los Angeles')) arrTotal += 9 * 60;
@@ -192,10 +189,8 @@ th>
 
         // Funkcja do normalizacji nazw miast
         function normalizeCity(city) {
-            if (city === 'CPK' || city === 'Centralny Port Komunikacyjny') {
-                return 'Centralny Port Komunikacyjny';
-            }
-            return city;
+            if (city === 'CPK' || city === 'Centralny Port Komunikacyjny') return 'Centralny Port Komunikacyjny';
+            return city.trim(); // Usunięcie ewentualnych spacji
         }
 
         // Pobieranie parametrów z URL
@@ -258,9 +253,12 @@ th>
             { plane: 'A350-1000', origin: 'Los Angeles', destination: 'Centralny Port Komunikacyjny', time: '08:00', arrival: '21:40', duration: calculateDuration('08:00', '21:40', true), price: '3100 PLN' }
         ];
 
-        // Filtrowanie lotów
+        // Filtrowanie lotów z debugowaniem
         let filteredFlights = [];
-        if (tripType === 'one-way') {
+        if (origin === 'Nie wybrano' || destination === 'Nie wybrano') {
+            console.log('Brak parametrów URL, wyświetlam wszystkie loty.');
+            filteredFlights = flights; // Wyświetl wszystkie loty, jeśli parametry są puste
+        } else if (tripType === 'one-way') {
             filteredFlights = flights.filter(flight => 
                 flight.origin === origin && flight.destination === destination
             );
@@ -273,6 +271,13 @@ th>
             );
             filteredFlights = [...outboundFlights, ...returnFlights];
         }
+
+        // Debugowanie
+        console.log('URL Params:', window.location.search);
+        console.log('Origin:', origin);
+        console.log('Destination:', destination);
+        console.log('Trip Type:', tripType);
+        console.log('Filtered Flights:', filteredFlights);
 
         // Wyświetlanie lotów
         const flightsList = document.getElementById('flights-list');
@@ -293,6 +298,7 @@ th>
             const row = document.createElement('tr');
             row.innerHTML = `<td colspan="6">Nie znaleziono lotów dla podanych kryteriów.</td>`;
             flightsList.appendChild(row);
+            console.log('Brak pasujących lotów.');
         }
 
         // Kalendarz powrotu
@@ -341,7 +347,6 @@ th>
                         calendar.textContent = `${day} ${months[month]} ${year}`;
                         calendar.dataset.value = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                         document.getElementById('return-modal').style.display = 'none';
-                        // Aktualizacja URL z nową datą powrotu
                         const params = new URLSearchParams(window.location.search);
                         params.set('return', calendar.dataset.value);
                         window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
