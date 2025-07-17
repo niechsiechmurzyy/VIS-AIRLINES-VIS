@@ -50,37 +50,62 @@
         .calendar-container {
             display: flex;
             align-items: center;
+            justify-content: space-between;
             margin-bottom: 15px;
             padding: 10px;
             background: #f9fbfd;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .calendar {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
         }
         .calendar button {
             background: none;
             border: none;
-            font-size: 1.3rem;
+            font-size: 1.5rem;
             cursor: pointer;
             color: #3498db;
-            margin: 0 10px;
-            transition: color 0.3s;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background 0.3s, color 0.3s;
         }
         .calendar button:hover {
-            color: #2980b9;
+            background: #3498db;
+            color: #fff;
         }
         .calendar-day {
-            padding: 8px 12px;
+            padding: 5px 10px;
+            margin: 0 2px;
             cursor: pointer;
             border: 1px solid #ecf0f1;
             border-radius: 4px;
-            margin: 0 5px;
             font-weight: 500;
             transition: all 0.3s;
+            min-width: 30px;
+            text-align: center;
+            background: #fff;
         }
         .calendar-day:hover {
             background: #3498db;
             color: #fff;
             border-color: #3498db;
+        }
+        .calendar-day.disabled {
+            color: #ccc;
+            cursor: not-allowed;
+            background: #f1f1f1;
+        }
+        .calendar-day.selected {
+            background: #2980b9;
+            color: #fff;
+            border-color: #2980b9;
         }
         .section {
             margin-bottom: 25px;
@@ -184,9 +209,9 @@
         <div class="summary" id="summary-text"></div>
         <div class="section" id="departure-section">
             <div class="calendar-container" id="departure-calendar">
-                <button id="prev-departure"><</button>
-                <span id="current-month-departure"></span>
-                <button id="next-departure">></button>
+                <button id="prev-departure">&lt;</button>
+                <div class="calendar" id="calendar-departure"></div>
+                <button id="next-departure">&gt;</button>
             </div>
             <h3>Wylot - dostępne loty</h3>
             <table id="departure-table">
@@ -207,9 +232,9 @@
         </div>
         <div class="section" id="return-section" style="display: none;">
             <div class="calendar-container" id="return-calendar">
-                <button id="prev-return"><</button>
-                <span id="current-month-return"></span>
-                <button id="next-return">></button>
+                <button id="prev-return">&lt;</button>
+                <div class="calendar" id="calendar-return"></div>
+                <button id="next-return">&gt;</button>
             </div>
             <h3>Powrót - dostępne loty</h3>
             <table id="return-table">
@@ -250,8 +275,8 @@
         const airportIata = {
             'Szczecin-Goleniów': 'SZZ',
             'Centralny Port Komunikacyjny': 'WAW',
-            'Gdańsk-Rębiechowo': 'GDN', // Dodano synonim
-            'Gdańsk-Lech Wałęsa': 'GDN', // Ujednolicono
+            'Gdańsk-Rębiechowo': 'GDN',
+            'Gdańsk-Lech Wałęsa': 'GDN',
             'Brno-Tuřany': 'BRQ',
             'Ostrawa-Leoš Janáček': 'OSR',
             'Hanower-Langenhagen': 'HAJ',
@@ -445,7 +470,7 @@
                 dayElement.textContent = current.getDate();
                 dayElement.className = 'calendar-day';
                 if (current < today) {
-                    dayElement.style.color = '#ccc';
+                    dayElement.classList.add('disabled');
                 } else {
                     dayElement.addEventListener('click', () => {
                         const newDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(current.getDate()).padStart(2, '0')}`;
@@ -468,21 +493,33 @@
             }
         }
 
-        renderCalendar(currentDateDeparture, 'departure-calendar', 'current-month-departure', 'prev-departure', 'next-departure');
+        // Ustawienie początkowego widoku kalendarza
+        const monthDeparture = document.createElement('div');
+        monthDeparture.id = 'current-month-departure';
+        monthDeparture.style.textAlign = 'center';
+        monthDeparture.style.flexGrow = '1';
+        document.getElementById('departure-calendar').insertBefore(monthDeparture, document.getElementById('calendar-departure'));
+        renderCalendar(currentDateDeparture, 'calendar-departure', 'current-month-departure', 'prev-departure', 'next-departure');
+
         if (tripType === 'round-trip' && returnDate) {
-            renderCalendar(currentDateReturn, 'return-calendar', 'current-month-return', 'prev-return', 'next-return');
+            const monthReturn = document.createElement('div');
+            monthReturn.id = 'current-month-return';
+            monthReturn.style.textAlign = 'center';
+            monthReturn.style.flexGrow = '1';
+            document.getElementById('return-calendar').insertBefore(monthReturn, document.getElementById('calendar-return'));
+            renderCalendar(currentDateReturn, 'calendar-return', 'current-month-return', 'prev-return', 'next-return');
         }
 
         document.getElementById('prev-departure').addEventListener('click', () => {
             currentDateDeparture.setDate(currentDateDeparture.getDate() - 10);
             if (currentDateDeparture < today) currentDateDeparture = new Date(today);
-            renderCalendar(currentDateDeparture, 'departure-calendar', 'current-month-departure', 'prev-departure', 'next-departure');
+            renderCalendar(currentDateDeparture, 'calendar-departure', 'current-month-departure', 'prev-departure', 'next-departure');
         });
 
         document.getElementById('next-departure').addEventListener('click', () => {
             currentDateDeparture.setDate(currentDateDeparture.getDate() + 10);
             if (currentDateDeparture > maxDate) currentDateDeparture = new Date(maxDate);
-            renderCalendar(currentDateDeparture, 'departure-calendar', 'current-month-departure', 'prev-departure', 'next-departure');
+            renderCalendar(currentDateDeparture, 'calendar-departure', 'current-month-departure', 'prev-departure', 'next-departure');
         });
 
         if (tripType === 'round-trip') {
@@ -490,13 +527,13 @@
             document.getElementById('prev-return').addEventListener('click', () => {
                 currentDateReturn.setDate(currentDateReturn.getDate() - 10);
                 if (currentDateReturn < today) currentDateReturn = new Date(today);
-                renderCalendar(currentDateReturn, 'return-calendar', 'current-month-return', 'prev-return', 'next-return');
+                renderCalendar(currentDateReturn, 'calendar-return', 'current-month-return', 'prev-return', 'next-return');
             });
 
             document.getElementById('next-return').addEventListener('click', () => {
                 currentDateReturn.setDate(currentDateReturn.getDate() + 10);
                 if (currentDateReturn > maxDate) currentDateReturn = new Date(maxDate);
-                renderCalendar(currentDateReturn, 'return-calendar', 'current-month-return', 'prev-return', 'next-return');
+                renderCalendar(currentDateReturn, 'calendar-return', 'current-month-return', 'prev-return', 'next-return');
             });
         }
     </script>
