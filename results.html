@@ -56,15 +56,17 @@
             background: #f9fbfd;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            max-width: 600px;
+            max-width: 900px;
             margin-left: auto;
             margin-right: auto;
+            width: 100%;
         }
         .calendar {
             display: flex;
             align-items: center;
-            flex-wrap: wrap;
             justify-content: center;
+            width: 80%;
+            flex-wrap: nowrap; /* Zapobiega zawijaniu do nowej linii */
         }
         .calendar button {
             background: none;
@@ -72,7 +74,7 @@
             font-size: 1.5rem;
             cursor: pointer;
             color: #3498db;
-            padding: 5px 10px;
+            padding: 5px 15px;
             border-radius: 4px;
             transition: background 0.3s, color 0.3s;
         }
@@ -182,11 +184,19 @@
             .calendar-container {
                 flex-direction: column;
                 padding: 5px;
+                max-width: 100%;
             }
             .calendar {
                 width: 100%;
-                justify-content: space-between;
-                margin-bottom: 10px;
+                justify-content: center;
+                flex-wrap: nowrap; /* Zachowanie jednej linii na mniejszych ekranach */
+                overflow-x: auto; /* Dodanie przewijania poziomego, jeśli nie mieści się */
+                -webkit-overflow-scrolling: touch; /* Płynne przewijanie na urządzeniach mobilnych */
+            }
+            .calendar-day {
+                min-width: 30px;
+                font-size: 1rem;
+                padding: 8px 12px;
             }
             table {
                 font-size: 0.9rem;
@@ -393,6 +403,9 @@
                         <td><button class="select-btn">Wybierz</button></td>
                     `;
                     departureList.appendChild(row);
+                    const classInfo = document.createElement('tr');
+                    classInfo.innerHTML = `<td colspan="7" class="airline-info">Wybrana klasa podróży</td>`;
+                    departureList.appendChild(classInfo);
                     const airlineInfo = document.createElement('tr');
                     airlineInfo.innerHTML = `<td colspan="7" class="airline-info">Obsługiwane przez VIS Airlines | Model samolotu: ${flight.plane}</td>`;
                     departureList.appendChild(airlineInfo);
@@ -423,6 +436,9 @@
                             <td><button class="select-btn">Wybierz</button></td>
                         `;
                         departureList.appendChild(row);
+                        const classInfo = document.createElement('tr');
+                        classInfo.innerHTML = `<td colspan="7" class="airline-info">Wybrana klasa podróży</td>`;
+                        departureList.appendChild(classInfo);
                         const airlineInfo = document.createElement('tr');
                         airlineInfo.innerHTML = `<td colspan="7" class="airline-info">Obsługiwane przez VIS Airlines | Model samolotu: ${flight.plane}</td>`;
                         departureList.appendChild(airlineInfo);
@@ -447,6 +463,9 @@
                             <td><button class="select-btn">Wybierz</button></td>
                         `;
                         returnList.appendChild(row);
+                        const classInfo = document.createElement('tr');
+                        classInfo.innerHTML = `<td colspan="7" class="airline-info">Wybrana klasa podróży</td>`;
+                        returnList.appendChild(classInfo);
                         const airlineInfo = document.createElement('tr');
                         airlineInfo.innerHTML = `<td colspan="7" class="airline-info">Obsługiwane przez VIS Airlines | Model samolotu: ${flight.plane}</td>`;
                         returnList.appendChild(airlineInfo);
