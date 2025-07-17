@@ -458,7 +458,7 @@
 
     <div class="main-content">
         <div class="search-container">
-            <form class="search-form" id="search-form">
+            <form class="search-form" action="results.html" method="GET">
                 <div>
                     <label for="origin">Skąd</label>
                     <div class="dropdown-select" id="origin-select" name="origin">Wybierz lotnisko</div>
@@ -471,7 +471,7 @@
                     <label>Wylot</label>
                     <div class="calendar" id="departure-calendar" name="departure">Wybierz datę</div>
                 </div>
-                <div id="return-div" style="display: none;">
+                <div id="return-div" style="display: block;">
                     <label>Powrót</label>
                     <div class="calendar" id="return-calendar" name="return">Wybierz datę (opcjonalne)</div>
                 </div>
@@ -498,45 +498,48 @@
         <div class="modal-content">
             <h3>Wybierz lotnisko - Skąd</h3>
             <ul id="origin-modal-list">
+                <li data-value="Poland"><strong>Polska</strong></li>
+                <li data-value="Warszawa-Chopina (WAW)">Warszawa - Chopin (WAW)</li>
+                <li data-value="Warszawa-Modlin (WMI)">Warszawa - Modlin (WMI)</li>
+                <li data-value="Kraków-Balice (KRK)">Kraków - Balice (KRK)</li>
+                <li data-value="Gdańsk-Rębiechowo (GDN)">Gdańsk - Lech Wałęsa (GDN)</li>
+                <li data-value="Wrocław-Strachowice (WRO)">Wrocław - Copernicus (WRO)</li>
+                <li data-value="Katowice-Pyrzowice (KTW)">Katowice - Pyrzowice (KTW)</li>
+                <li data-value="Poznań-Ławica (POZ)">Poznań - Ławica (POZ)</li>
+                <li data-value="Łódź-Lublinek (LCJ)">Łódź - Lublinek (LCJ)</li>
+                <li data-value="Rzeszów-Jasionka (RZE)">Rzeszów - Jasionka (RZE)</li>
+                <li data-value="Szczecin-Goleniów (SZZ)">Szczecin - Goleniów (SZZ)</li>
+                <li data-value="Bydgoszcz-Szwederowo (BZG)">Bydgoszcz - Szwederowo (BZG)</li>
+                <li data-value="Zielona Góra-Babimost (IEG)">Zielona Góra - Babimost (IEG)</li>
+                <li data-value="Lublin-Świdnik (LUZ)">Lublin - Świdnik (LUZ)</li>
+                <li data-value="Olsztyn-Mazury (SZY)">Olsztyn - Mazury (SZY)</li>
+                <li data-value="Radom (RDO)">Radom (RDO)</li>
                 <li data-value="Centralny Port Komunikacyjny">Centralny Port Komunikacyjny</li>
-                <li data-value="Warszawa - Chopin">Warszawa - Chopin (WAW)</li>
-                <li data-value="Warszawa - Modlin">Warszawa - Modlin (WMI)</li>
-                <li data-value="Kraków - Balice">Kraków - Balice (KRK)</li>
-                <li data-value="Gdańsk - Lech Wałęsa">Gdańsk - Lech Wałęsa (GDN)</li>
-                <li data-value="Wrocław - Copernicus">Wrocław - Copernicus (WRO)</li>
-                <li data-value="Katowice - Pyrzowice">Katowice - Pyrzowice (KTW)</li>
-                <li data-value="Poznań - Ławica">Poznań - Ławica (POZ)</li>
-                <li data-value="Łódź - Lublinek">Łódź - Lublinek (LCJ)</li>
-                <li data-value="Rzeszów - Jasionka">Rzeszów - Jasionka (RZE)</li>
-                <li data-value="Szczecin - Goleniów">Szczecin - Goleniów (SZZ)</li>
-                <li data-value="Bydgoszcz - Szwederowo">Bydgoszcz - Szwederowo (BZG)</li>
-                <li data-value="Zielona Góra - Babimost">Zielona Góra - Babimost (IEG)</li>
-                <li data-value="Lublin - Świdnik">Lublin - Świdnik (LUZ)</li>
-                <li data-value="Olsztyn - Mazury">Olsztyn - Mazury (SZY)</li>
-                <li data-value="Radom">Radom (RDO)</li>
-                <li data-value="Berlin - Tegel">Berlin - Tegel (TXL)</li>
-                <li data-value="Berlin - Schönefeld">Berlin - Schönefeld (SXF)</li>
-                <li data-value="Frankfurt nad Menem">Frankfurt nad Menem (FRA)</li>
-                <li data-value="Monachium">Monachium (MUC)</li>
-                <li data-value="Düsseldorf">Düsseldorf (DUS)</li>
-                <li data-value="Hamburg">Hamburg (HAM)</li>
-                <li data-value="Kolonia/Bonn">Kolonia/Bonn (CGN)</li>
-                <li data-value="Stuttgart">Stuttgart (STR)</li>
-                <li data-value="Hanower">Hanower (HAJ)</li>
-                <li data-value="Dortmund">Dortmund (DTM)</li>
-                <li data-value="Brema">Brema (BRE)</li>
-                <li data-value="Lipsk/Halle">Lipsk/Halle (LEJ)</li>
-                <li data-value="Norymberga">Norymberga (NUE)</li>
-                <li data-value="Paryż - Charles de Gaulle">Paryż - Charles de Gaulle (CDG)</li>
-                <li data-value="Paryż - Orly">Paryż - Orly (ORY)</li>
-                <li data-value="Nicea - Lazurowe Wybrzeże">Nicea - Lazurowe Wybrzeże (NCE)</li>
-                <li data-value="Lyon - Saint-Exupéry">Lyon - Saint-Exupéry (LYS)</li>
-                <li data-value="Marsylia - Prowansja">Marsylia - Prowansja (MRS)</li>
-                <li data-value="Tuluza - Blagnac">Tuluza - Blagnac (TLS)</li>
-                <li data-value="Bordeaux - Mérignac">Bordeaux - Mérignac (BOD)</li>
-                <li data-value="Nantes - Atlantique">Nantes - Atlantique (NTE)</li>
-                <li data-value="Strasburg - Entzheim">Strasburg - Entzheim (SXB)</li>
-                <li data-value="Lille - Lesquin">Lille - Lesquin (LIL)</li>
+                <li data-value="Germany"><strong>Niemcy</strong></li>
+                <li data-value="Berlin-Tegel (TXL)">Berlin - Tegel (TXL)</li>
+                <li data-value="Berlin-Schönefeld (SXF)">Berlin - Schönefeld (SXF)</li>
+                <li data-value="Frankfurt nad Menem (FRA)">Frankfurt nad Menem (FRA)</li>
+                <li data-value="Monachium (MUC)">Monachium (MUC)</li>
+                <li data-value="Düsseldorf (DUS)">Düsseldorf (DUS)</li>
+                <li data-value="Hamburg (HAM)">Hamburg (HAM)</li>
+                <li data-value="Kolonia/Bonn (CGN)">Kolonia/Bonn (CGN)</li>
+                <li data-value="Stuttgart (STR)">Stuttgart (STR)</li>
+                <li data-value="Hanower (HAJ)">Hanower (HAJ)</li>
+                <li data-value="Dortmund (DTM)">Dortmund (DTM)</li>
+                <li data-value="Brema (BRE)">Brema (BRE)</li>
+                <li data-value="Lipsk/Halle (LEJ)">Lipsk/Halle (LEJ)</li>
+                <li data-value="Norymberga (NUE)">Norymberga (NUE)</li>
+                <li data-value="France"><strong>Francja</strong></li>
+                <li data-value="Paryż-Charles de Gaulle (CDG)">Paryż - Charles de Gaulle (CDG)</li>
+                <li data-value="Paryż-Orly (ORY)">Paryż - Orly (ORY)</li>
+                <li data-value="Nicea-Lazurowe Wybrzeże (NCE)">Nicea - Lazurowe Wybrzeże (NCE)</li>
+                <li data-value="Lyon-Saint-Exupéry (LYS)">Lyon - Saint-Exupéry (LYS)</li>
+                <li data-value="Marsylia-Prowansja (MRS)">Marsylia - Prowansja (MRS)</li>
+                <li data-value="Tuluza-Blagnac (TLS)">Tuluza - Blagnac (TLS)</li>
+                <li data-value="Bordeaux-Mérignac (BOD)">Bordeaux - Mérignac (BOD)</li>
+                <li data-value="Nantes-Atlantique (NTE)">Nantes - Atlantique (NTE)</li>
+                <li data-value="Strasburg-Entzheim (SXB)">Strasburg - Entzheim (SXB)</li>
+                <li data-value="Lille-Lesquin (LIL)">Lille - Lesquin (LIL)</li>
             </ul>
         </div>
     </div>
@@ -545,45 +548,48 @@
         <div class="modal-content">
             <h3>Wybierz lotnisko - Dokąd</h3>
             <ul id="destination-modal-list">
+                <li data-value="Poland"><strong>Polska</strong></li>
+                <li data-value="Warszawa-Chopina (WAW)">Warszawa - Chopin (WAW)</li>
+                <li data-value="Warszawa-Modlin (WMI)">Warszawa - Modlin (WMI)</li>
+                <li data-value="Kraków-Balice (KRK)">Kraków - Balice (KRK)</li>
+                <li data-value="Gdańsk-Rębiechowo (GDN)">Gdańsk - Lech Wałęsa (GDN)</li>
+                <li data-value="Wrocław-Strachowice (WRO)">Wrocław - Copernicus (WRO)</li>
+                <li data-value="Katowice-Pyrzowice (KTW)">Katowice - Pyrzowice (KTW)</li>
+                <li data-value="Poznań-Ławica (POZ)">Poznań - Ławica (POZ)</li>
+                <li data-value="Łódź-Lublinek (LCJ)">Łódź - Lublinek (LCJ)</li>
+                <li data-value="Rzeszów-Jasionka (RZE)">Rzeszów - Jasionka (RZE)</li>
+                <li data-value="Szczecin-Goleniów (SZZ)">Szczecin - Goleniów (SZZ)</li>
+                <li data-value="Bydgoszcz-Szwederowo (BZG)">Bydgoszcz - Szwederowo (BZG)</li>
+                <li data-value="Zielona Góra-Babimost (IEG)">Zielona Góra - Babimost (IEG)</li>
+                <li data-value="Lublin-Świdnik (LUZ)">Lublin - Świdnik (LUZ)</li>
+                <li data-value="Olsztyn-Mazury (SZY)">Olsztyn - Mazury (SZY)</li>
+                <li data-value="Radom (RDO)">Radom (RDO)</li>
                 <li data-value="Centralny Port Komunikacyjny">Centralny Port Komunikacyjny</li>
-                <li data-value="Warszawa - Chopin">Warszawa - Chopin (WAW)</li>
-                <li data-value="Warszawa - Modlin">Warszawa - Modlin (WMI)</li>
-                <li data-value="Kraków - Balice">Kraków - Balice (KRK)</li>
-                <li data-value="Gdańsk - Lech Wałęsa">Gdańsk - Lech Wałęsa (GDN)</li>
-                <li data-value="Wrocław - Copernicus">Wrocław - Copernicus (WRO)</li>
-                <li data-value="Katowice - Pyrzowice">Katowice - Pyrzowice (KTW)</li>
-                <li data-value="Poznań - Ławica">Poznań - Ławica (POZ)</li>
-                <li data-value="Łódź - Lublinek">Łódź - Lublinek (LCJ)</li>
-                <li data-value="Rzeszów - Jasionka">Rzeszów - Jasionka (RZE)</li>
-                <li data-value="Szczecin - Goleniów">Szczecin - Goleniów (SZZ)</li>
-                <li data-value="Bydgoszcz - Szwederowo">Bydgoszcz - Szwederowo (BZG)</li>
-                <li data-value="Zielona Góra - Babimost">Zielona Góra - Babimost (IEG)</li>
-                <li data-value="Lublin - Świdnik">Lublin - Świdnik (LUZ)</li>
-                <li data-value="Olsztyn - Mazury">Olsztyn - Mazury (SZY)</li>
-                <li data-value="Radom">Radom (RDO)</li>
-                <li data-value="Berlin - Tegel">Berlin - Tegel (TXL)</li>
-                <li data-value="Berlin - Schönefeld">Berlin - Schönefeld (SXF)</li>
-                <li data-value="Frankfurt nad Menem">Frankfurt nad Menem (FRA)</li>
-                <li data-value="Monachium">Monachium (MUC)</li>
-                <li data-value="Düsseldorf">Düsseldorf (DUS)</li>
-                <li data-value="Hamburg">Hamburg (HAM)</li>
-                <li data-value="Kolonia/Bonn">Kolonia/Bonn (CGN)</li>
-                <li data-value="Stuttgart">Stuttgart (STR)</li>
-                <li data-value="Hanower">Hanower (HAJ)</li>
-                <li data-value="Dortmund">Dortmund (DTM)</li>
-                <li data-value="Brema">Brema (BRE)</li>
-                <li data-value="Lipsk/Halle">Lipsk/Halle (LEJ)</li>
-                <li data-value="Norymberga">Norymberga (NUE)</li>
-                <li data-value="Paryż - Charles de Gaulle">Paryż - Charles de Gaulle (CDG)</li>
-                <li data-value="Paryż - Orly">Paryż - Orly (ORY)</li>
-                <li data-value="Nicea - Lazurowe Wybrzeże">Nicea - Lazurowe Wybrzeże (NCE)</li>
-                <li data-value="Lyon - Saint-Exupéry">Lyon - Saint-Exupéry (LYS)</li>
-                <li data-value="Marsylia - Prowansja">Marsylia - Prowansja (MRS)</li>
-                <li data-value="Tuluza - Blagnac">Tuluza - Blagnac (TLS)</li>
-                <li data-value="Bordeaux - Mérignac">Bordeaux - Mérignac (BOD)</li>
-                <li data-value="Nantes - Atlantique">Nantes - Atlantique (NTE)</li>
-                <li data-value="Strasburg - Entzheim">Strasburg - Entzheim (SXB)</li>
-                <li data-value="Lille - Lesquin">Lille - Lesquin (LIL)</li>
+                <li data-value="Germany"><strong>Niemcy</strong></li>
+                <li data-value="Berlin-Tegel (TXL)">Berlin - Tegel (TXL)</li>
+                <li data-value="Berlin-Schönefeld (SXF)">Berlin - Schönefeld (SXF)</li>
+                <li data-value="Frankfurt nad Menem (FRA)">Frankfurt nad Menem (FRA)</li>
+                <li data-value="Monachium (MUC)">Monachium (MUC)</li>
+                <li data-value="Düsseldorf (DUS)">Düsseldorf (DUS)</li>
+                <li data-value="Hamburg (HAM)">Hamburg (HAM)</li>
+                <li data-value="Kolonia/Bonn (CGN)">Kolonia/Bonn (CGN)</li>
+                <li data-value="Stuttgart (STR)">Stuttgart (STR)</li>
+                <li data-value="Hanower (HAJ)">Hanower (HAJ)</li>
+                <li data-value="Dortmund (DTM)">Dortmund (DTM)</li>
+                <li data-value="Brema (BRE)">Brema (BRE)</li>
+                <li data-value="Lipsk/Halle (LEJ)">Lipsk/Halle (LEJ)</li>
+                <li data-value="Norymberga (NUE)">Norymberga (NUE)</li>
+                <li data-value="France"><strong>Francja</strong></li>
+                <li data-value="Paryż-Charles de Gaulle (CDG)">Paryż - Charles de Gaulle (CDG)</li>
+                <li data-value="Paryż-Orly (ORY)">Paryż - Orly (ORY)</li>
+                <li data-value="Nicea-Lazurowe Wybrzeże (NCE)">Nicea - Lazurowe Wybrzeże (NCE)</li>
+                <li data-value="Lyon-Saint-Exupéry (LYS)">Lyon - Saint-Exupéry (LYS)</li>
+                <li data-value="Marsylia-Prowansja (MRS)">Marsylia - Prowansja (MRS)</li>
+                <li data-value="Tuluza-Blagnac (TLS)">Tuluza - Blagnac (TLS)</li>
+                <li data-value="Bordeaux-Mérignac (BOD)">Bordeaux - Mérignac (BOD)</li>
+                <li data-value="Nantes-Atlantique (NTE)">Nantes - Atlantique (NTE)</li>
+                <li data-value="Strasburg-Entzheim (SXB)">Strasburg - Entzheim (SXB)</li>
+                <li data-value="Lille-Lesquin (LIL)">Lille - Lesquin (LIL)</li>
             </ul>
         </div>
     </div>
@@ -826,30 +832,28 @@
         });
 
         // Obsługa przesyłania formularza
-        document.getElementById('search-form').addEventListener('submit', (e) => {
+        document.querySelector('.search-form').addEventListener('submit', (e) => {
             e.preventDefault();
-            const origin = document.getElementById('origin-select').dataset.value || 'Nie wybrano';
-            const destination = document.getElementById('destination-select').dataset.value || 'Nie wybrano';
-            const departure = document.getElementById('departure-calendar').dataset.value || 'Nie wybrano';
-            const returnDate = document.getElementById('return-calendar').dataset.value || '';
-            const passengers = document.getElementById('passengers-class').textContent || '1 Pasażer, Ekonomiczna';
-            const tripType = document.querySelector('input[name="trip-type"]:checked').value || 'one-way';
+            const form = e.target;
+            const origin = document.getElementById('origin-select').dataset.value;
+            const destination = document.getElementById('destination-select').dataset.value;
+            const departure = document.getElementById('departure-calendar').dataset.value;
+            const returnDate = document.getElementById('return-calendar').dataset.value;
+            const passengers = document.getElementById('passengers-class').textContent;
+            const tripType = document.querySelector('input[name="trip-type"]:checked').value;
 
-            if (origin === 'Wybierz lotnisko' || destination === 'Wybierz lotnisko' || departure === 'Wybierz datę') {
-                alert('Proszę wybrać wszystkie wymagane pola (Skąd, Dokąd, Wylot).');
-                return;
-            }
-
-            console.log('Form Data:', { origin, destination, departure, returnDate, passengers, tripType });
+            // Utwórz URL z parametrami
             const params = new URLSearchParams({
-                origin: encodeURIComponent(origin),
-                destination: encodeURIComponent(destination),
-                departure: departure,
-                return: tripType === 'round-trip' ? returnDate : '',
-                passengers: encodeURIComponent(passengers),
+                origin: origin || 'Nie wybrano',
+                destination: destination || 'Nie wybrano',
+                departure: departure || 'Nie wybrano',
+                return: tripType === 'round-trip' ? returnDate || 'Nie wybrano' : '',
+                passengers: passengers,
                 'trip-type': tripType
             });
-            window.location.href = `rezultat.html?${params.toString()}`;
+
+            // Przekieruj do results.html z parametrami
+            window.location.href = `results.html?${params.toString()}`;
         });
     </script>
 </body>
