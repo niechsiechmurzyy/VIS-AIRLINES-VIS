@@ -1,1 +1,565 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIS - Dostępne loty</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Helvetica', sans-serif;
+        }
 
+        body {
+            line-height: 1.6;
+            color: #1a2b3c;
+            background: #e6eef7;
+        }
+
+        header {
+            background: #ffffff;
+            padding: 1.5rem 3rem;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1e4a8a;
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        nav a {
+            color: #1a2b3c;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #ff6f61;
+        }
+
+        .dropdown {
+            position: relative;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            min-width: 200px;
+            z-index: 1001;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-content div {
+            padding: 0.5rem 1rem;
+            color: #1a2b3c;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .dropdown-content div:hover {
+            background: #f0f6fa;
+        }
+
+        .main-content {
+            padding-top: 120px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: calc(100vh - 120px);
+            background: #e6eef7;
+            padding: 2rem 1rem;
+        }
+
+        .results-container {
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .results-container h2 {
+            font-size: 1.8rem;
+            color: #1e4a8a;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-summary {
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            color: #1a2b3c;
+        }
+
+        .flights-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+        }
+
+        .flights-table th, .flights-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .flights-table th {
+            background: #f0f6fa;
+            font-weight: 600;
+            color: #1a2b3c;
+        }
+
+        .flights-table td {
+            color: #1a2b3c;
+        }
+
+        .flights-table tr:hover {
+            background: #f9f9f9;
+        }
+
+        .select-btn {
+            background: #ff6f61;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .select-btn:hover {
+            background: #e65b50;
+        }
+
+        .back-btn {
+            background: #1e4a8a;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: #163a6a;
+        }
+
+        .calendar-container {
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            padding: 0.5rem 0;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .calendar-header button {
+            background: none;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            color: #1e4a8a;
+            padding: 0 0.5rem;
+        }
+
+        .calendar-grid {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .calendar-day {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            background: #fff;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .calendar-day:hover, .calendar-day.selected {
+            background: #ff6f61;
+            color: white;
+        }
+
+        .calendar-day.disabled {
+            color: #ccc;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .logo {
+                font-size: 2rem;
+            }
+
+            nav {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .results-container {
+                padding: 1.5rem;
+                width: 90%;
+            }
+
+            .flights-table th, .flights-table td {
+                padding: 0.8rem;
+                font-size: 0.9rem;
+            }
+
+            .select-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .back-btn {
+                padding: 0.6rem 1.2rem;
+                font-size: 1rem;
+            }
+
+            .calendar-grid {
+                flex-wrap: nowrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html">Zarezerwuj lot</a>
+            <a href="#checkin">Odpraw się</a>
+            <a href="#manage">Zarządzaj rezerwacją</a>
+        </nav>
+        <div class="logo">VIS</div>
+        <nav>
+            <div class="dropdown">
+                <span>Waluta</span>
+                <div class="dropdown-content">
+                    <div>🇵🇱 PLN - Polska</div>
+                    <div>🇺🇸 USD - USA</div>
+                    <div>🇪🇺 EUR - Euro</div>
+                </div>
+            </div>
+            <div class="dropdown">
+                <span>Język</span>
+                <div class="dropdown-content">
+                    <div>🇵🇱 PL - Polski</div>
+                    <div>🇬🇧 EN - English</div>
+                    <div>🇩🇪 DE - Deutsch</div>
+                </div>
+            </div>
+            <div class="dropdown">
+                <span class="account-icon">👤</span>
+                <div class="dropdown-content">
+                    <a href="#login">Zaloguj się</a>
+                    <a href="#register">Zarejestruj się</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="main-content">
+        <div class="results-container">
+            <h2>Dostępne loty</h2>
+            <div class="search-summary">
+                <p id="summary-text">Wyszukiwanie: <span id="origin"></span> → <span id="destination"></span>, <span id="departure"></span><span id="return"></span>, <span id="passengers"></span></p>
+            </div>
+
+            <!-- Sekcja lotów wylotowych -->
+            <h3>Loty wylotowe</h3>
+            <div class="calendar-container" id="departure-calendar-container">
+                <div class="calendar-header">
+                    <button id="prev-month-departure"><</button>
+                    <span id="current-month-departure"></span>
+                    <button id="next-month-departure">></button>
+                </div>
+                <div class="calendar-grid" id="departure-calendar-grid"></div>
+            </div>
+            <table class="flights-table" id="departure-flights-table">
+                <thead>
+                    <tr>
+                        <th>Godzina</th>
+                        <th>Czas lotu</th>
+                        <th>Lotnisko wylotu</th>
+                        <th>Lotnisko przylotu</th>
+                        <th>Cena</th>
+                        <th>Akcja</th>
+                    </tr>
+                </thead>
+                <tbody id="departure-flights-list"></tbody>
+            </table>
+
+            <!-- Sekcja lotów powrotnych (ukryta dla lotu w jedną stronę) -->
+            <div id="return-section" style="display: none;">
+                <h3>Loty powrotne</h3>
+                <div class="calendar-container" id="return-calendar-container">
+                    <div class="calendar-header">
+                        <button id="prev-month-return"><</button>
+                        <span id="current-month-return"></span>
+                        <button id="next-month-return">></button>
+                    </div>
+                    <div class="calendar-grid" id="return-calendar-grid"></div>
+                </div>
+                <table class="flights-table" id="return-flights-table">
+                    <thead>
+                        <tr>
+                            <th>Godzina</th>
+                            <th>Czas lotu</th>
+                            <th>Lotnisko wylotu</th>
+                            <th>Lotnisko przylotu</th>
+                            <th>Cena</th>
+                            <th>Akcja</th>
+                        </tr>
+                    </thead>
+                    <tbody id="return-flights-list"></tbody>
+                </table>
+            </div>
+
+            <a href="index.html" class="back-btn">Powrót do wyszukiwania</a>
+        </div>
+    </div>
+
+    <script>
+        // Pobieranie parametrów z URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const origin = urlParams.get('origin') || 'Nie wybrano';
+        const destination = urlParams.get('destination') || 'Nie wybrano';
+        const departure = urlParams.get('departure') || 'Nie wybrano';
+        const returnDate = urlParams.get('return') || '';
+        const passengers = urlParams.get('passengers') || '1 Pasażer, Ekonomiczna';
+        const tripType = urlParams.get('trip-type') || 'one-way';
+
+        // Wyświetlanie podsumowania wyszukiwania
+        document.getElementById('origin').textContent = origin;
+        document.getElementById('destination').textContent = destination;
+        document.getElementById('departure').textContent = departure;
+        document.getElementById('return').textContent = tripType === 'round-trip' ? `, Powrót: ${returnDate}` : '';
+        document.getElementById('passengers').textContent = passengers;
+
+        // Sterowanie widocznością sekcji powrotnej
+        const returnSection = document.getElementById('return-section');
+        if (tripType === 'round-trip') {
+            returnSection.style.display = 'block';
+        } else {
+            returnSection.style.display = 'none';
+        }
+
+        // Dane lotów (na podstawie Twoich danych, dostępne codziennie)
+        const flights = [
+            { plane: 'A220-100', origin: 'Szczecin', destination: 'CPK', time: '05:00', arrival: '06:00', duration: '1h 00m', price: '150 PLN' },
+            { plane: 'A220-100', origin: 'CPK', destination: 'Brno', time: '06:45', arrival: '07:55', duration: '1h 10m', price: '180 PLN' },
+            { plane: 'A220-100', origin: 'Brno', destination: 'CPK', time: '08:40', arrival: '09:50', duration: '1h 10m', price: '180 PLN' },
+            { plane: 'A220-100', origin: 'CPK', destination: 'Ostrawa', time: '10:35', arrival: '11:30', duration: '0h 55m', price: '160 PLN' },
+            { plane: 'A220-100', origin: 'Ostrawa', destination: 'CPK', time: '12:15', arrival: '13:10', duration: '0h 55m', price: '160 PLN' },
+            { plane: 'A220-100', origin: 'CPK', destination: 'Hannover', time: '13:55', arrival: '15:35', duration: '1h 40m', price: '200 PLN' },
+            { plane: 'A220-100', origin: 'Hannover', destination: 'CPK', time: '16:20', arrival: '18:00', duration: '1h 40m', price: '200 PLN' },
+            { plane: 'A220-100', origin: 'CPK', destination: 'Berlin', time: '18:45', arrival: '19:55', duration: '1h 10m', price: '180 PLN' },
+            { plane: 'A220-100', origin: 'Berlin', destination: 'CPK', time: '20:40', arrival: '21:50', duration: '1h 10m', price: '180 PLN' },
+            { plane: 'A220-100', origin: 'CPK', destination: 'Szczecin', time: '22:20', arrival: '23:20', duration: '1h 00m', price: '150 PLN' },
+            { plane: 'A330-800 NEO', origin: 'CPK', destination: 'Nowy Jork', time: '23:00', arrival: '08:30', duration: '9h 30m', price: '1200 PLN' },
+            { plane: 'A330-800 NEO', origin: 'Nowy Jork', destination: 'CPK', time: '11:00', arrival: '20:30', duration: '9h 30m', price: '1200 PLN' },
+            { plane: 'A330-800 NEO', origin: 'CPK', destination: 'Nowy Jork', time: '14:00', arrival: '23:30', duration: '9h 30m', price: '1200 PLN' },
+            { plane: 'A330-800 NEO', origin: 'Nowy Jork', destination: 'CPK', time: '02:00', arrival: '11:30', duration: '9h 30m', price: '1200 PLN' },
+            { plane: 'A330-800 NEO', origin: 'CPK', destination: 'Nowy Jork', time: '18:30', arrival: '04:00', duration: '9h 30m', price: '1200 PLN' },
+            { plane: 'A330-800 NEO', origin: 'Nowy Jork', destination: 'CPK', time: '06:30', arrival: '16:00', duration: '9h 30m', price: '1200 PLN' },
+            { plane: 'A350-900', origin: 'CPK', destination: 'Chicago', time: '12:00', arrival: '22:00', duration: '10h 00m', price: '1300 PLN' },
+            { plane: 'A350-900', origin: 'Chicago', destination: 'CPK', time: '00:00', arrival: '10:00', duration: '10h 00m', price: '1300 PLN' },
+            { plane: 'A320 NEO', origin: 'Kraków', destination: 'CPK', time: '06:00', arrival: '07:00', duration: '1h 00m', price: '150 PLN' },
+            { plane: 'A320 NEO', origin: 'CPK', destination: 'Frankfurt', time: '07:45', arrival: '09:25', duration: '1h 40m', price: '200 PLN' },
+            { plane: 'A320 NEO', origin: 'Frankfurt', destination: 'CPK', time: '10:10', arrival: '11:50', duration: '1h 40m', price: '200 PLN' },
+            { plane: 'A320 NEO', origin: 'CPK', destination: 'Paryż', time: '12:35', arrival: '15:05', duration: '2h 30m', price: '250 PLN' },
+            { plane: 'A320 NEO', origin: 'Paryż', destination: 'CPK', time: '15:50', arrival: '18:20', duration: '2h 30m', price: '250 PLN' },
+            { plane: 'A320 NEO', origin: 'CPK', destination: 'Munich', time: '19:05', arrival: '20:35', duration: '1h 30m', price: '220 PLN' },
+            { plane: 'A320 NEO', origin: 'Munich', destination: 'CPK', time: '21:20', arrival: '22:50', duration: '1h 30m', price: '220 PLN' },
+            { plane: 'A320 NEO', origin: 'CPK', destination: 'Kraków', time: '23:20', arrival: '00:20', duration: '1h 00m', price: '150 PLN' },
+            { plane: 'A220-300', origin: 'Gdańsk', destination: 'CPK', time: '04:30', arrival: '05:25', duration: '0h 55m', price: '160 PLN' },
+            { plane: 'A220-300', origin: 'CPK', destination: 'Munich', time: '06:10', arrival: '07:40', duration: '1h 30m', price: '220 PLN' },
+            { plane: 'A220-300', origin: 'Munich', destination: 'CPK', time: '08:25', arrival: '09:55', duration: '1h 30m', price: '220 PLN' },
+            { plane: 'A220-300', origin: 'CPK', destination: 'Gdańsk', time: '10:40', arrival: '11:35', duration: '0h 55m', price: '160 PLN' },
+            { plane: 'A220-300', origin: 'Gdańsk', destination: 'CPK', time: '12:20', arrival: '13:15', duration: '0h 55m', price: '160 PLN' },
+            { plane: 'A220-300', origin: 'CPK', destination: 'Szczecin', time: '14:00', arrival: '15:00', duration: '1h 00m', price: '150 PLN' },
+            { plane: 'A220-300', origin: 'Szczecin', destination: 'CPK', time: '15:45', arrival: '16:45', duration: '1h 00m', price: '150 PLN' },
+            { plane: 'A220-300', origin: 'CPK', destination: 'Frankfurt', time: '17:30', arrival: '19:00', duration: '1h 30m', price: '220 PLN' },
+            { plane: 'A220-300', origin: 'Frankfurt', destination: 'CPK', time: '19:45', arrival: '21:15', duration: '1h 30m', price: '220 PLN' },
+            { plane: 'A220-300', origin: 'CPK', destination: 'Gdańsk', time: '21:00', arrival: '22:00', duration: '1h 00m', price: '160 PLN' },
+            { plane: 'A320 NEO', origin: 'Manchester', destination: 'CPK', time: '06:00', arrival: '08:45', duration: '2h 45m', price: '300 PLN' },
+            { plane: 'A320 NEO', origin: 'CPK', destination: 'Londyn', time: '09:30', arrival: '12:10', duration: '2h 40m', price: '280 PLN' },
+            { plane: 'A320 NEO', origin: 'Londyn', destination: 'CPK', time: '12:55', arrival: '15:35', duration: '2h 40m', price: '280 PLN' },
+            { plane: 'A320 NEO', origin: 'CPK', destination: 'Rzym', time: '16:20', arrival: '18:50', duration: '2h 30m', price: '250 PLN' },
+            { plane: 'A320 NEO', origin: 'Rzym', destination: 'CPK', time: '19:35', arrival: '22:05', duration: '2h 30m', price: '250 PLN' },
+            { plane: 'A320 NEO', origin: 'CPK', destination: 'Manchester', time: '22:50', arrival: '01:20', duration: '2h 30m', price: '300 PLN' }
+        ];
+
+        // Filtrowanie lotów wylotowych
+        const departureFlights = flights.filter(flight => flight.origin === origin && flight.destination === destination);
+
+        // Filtrowanie lotów powrotnych
+        const returnFlights = flights.filter(flight => flight.origin === destination && flight.destination === origin);
+
+        // Wypełnianie tabeli lotów wylotowych
+        const departureFlightsList = document.getElementById('departure-flights-list');
+        departureFlights.forEach(flight => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${flight.time}</td>
+                <td>${flight.duration}</td>
+                <td>${flight.origin}</td>
+                <td>${flight.destination}</td>
+                <td>${flight.price}</td>
+                <td><button class="select-btn">Wybierz</button></td>
+            `;
+            departureFlightsList.appendChild(row);
+        });
+
+        // Wypełnianie tabeli lotów powrotnych (jeśli round-trip)
+        const returnFlightsList = document.getElementById('return-flights-list');
+        if (tripType === 'round-trip' && returnFlights.length > 0) {
+            returnFlights.forEach(flight => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${flight.time}</td>
+                    <td>${flight.duration}</td>
+                    <td>${flight.origin}</td>
+                    <td>${flight.destination}</td>
+                    <td>${flight.price}</td>
+                    <td><button class="select-btn">Wybierz</button></td>
+                `;
+                returnFlightsList.appendChild(row);
+            });
+        }
+
+        // Kalendarz wylotowy
+        let currentDateDeparture = new Date(departure ? departure : new Date());
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const maxDate = new Date(today);
+        maxDate.setFullYear(maxDate.getFullYear() + 1); // Do 17 lipca 2026
+        const months = ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'];
+
+        function renderCalendar(date, gridId, monthId, prevId, nextId) {
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            document.getElementById(monthId).textContent = `${months[month]} ${year}`;
+            const grid = document.getElementById(gridId);
+            grid.innerHTML = '';
+
+            for (let day = 1; day <= lastDay.getDate(); day++) {
+                const dayElement = document.createElement('div');
+                dayElement.textContent = day;
+                const current = new Date(year, month, day);
+                dayElement.className = 'calendar-day';
+                if (current < today) {
+                    dayElement.classList.add('disabled');
+                } else if (current > maxDate) {
+                    dayElement.classList.add('disabled');
+                } else {
+                    dayElement.addEventListener('click', () => {
+                        const selectedDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                        if (gridId === 'departure-calendar-grid') {
+                            currentDateDeparture = current;
+                            renderCalendar(currentDateDeparture, 'departure-calendar-grid', 'current-month-departure', 'prev-month-departure', 'next-month-departure');
+                        } else {
+                            currentDateReturn = current;
+                            renderCalendar(currentDateReturn, 'return-calendar-grid', 'current-month-return', 'prev-month-return', 'next-month-return');
+                        }
+                        dayElement.classList.add('selected');
+                        document.querySelectorAll(`#${gridId} .calendar-day`).forEach(d => {
+                            if (d !== dayElement) d.classList.remove('selected');
+                        });
+                    });
+                }
+                grid.appendChild(dayElement);
+            }
+        }
+
+        document.getElementById('prev-month-departure').addEventListener('click', () => {
+            currentDateDeparture.setMonth(currentDateDeparture.getMonth() - 1);
+            if (currentDateDeparture < today) currentDateDeparture = new Date(today);
+            renderCalendar(currentDateDeparture, 'departure-calendar-grid', 'current-month-departure', 'prev-month-departure', 'next-month-departure');
+        });
+
+        document.getElementById('next-month-departure').addEventListener('click', () => {
+            currentDateDeparture.setMonth(currentDateDeparture.getMonth() + 1);
+            if (currentDateDeparture > maxDate) currentDateDeparture = new Date(maxDate);
+            renderCalendar(currentDateDeparture, 'departure-calendar-grid', 'current-month-departure', 'prev-month-departure', 'next-month-departure');
+        });
+
+        // Kalendarz powrotny
+        let currentDateReturn = new Date(returnDate ? returnDate : new Date());
+        if (tripType === 'one-way') currentDateReturn = new Date(maxDate);
+
+        document.getElementById('prev-month-return').addEventListener('click', () => {
+            currentDateReturn.setMonth(currentDateReturn.getMonth() - 1);
+            if (currentDateReturn < today) currentDateReturn = new Date(today);
+            renderCalendar(currentDateReturn, 'return-calendar-grid', 'current-month-return', 'prev-month-return', 'next-month-return');
+        });
+
+        document.getElementById('next-month-return').addEventListener('click', () => {
+            currentDateReturn.setMonth(currentDateReturn.getMonth() + 1);
+            if (currentDateReturn > maxDate) currentDateReturn = new Date(maxDate);
+            renderCalendar(currentDateReturn, 'return-calendar-grid', 'current-month-return', 'prev-month-return', 'next-month-return');
+        });
+
+        // Inicjalizacja kalendarzy
+        renderCalendar(currentDateDeparture, 'departure-calendar-grid', 'current-month-departure', 'prev-month-departure', 'next-month-departure');
+        if (tripType === 'round-trip') {
+            renderCalendar(currentDateReturn, 'return-calendar-grid', 'current-month-return', 'prev-month-return', 'next-month-return');
+        }
+
+        // Obsługa przycisku wyboru lotu
+        document.querySelectorAll('.select-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                alert('Wybrano lot! Przejdź do rezerwacji.');
+                // Tutaj można dodać przekierowanie do strony rezerwacji
+            });
+        });
+    </script>
+</body>
+</html>
