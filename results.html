@@ -436,30 +436,17 @@
         ];
 
         // Filtrowanie lotów wylotowych
-        const departureFlights = flights.filter(flight => flight.origin === origin && flight.destination === destination);
-
-        // Filtrowanie lotów powrotnych
-        const returnFlights = flights.filter(flight => flight.origin === destination && flight.destination === origin);
-
-        // Wypełnianie tabeli lotów wylotowych
+        const departureFlights = flights.filter(flight => 
+            flight.origin === origin && flight.destination === destination
+        );
         const departureFlightsList = document.getElementById('departure-flights-list');
-        departureFlights.forEach(flight => {
+        if (departureFlights.length === 0) {
             const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${flight.time}</td>
-                <td>${flight.duration}</td>
-                <td>${flight.origin}</td>
-                <td>${flight.destination}</td>
-                <td>${flight.price}</td>
-                <td><button class="select-btn">Wybierz</button></td>
-            `;
+            row.innerHTML = `<td colspan="6" style="text-align: center; color: #ff6f61;">Brak dostępnych lotów dla wybranej trasy. Sprawdź inne połączenia lub skontaktuj się z nami.</td>`;
             departureFlightsList.appendChild(row);
-        });
-
-        // Wypełnianie tabeli lotów powrotnych (jeśli round-trip)
-        const returnFlightsList = document.getElementById('return-flights-list');
-        if (tripType === 'round-trip' && returnFlights.length > 0) {
-            returnFlights.forEach(flight => {
+            console.log(`Brak lotów dla: ${origin} → ${destination}`);
+        } else {
+            departureFlights.forEach(flight => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${flight.time}</td>
@@ -469,8 +456,37 @@
                     <td>${flight.price}</td>
                     <td><button class="select-btn">Wybierz</button></td>
                 `;
-                returnFlightsList.appendChild(row);
+                departureFlightsList.appendChild(row);
             });
+            console.log(`Znaleziono loty dla: ${origin} → ${destination}`, departureFlights);
+        }
+
+        // Filtrowanie lotów powrotnych
+        const returnFlightsList = document.getElementById('return-flights-list');
+        if (tripType === 'round-trip') {
+            const returnFlights = flights.filter(flight => 
+                flight.origin === destination && flight.destination === origin
+            );
+            if (returnFlights.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="6" style="text-align: center; color: #ff6f61;">Brak dostępnych lotów powrotnych dla wybranej trasy. Sprawdź inne połączenia lub skontaktuj się z nami.</td>`;
+                returnFlightsList.appendChild(row);
+                console.log(`Brak lotów powrotnych dla: ${destination} → ${origin}`);
+            } else {
+                returnFlights.forEach(flight => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${flight.time}</td>
+                        <td>${flight.duration}</td>
+                        <td>${flight.origin}</td>
+                        <td>${flight.destination}</td>
+                        <td>${flight.price}</td>
+                        <td><button class="select-btn">Wybierz</button></td>
+                    `;
+                    returnFlightsList.appendChild(row);
+                });
+                console.log(`Znaleziono loty powrotne dla: ${destination} → ${origin}`, returnFlights);
+            }
         }
 
         // Kalendarz wylotowy
