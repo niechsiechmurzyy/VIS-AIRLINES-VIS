@@ -423,22 +423,6 @@
             { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Katowice-Pyrzowice', time: '21:30', arrival: '22:30', duration: '1h 00m', prices: { Ekonomi: '179 PLN', Biznes: '379 PLN' } }
         ];
 
-        // Filtrowanie lotów
-        let filteredFlights = [];
-        if (tripType === 'one-way') {
-            filteredFlights = flights.filter(flight => 
-                cleanAirportName(flight.origin) === cleanAirportName(origin) && cleanAirportName(flight.destination) === cleanAirportName(destination)
-            );
-        } else if (tripType === 'round-trip') {
-            const outboundFlights = flights.filter(flight => 
-                cleanAirportName(flight.origin) === cleanAirportName(origin) && cleanAirportName(flight.destination) === cleanAirportName(destination)
-            );
-            const returnFlights = flights.filter(flight => 
-                cleanAirportName(flight.origin) === cleanAirportName(destination) && cleanAirportName(flight.destination) === cleanAirportName(origin)
-            );
-            filteredFlights = [...outboundFlights, ...returnFlights];
-        }
-
         // Funkcja określająca wybraną klasę i cenę
         function getClassAndPrice(flight) {
             if (selectedClass && flight.prices[selectedClass]) {
@@ -446,6 +430,23 @@
             } else {
                 return 'Klasa nie dostępna';
             }
+        }
+
+        // Funkcja generująca lot z przesiadką dla dowolnej trasy
+        function generateLayoverFlight(origin, destination, departureDate) {
+            const departureTime = new Date(departureDate);
+            const layoverStart = new Date(departureTime.getTime() + 1 * 60 * 60 * 1000); // 1h lot do CPK
+            const layoverDuration = Math.floor(Math.random() * 10) * 60 * 60 * 1000; // Losowy czas przesiadki do 10h
+            const layoverEnd = new Date(layoverStart.getTime() + layoverDuration);
+            const arrivalTime = new Date(layoverEnd.getTime() + 2.5 * 60 * 60 * 1000); // Przykładowy czas lotu do celu (2.5h)
+
+            return {
+                segments: [
+                    { plane: 'A220-100', origin: origin, destination: 'Centralny Port Komunikacyjny', time: departureTime.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }), arrival: layoverStart.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }), duration: '1h 00m', prices: { Ekonomi: '199 PLN', Biznes: '399 PLN' } },
+                    { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: destination, time: layoverEnd.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }), arrival: arrivalTime.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }), duration: '2h 30m', prices: { Ekonomi: '289 PLN', Biznes: '489 PLN' } }
+                ],
+                layoverDuration: `${Math.floor(layoverDuration / (60 * 60 * 1000))}h ${Math.floor((layoverDuration % (60 * 60 * 1000)) / (60 * 1000))}min`
+            };
         }
 
         // Wyświetlanie lotów
@@ -457,27 +458,69 @@
         const departureAirline = document.getElementById('departure-airline');
         const returnAirline = document.getElementById('return-airline');
 
-        if (filteredFlights.length > 0) {
+        if (departure !== 'Nie wybrano') {
+            const departureDate = new Date(departure);
+
             if (tripType === 'one-way') {
-                filteredFlights.forEach(flight => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${flight.time}</td>
-                        <td>${flight.arrival}</td>
-                        <td>${flight.duration}</td>
-                        <td>${flight.origin} (${airportIata[flight.origin] || ''})</td>
-                        <td>${flight.destination} (${airportIata[flight.destination] || ''})</td>
-                        <td>${getClassAndPrice(flight)}</td>
-                        <td><button class="select-btn">Wybierz</button></td>
-                    `;
-                    departureList.appendChild(row);
-                    const classInfo = document.createElement('tr');
-                    classInfo.innerHTML = `<td colspan="7" class="airline-info">Wybrana klasa podróży</td>`;
-                    departureList.appendChild(classInfo);
-                    const airlineInfo = document.createElement('tr');
-                    airlineInfo.innerHTML = `<td colspan="7" class="airline-info">Obsługiwane przez VIS Airlines | Model samolotu: ${flight.plane}</td>`;
-                    departureList.appendChild(airlineInfo);
-                });
+                let filteredFlights = flights.filter(flight => 
+                    cleanAirportName(flight.origin) === cleanAirportName(origin) && cleanAirportName(flight.destination) === cleanAirportName(destination)
+                );
+                if (filteredFlights.length === 0 || Math.random() < 0.5) { // 50% szans na wyświetlenie przesiadki, jeśli brak bezpośrednich lotów
+                    const layoverFlight = generateLayoverFlight(origin, destination, departureDate);
+                    if (layoverFlight) {
+                        const row1 = document.createElement('tr');
+                        row1.innerHTML = `
+                            <td>${layoverFlight.segments[0].time}</td>
+                            <td>${layoverFlight.segments[0].arrival}</td>
+                            <td>${layoverFlight.segments[0].duration}</td>
+                            <td>${layoverFlight.segments[0].origin} (${airportIata[layoverFlight.segments[0].origin] || ''})</td>
+                            <td>${layoverFlight.segments[0].destination} (${airportIata[layoverFlight.segments[0].destination] || ''})</td>
+                            <td>${getClassAndPrice(layoverFlight.segments[0])}</td>
+                            <td></td>
+                        `;
+                        departureList.appendChild(row1);
+
+                        const row2 = document.createElement('tr');
+                        row2.innerHTML = `
+                            <td>${layoverFlight.segments[1].time}</td>
+                            <td>${layoverFlight.segments[1].arrival}</td>
+                            <td>${layoverFlight.segments[1].duration}</td>
+                            <td>${layoverFlight.segments[1].origin} (${airportIata[layoverFlight.segments[1].origin] || ''})</td>
+                            <td>${layoverFlight.segments[1].destination} (${airportIata[layoverFlight.segments[1].destination] || ''})</td>
+                            <td>${getClassAndPrice(layoverFlight.segments[1])}</td>
+                            <td><button class="select-btn">Wybierz</button></td>
+                        `;
+                        departureList.appendChild(row2);
+
+                        const layoverInfo = document.createElement('tr');
+                        layoverInfo.innerHTML = `<td colspan="7" class="airline-info">Przesiadka w ${layoverFlight.segments[0].destination}: ${layoverFlight.layoverDuration}</td>`;
+                        departureList.appendChild(layoverInfo);
+
+                        const airlineInfo = document.createElement('tr');
+                        airlineInfo.innerHTML = `<td colspan="7" class="airline-info">Obsługiwane przez VIS Airlines | Model samolotu: ${layoverFlight.segments[0].plane} / ${layoverFlight.segments[1].plane}</td>`;
+                        departureList.appendChild(airlineInfo);
+                    }
+                } else {
+                    filteredFlights.forEach(flight => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${flight.time}</td>
+                            <td>${flight.arrival}</td>
+                            <td>${flight.duration}</td>
+                            <td>${flight.origin} (${airportIata[flight.origin] || ''})</td>
+                            <td>${flight.destination} (${airportIata[flight.destination] || ''})</td>
+                            <td>${getClassAndPrice(flight)}</td>
+                            <td><button class="select-btn">Wybierz</button></td>
+                        `;
+                        departureList.appendChild(row);
+                        const classInfo = document.createElement('tr');
+                        classInfo.innerHTML = `<td colspan="7" class="airline-info">Wybrana klasa podróży</td>`;
+                        departureList.appendChild(classInfo);
+                        const airlineInfo = document.createElement('tr');
+                        airlineInfo.innerHTML = `<td colspan="7" class="airline-info">Obsługiwane przez VIS Airlines | Model samolotu: ${flight.plane}</td>`;
+                        departureList.appendChild(airlineInfo);
+                    });
+                }
                 departureAirline.textContent = '';
             } else if (tripType === 'round-trip') {
                 departureSection.style.display = 'block';
@@ -491,7 +534,43 @@
                     cleanAirportName(flight.origin) === cleanAirportName(destination) && cleanAirportName(flight.destination) === cleanAirportName(origin)
                 );
 
-                if (outboundFlights.length > 0) {
+                // Wylot
+                if (outboundFlights.length === 0 || Math.random() < 0.5) {
+                    const layoverFlight = generateLayoverFlight(origin, destination, departureDate);
+                    if (layoverFlight) {
+                        const row1 = document.createElement('tr');
+                        row1.innerHTML = `
+                            <td>${layoverFlight.segments[0].time}</td>
+                            <td>${layoverFlight.segments[0].arrival}</td>
+                            <td>${layoverFlight.segments[0].duration}</td>
+                            <td>${layoverFlight.segments[0].origin} (${airportIata[layoverFlight.segments[0].origin] || ''})</td>
+                            <td>${layoverFlight.segments[0].destination} (${airportIata[layoverFlight.segments[0].destination] || ''})</td>
+                            <td>${getClassAndPrice(layoverFlight.segments[0])}</td>
+                            <td></td>
+                        `;
+                        departureList.appendChild(row1);
+
+                        const row2 = document.createElement('tr');
+                        row2.innerHTML = `
+                            <td>${layoverFlight.segments[1].time}</td>
+                            <td>${layoverFlight.segments[1].arrival}</td>
+                            <td>${layoverFlight.segments[1].duration}</td>
+                            <td>${layoverFlight.segments[1].origin} (${airportIata[layoverFlight.segments[1].origin] || ''})</td>
+                            <td>${layoverFlight.segments[1].destination} (${airportIata[layoverFlight.segments[1].destination] || ''})</td>
+                            <td>${getClassAndPrice(layoverFlight.segments[1])}</td>
+                            <td><button class="select-btn">Wybierz</button></td>
+                        `;
+                        departureList.appendChild(row2);
+
+                        const layoverInfo = document.createElement('tr');
+                        layoverInfo.innerHTML = `<td colspan="7" class="airline-info">Przesiadka w ${layoverFlight.segments[0].destination}: ${layoverFlight.layoverDuration}</td>`;
+                        departureList.appendChild(layoverInfo);
+
+                        const airlineInfo = document.createElement('tr');
+                        airlineInfo.innerHTML = `<td colspan="7" class="airline-info">Obsługiwane przez VIS Airlines | Model samolotu: ${layoverFlight.segments[0].plane} / ${layoverFlight.segments[1].plane}</td>`;
+                        departureList.appendChild(airlineInfo);
+                    }
+                } else {
                     outboundFlights.forEach(flight => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
@@ -511,43 +590,74 @@
                         airlineInfo.innerHTML = `<td colspan="7" class="airline-info">Obsługiwane przez VIS Airlines | Model samolotu: ${flight.plane}</td>`;
                         departureList.appendChild(airlineInfo);
                     });
-                    departureAirline.textContent = '';
-                } else {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `<td colspan="7">Nie znaleziono lotów wylotowych.</td>`;
-                    departureList.appendChild(row);
                 }
+                departureAirline.textContent = '';
 
-                if (returnFlights.length > 0) {
-                    returnFlights.forEach(flight => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${flight.time}</td>
-                            <td>${flight.arrival}</td>
-                            <td>${flight.duration}</td>
-                            <td>${flight.origin} (${airportIata[flight.origin] || ''})</td>
-                            <td>${flight.destination} (${airportIata[flight.destination] || ''})</td>
-                            <td>${getClassAndPrice(flight)}</td>
-                            <td><button class="select-btn">Wybierz</button></td>
-                        `;
-                        returnList.appendChild(row);
-                        const classInfo = document.createElement('tr');
-                        classInfo.innerHTML = `<td colspan="7" class="airline-info">Wybrana klasa podróży</td>`;
-                        returnList.appendChild(classInfo);
-                        const airlineInfo = document.createElement('tr');
-                        airlineInfo.innerHTML = `<td colspan="7" class="airline-info">Obsługiwane przez VIS Airlines | Model samolotu: ${flight.plane}</td>`;
-                        returnList.appendChild(airlineInfo);
-                    });
+                // Powrót
+                if (returnDate !== '' && returnDate !== 'Nie wybrano') {
+                    const returnDateObj = new Date(returnDate);
+                    if (returnFlights.length === 0 || Math.random() < 0.5) {
+                        const layoverFlight = generateLayoverFlight(destination, origin, returnDateObj);
+                        if (layoverFlight) {
+                            const row1 = document.createElement('tr');
+                            row1.innerHTML = `
+                                <td>${layoverFlight.segments[0].time}</td>
+                                <td>${layoverFlight.segments[0].arrival}</td>
+                                <td>${layoverFlight.segments[0].duration}</td>
+                                <td>${layoverFlight.segments[0].origin} (${airportIata[layoverFlight.segments[0].origin] || ''})</td>
+                                <td>${layoverFlight.segments[0].destination} (${airportIata[layoverFlight.segments[0].destination] || ''})</td>
+                                <td>${getClassAndPrice(layoverFlight.segments[0])}</td>
+                                <td></td>
+                            `;
+                            returnList.appendChild(row1);
+
+                            const row2 = document.createElement('tr');
+                            row2.innerHTML = `
+                                <td>${layoverFlight.segments[1].time}</td>
+                                <td>${layoverFlight.segments[1].arrival}</td>
+                                <td>${layoverFlight.segments[1].duration}</td>
+                                <td>${layoverFlight.segments[1].origin} (${airportIata[layoverFlight.segments[1].origin] || ''})</td>
+                                <td>${layoverFlight.segments[1].destination} (${airportIata[layoverFlight.segments[1].destination] || ''})</td>
+                                <td>${getClassAndPrice(layoverFlight.segments[1])}</td>
+                                <td><button class="select-btn">Wybierz</button></td>
+                            `;
+                            returnList.appendChild(row2);
+
+                            const layoverInfo = document.createElement('tr');
+                            layoverInfo.innerHTML = `<td colspan="7" class="airline-info">Przesiadka w ${layoverFlight.segments[0].destination}: ${layoverFlight.layoverDuration}</td>`;
+                            returnList.appendChild(layoverInfo);
+
+                            const airlineInfo = document.createElement('tr');
+                            airlineInfo.innerHTML = `<td colspan="7" class="airline-info">Obsługiwane przez VIS Airlines | Model samolotu: ${layoverFlight.segments[0].plane} / ${layoverFlight.segments[1].plane}</td>`;
+                            returnList.appendChild(airlineInfo);
+                        }
+                    } else {
+                        returnFlights.forEach(flight => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${flight.time}</td>
+                                <td>${flight.arrival}</td>
+                                <td>${flight.duration}</td>
+                                <td>${flight.origin} (${airportIata[flight.origin] || ''})</td>
+                                <td>${flight.destination} (${airportIata[flight.destination] || ''})</td>
+                                <td>${getClassAndPrice(flight)}</td>
+                                <td><button class="select-btn">Wybierz</button></td>
+                            `;
+                            returnList.appendChild(row);
+                            const classInfo = document.createElement('tr');
+                            classInfo.innerHTML = `<td colspan="7" class="airline-info">Wybrana klasa podróży</td>`;
+                            returnList.appendChild(classInfo);
+                            const airlineInfo = document.createElement('tr');
+                            airlineInfo.innerHTML = `<td colspan="7" class="airline-info">Obsługiwane przez VIS Airlines | Model samolotu: ${flight.plane}</td>`;
+                            returnList.appendChild(airlineInfo);
+                        });
+                    }
                     returnAirline.textContent = '';
-                } else {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `<td colspan="7">Nie znaleziono lotów powrotnych.</td>`;
-                    returnList.appendChild(row);
                 }
             }
         } else {
             const row = document.createElement('tr');
-            row.innerHTML = `<td colspan="7">Nie znaleziono lotów dla podanych kryteriów.</td>`;
+            row.innerHTML = `<td colspan="7">Nie wybrano daty wylotu.</td>`;
             departureList.appendChild(row);
         }
 
