@@ -2,151 +2,107 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIS - Dodatki do lotu</title>
+    <title>Dodatki - VIS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(135deg, #f0f4f8, #e0e8f0);
-            margin: 0;
-            padding: 0;
-            color: #2c3e50;
-        }
-        header {
-            background: #fff;
-            padding: 15px 30px;
-            border-bottom: 1px solid #ecf0f1;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        nav a {
-            color: #3498db;
-            text-decoration: none;
-            margin: 0 20px;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-        nav a:hover {
-            color: #2980b9;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 30px auto;
-            padding: 25px;
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-        .summary {
-            background: #f9fbfd;
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            color: #7f8c8d;
-            font-size: 0.95rem;
-        }
-        .section {
-            margin-bottom: 25px;
-        }
-        h3 {
-            color: #2c3e50;
-            margin-bottom: 15px;
-            font-size: 1.3rem;
-            font-weight: 600;
-            border-bottom: 2px solid #3498db;
-            display: inline-block;
-        }
-        .options {
-            margin: 15px 0;
-        }
-        .option {
-            display: flex;
-            align-items: center;
+        .baggage-icon, .extra-icon {
+            font-size: 24px;
+            color: #10b981;
             margin-bottom: 10px;
         }
-        .option label {
-            margin-left: 10px;
-            font-weight: 500;
+        .selected {
+            border-color: #10b981;
+            background-color: rgba(16, 185, 129, 0.1);
         }
-        .option input {
-            margin-right: 10px;
+        .price {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #10b981;
+            display: none;
         }
-        .next-btn {
-            background: linear-gradient(90deg, #ff6200, #ff7e00);
-            color: #fff;
-            border: none;
-            padding: 10px 25px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
         }
-        .next-btn:hover {
-            background: linear-gradient(90deg, #e65c00, #e66b00);
-            transform: translateY(-2px);
-        }
-        .back-btn {
-            background: #3498db;
-            color: #fff;
-            border: none;
-            padding: 10px 25px;
-            border-radius: 20px;
-            text-decoration: none;
-            display: inline-block;
-            font-weight: 500;
-            transition: all 0.3s;
-            margin-right: 10px;
-        }
-        .back-btn:hover {
-            background: #2980b9;
-            transform: translateY(-2px);
-        }
-        @media (max-width: 768px) {
-            .container {
-                padding: 15px;
-            }
-            .option {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .option label {
-                margin-left: 0;
-                margin-top: 5px;
-            }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
     </style>
 </head>
-<body>
-    <header>
-        <nav>
-            <a href="index.html">Zarezerwuj lot</a>
-            <a href="#checkin">Odpraw się</a>
-            <a href="#manage">Zarządzaj rezerwacją</a>
+<body class="bg-gradient-to-br from-gray-100 to-gray-200 font-sans text-gray-800">
+    <header class="bg-white shadow-md sticky top-0 z-10">
+        <nav class="max-w-7xl mx-auto px-4 py-3">
+            <a href="index.html" class="text-blue-600 hover:text-blue-800 font-medium transition-colors">Zarezerwuj lot</a>
+            <a href="#checkin" class="ml-6 text-blue-600 hover:text-blue-800 font-medium transition-colors">Odpraw się</a>
+            <a href="#manage" class="ml-6 text-blue-600 hover:text-blue-800 font-medium transition-colors">Zarządzaj rezerwacją</a>
         </nav>
     </header>
-    <div class="container">
-        <div class="summary" id="summary-text"></div>
-        <div class="section">
-            <h3>Dodatki do lotu</h3>
-            <div class="options">
-                <div class="option">
-                    <input type="checkbox" id="extra-baggage">
-                    <label for="extra-baggage">Dodatkowy bagaż (20 kg) - 150 PLN</label>
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <div class="text-sm text-gray-500 mb-4" id="summary-text"></div>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Dodatki do Twojego lotu</h2>
+        
+        <!-- Bagaż rejestrowany -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">Bagaż rejestrowany</h3>
+            <div class="grid grid-cols-4 gap-4">
+                <div class="text-center p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer" onclick="selectExtra('baggage', 10)">
+                    <div class="baggage-icon">🧳</div>
+                    <span class="block text-sm font-medium">10kg</span>
+                    <button class="select-btn mt-2 w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors" onclick="selectBaggage(10, event)">Wybierz</button>
+                    <div class="price mt-2" id="price-10">Cena: 50 PLN</div>
                 </div>
-                <div class="option">
-                    <input type="checkbox" id="seat-selection">
-                    <label for="seat-selection">Wybór miejsca (np. przy oknie) - 50 PLN</label>
+                <div class="text-center p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer" onclick="selectExtra('baggage', 15)">
+                    <div class="baggage-icon">🧳</div>
+                    <span class="block text-sm font-medium">15kg</span>
+                    <button class="select-btn mt-2 w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors" onclick="selectBaggage(15, event)">Wybierz</button>
+                    <div class="price mt-2" id="price-15">Cena: 75 PLN</div>
                 </div>
-                <div class="option">
-                    <input type="checkbox" id="priority-boarding">
-                    <label for="priority-boarding">Priorytetowa odprawa - 80 PLN</label>
+                <div class="text-center p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer" onclick="selectExtra('baggage', 20)">
+                    <div class="baggage-icon">🧳</div>
+                    <span class="block text-sm font-medium">20kg</span>
+                    <button class="select-btn mt-2 w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors" onclick="selectBaggage(20, event)">Wybierz</button>
+                    <div class="price mt-2" id="price-20">Cena: 100 PLN</div>
+                </div>
+                <div class="text-center p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer" onclick="selectExtra('baggage', 25)">
+                    <div class="baggage-icon">🧳</div>
+                    <span class="block text-sm font-medium">25kg</span>
+                    <button class="select-btn mt-2 w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors" onclick="selectBaggage(25, event)">Wybierz</button>
+                    <div class="price mt-2" id="price-25">Cena: 125 PLN</div>
                 </div>
             </div>
         </div>
-        <a href="results.html" class="back-btn">Powrót</a>
-        <button class="next-btn" onclick="proceedToPayment()">Dalej</button>
+
+        <!-- Dodatkowe opcje -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">Dodatkowe usługi</h3>
+            <div class="grid grid-cols-3 gap-4">
+                <div class="text-center p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer" onclick="selectExtra('insurance')">
+                    <div class="extra-icon">🛡️</div>
+                    <span class="block text-sm font-medium">Ubezpieczenie</span>
+                    <button class="select-btn mt-2 w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors" onclick="selectExtra('insurance', event)">Wybierz</button>
+                    <div class="price mt-2" id="price-insurance">Cena: 30 PLN</div>
+                </div>
+                <div class="text-center p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer" onclick="selectExtra('priority')">
+                    <div class="extra-icon">⭐</div>
+                    <span class="block text-sm font-medium">Priorytetowa odprawa</span>
+                    <button class="select-btn mt-2 w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors" onclick="selectExtra('priority', event)">Wybierz</button>
+                    <div class="price mt-2" id="price-priority">Cena: 20 PLN</div>
+                </div>
+                <div class="text-center p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer" onclick="selectExtra('windowSeat')">
+                    <div class="extra-icon">🪟</div>
+                    <span class="block text-sm font-medium">Miejsce przy oknie</span>
+                    <button class="select-btn mt-2 w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors" onclick="selectExtra('windowSeat', event)">Wybierz</button>
+                    <div class="price mt-2" id="price-windowSeat">Cena: 15 PLN</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Przycisk Przejdź dalej -->
+        <div class="mt-8 text-center">
+            <a href="passenger-form.html" class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors inline-block">Przejdź dalej</a>
+        </div>
     </div>
 
     <script>
@@ -158,43 +114,48 @@
         const returnDate = urlParams.get('return') || '';
         const passengers = urlParams.get('passengers') || '1 Pasażer, Ekonomiczna';
         const selectedClass = urlParams.get('class') || 'Ekonomi';
-        const outboundTimes = urlParams.get('outboundTimes') || '';
-        const outboundArrivals = urlParams.get('outboundArrivals') || '';
-        const outboundType = urlParams.get('outboundType') || '';
-        const outboundFlightData = urlParams.get('outboundFlightData') || '';
-        const returnTimes = urlParams.get('returnTimes') || '';
-        const returnArrivals = urlParams.get('returnArrivals') || '';
-        const returnType = urlParams.get('returnType') || '';
-        const returnFlightData = urlParams.get('returnFlightData') || '';
 
         // Wyświetlanie podsumowania
-        document.getElementById('summary-text').textContent = `Wyszukiwanie: ${origin} → ${destination}, ${departure}${returnDate ? `, Powrót: ${returnDate}` : ''}, ${passengers}, Klasa: ${selectedClass}, Wylot: ${outboundTimes}, Powrót: ${returnTimes}`;
+        document.getElementById('summary-text').textContent = `Rezerwacja: ${origin} → ${destination}, ${departure}${returnDate ? `, Powrót: ${returnDate}` : ''}, ${passengers}, Klasa: ${selectedClass}`;
 
-        function proceedToPayment() {
-            const extras = [];
-            if (document.getElementById('extra-baggage').checked) extras.push('extra-baggage');
-            if (document.getElementById('seat-selection').checked) extras.push('seat-selection');
-            if (document.getElementById('priority-boarding').checked) extras.push('priority-boarding');
-
-            const params = new URLSearchParams();
-            params.set('origin', origin);
-            params.set('destination', destination);
-            params.set('departure', departure);
-            if (returnDate) params.set('return', returnDate);
-            params.set('passengers', passengers);
-            params.set('class', selectedClass);
-            if (outboundTimes) params.set('outboundTimes', outboundTimes);
-            if (outboundArrivals) params.set('outboundArrivals', outboundArrivals);
-            if (outboundType) params.set('outboundType', outboundType);
-            if (outboundFlightData) params.set('outboundFlightData', outboundFlightData);
-            if (returnTimes) params.set('returnTimes', returnTimes);
-            if (returnArrivals) params.set('returnArrivals', returnArrivals);
-            if (returnType) params.set('returnType', returnType);
-            if (returnFlightData) params.set('returnFlightData', returnFlightData);
-            if (extras.length > 0) params.set('extras', extras.join(','));
-
-            window.location.href = `payment.html?${params.toString()}`; // Przekierowanie do strony płatności (do zaimplementowania)
+        // Zarządzanie wyborem bagażu
+        function selectBaggage(weight, event) {
+            if (event) event.stopPropagation();
+            document.querySelectorAll('.price').forEach(price => price.style.display = 'none');
+            document.getElementById(`price-${weight}`).style.display = 'block';
+            selectExtra('baggage', weight);
         }
+
+        // Zarządzanie wyborem dodatkowych opcji
+        function selectExtra(type, value, event) {
+            if (event) event.stopPropagation();
+            let selectedExtras = JSON.parse(localStorage.getItem('selectedExtras')) || {};
+            if (type === 'baggage') {
+                selectedExtras.baggage = value;
+                document.querySelectorAll('.baggage-option').forEach(el => el.classList.remove('selected'));
+                event.currentTarget.closest('.baggage-option').classList.add('selected');
+            } else {
+                selectedExtras[type] = selectedExtras[type] ? !selectedExtras[type] : true;
+                event.currentTarget.closest('.cursor-pointer').classList.toggle('selected', selectedExtras[type]);
+                document.getElementById(`price-${type}`).style.display = selectedExtras[type] ? 'block' : 'none';
+            }
+            localStorage.setItem('selectedExtras', JSON.stringify(selectedExtras));
+        }
+
+        // Załadowanie zapisanych opcji przy odświeżeniu
+        window.onload = () => {
+            const selectedExtras = JSON.parse(localStorage.getItem('selectedExtras')) || {};
+            if (selectedExtras.baggage) {
+                document.getElementById(`price-${selectedExtras.baggage}`).style.display = 'block';
+                document.querySelector(`[onclick="selectExtra('baggage', ${selectedExtras.baggage})"]`).closest('.baggage-option').classList.add('selected');
+            }
+            ['insurance', 'priority', 'windowSeat'].forEach(type => {
+                if (selectedExtras[type]) {
+                    document.getElementById(`price-${type}`).style.display = 'block';
+                    document.querySelector(`[onclick="selectExtra('${type}')"]`).closest('.cursor-pointer').classList.add('selected');
+                }
+            });
+        };
     </script>
 </body>
 </html>
