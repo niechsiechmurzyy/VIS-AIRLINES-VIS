@@ -233,14 +233,14 @@
         let filteredFlights = [];
         if (tripType === 'one-way') {
             filteredFlights = flights.filter(flight => 
-                flight.origin === origin && flight.destination === destination
+                flight.origin === origin.replace(' (.*)', '') && flight.destination === destination.replace(' (.*)', '')
             );
         } else if (tripType === 'round-trip') {
             const outboundFlights = flights.filter(flight => 
-                flight.origin === origin && flight.destination === destination
+                flight.origin === origin.replace(' (.*)', '') && flight.destination === destination.replace(' (.*)', '')
             );
             const returnFlights = flights.filter(flight => 
-                flight.origin === destination && flight.destination === origin
+                flight.origin === destination.replace(' (.*)', '') && flight.destination === origin.replace(' (.*)', '')
             );
             filteredFlights = [...outboundFlights, ...returnFlights];
         }
