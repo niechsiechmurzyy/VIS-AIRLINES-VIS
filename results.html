@@ -66,7 +66,7 @@
             align-items: center;
             justify-content: center;
             width: 80%;
-            flex-wrap: nowrap; /* Zapobiega zawijaniu do nowej linii */
+            flex-wrap: nowrap;
         }
         .calendar button {
             background: none;
@@ -189,9 +189,9 @@
             .calendar {
                 width: 100%;
                 justify-content: center;
-                flex-wrap: nowrap; /* Zachowanie jednej linii na mniejszych ekranach */
-                overflow-x: auto; /* Dodanie przewijania poziomego, jeśli nie mieści się */
-                -webkit-overflow-scrolling: touch; /* Płynne przewijanie na urządzeniach mobilnych */
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
             }
             .calendar-day {
                 min-width: 30px;
@@ -275,7 +275,7 @@
         const returnDate = urlParams.get('return') || '';
         const passengers = urlParams.get('passengers') || '1 Pasażer, Ekonomiczna';
         const tripType = urlParams.get('trip-type') || 'one-way';
-        const selectedClass = urlParams.get('class') || '';
+        const selectedClass = urlParams.get('class') || 'Ekonomi'; // Domyślna klasa, jeśli nie wybrano
         const selectedPrice = urlParams.get('price') || '';
 
         // Funkcja do czyszczenia nazwy z nawiasów
@@ -370,13 +370,12 @@
             filteredFlights = [...outboundFlights, ...returnFlights];
         }
 
-        // Funkcja określająca dostępne klasy i cenę
+        // Funkcja określająca wybraną klasę i cenę
         function getClassAndPrice(flight) {
             if (selectedClass && flight.prices[selectedClass]) {
                 return `${selectedClass} - ${flight.prices[selectedClass]}`;
             } else {
-                const availableClasses = Object.keys(flight.prices).join(', ');
-                return `Wybierz klasę: ${availableClasses}`;
+                return 'Klasa nie dostępna'; // Jeśli wybrana klasa nie istnieje dla danego lotu
             }
         }
 
