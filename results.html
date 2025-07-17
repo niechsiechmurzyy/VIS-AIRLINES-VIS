@@ -160,6 +160,20 @@
             background: linear-gradient(90deg, #e65c00, #e66b00);
             transform: translateY(-2px);
         }
+        .next-btn {
+            background: linear-gradient(90deg, #ff6200, #ff7e00);
+            color: #fff;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .next-btn:hover {
+            background: linear-gradient(90deg, #e65c00, #e66b00);
+            transform: translateY(-2px);
+        }
         .back-btn {
             background: #3498db;
             color: #fff;
@@ -677,22 +691,32 @@
             departureList.appendChild(row);
         }
 
-        // Funkcje do wyboru lotów i przekierowania
+        // Zmienne do przechowywania wybranych lotów
         let selectedOutbound = null;
         let selectedReturn = null;
 
+        // Funkcje do wyboru lotów
         function selectOutbound(times, arrivals, type, flightData) {
             selectedOutbound = { times, arrivals, type, flightData };
-            if (tripType === 'round-trip' && selectedReturn) {
-                redirectToExtras();
-            } else if (tripType === 'one-way') {
-                redirectToExtras();
-            }
+            updateButtons();
         }
 
         function selectReturn(times, arrivals, type, flightData) {
             selectedReturn = { times, arrivals, type, flightData };
-            if (selectedOutbound) {
+            updateButtons();
+        }
+
+        function updateButtons() {
+            const buttons = document.querySelectorAll('#departure-list .select-btn, #return-list .select-btn');
+            buttons.forEach(button => {
+                if (button.textContent === 'Wybierz') {
+                    button.classList.remove('select-btn');
+                    button.classList.add('next-btn');
+                    button.textContent = 'Dalej';
+                }
+            });
+
+            if ((tripType === 'one-way' && selectedOutbound) || (tripType === 'round-trip' && selectedOutbound && selectedReturn)) {
                 redirectToExtras();
             }
         }
