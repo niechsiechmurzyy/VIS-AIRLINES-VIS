@@ -265,6 +265,8 @@
         const returnDate = urlParams.get('return') || '';
         const passengers = urlParams.get('passengers') || '1 Pasażer, Ekonomiczna';
         const tripType = urlParams.get('trip-type') || 'one-way';
+        const selectedClass = urlParams.get('class') || '';
+        const selectedPrice = urlParams.get('price') || '';
 
         // Funkcja do czyszczenia nazwy z nawiasów
         function cleanAirportName(name) {
@@ -294,52 +296,52 @@
         };
 
         // Wyświetlanie podsumowania
-        document.getElementById('summary-text').textContent = `Wyszukiwanie: ${origin} → ${destination}, ${departure}${tripType === 'round-trip' ? `, Powrót: ${returnDate}` : ''}, ${passengers}`;
+        document.getElementById('summary-text').textContent = `Wyszukiwanie: ${origin} → ${destination}, ${departure}${tripType === 'round-trip' ? `, Powrót: ${returnDate}` : ''}, ${passengers}${selectedClass ? `, Klasa: ${selectedClass}` : ''}`;
 
-        // Pełna lista lotów
+        // Pełna lista lotów z cenami według klasy
         const flights = [
-            { plane: 'A220-100', origin: 'Szczecin-Goleniów', destination: 'Centralny Port Komunikacyjny', time: '05:00', arrival: '06:00', duration: '1h 00m' },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Brno-Tuřany', time: '06:45', arrival: '07:55', duration: '1h 10m' },
-            { plane: 'A220-100', origin: 'Brno-Tuřany', destination: 'Centralny Port Komunikacyjny', time: '08:40', arrival: '09:50', duration: '1h 10m' },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Ostrawa-Leoš Janáček', time: '10:35', arrival: '11:30', duration: '0h 55m' },
-            { plane: 'A220-100', origin: 'Ostrawa-Leoš Janáček', destination: 'Centralny Port Komunikacyjny', time: '12:15', arrival: '13:10', duration: '0h 55m' },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Hanower-Langenhagen', time: '13:55', arrival: '15:35', duration: '1h 40m' },
-            { plane: 'A220-100', origin: 'Hanower-Langenhagen', destination: 'Centralny Port Komunikacyjny', time: '16:20', arrival: '18:00', duration: '1h 40m' },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Berlin-Tegel', time: '18:45', arrival: '19:55', duration: '1h 10m' },
-            { plane: 'A220-100', origin: 'Berlin-Tegel', destination: 'Centralny Port Komunikacyjny', time: '20:40', arrival: '21:50', duration: '1h 10m' },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Szczecin-Goleniów', time: '22:20', arrival: '23:20', duration: '1h 00m' },
-            { plane: 'A220-300', origin: 'Gdańsk-Lech Wałęsa', destination: 'Centralny Port Komunikacyjny', time: '04:30', arrival: '05:25', duration: '0h 55m' },
-            { plane: 'A220-300', origin: 'Centralny Port Komunikacyjny', destination: 'Monachium', time: '06:10', arrival: '07:40', duration: '1h 30m' },
-            { plane: 'A220-300', origin: 'Monachium', destination: 'Centralny Port Komunikacyjny', time: '08:25', arrival: '09:55', duration: '1h 30m' },
-            { plane: 'A220-300', origin: 'Centralny Port Komunikacyjny', destination: 'Gdańsk-Lech Wałęsa', time: '10:40', arrival: '11:35', duration: '0h 55m' },
-            { plane: 'A220-300', origin: 'Gdańsk-Lech Wałęsa', destination: 'Centralny Port Komunikacyjny', time: '12:20', arrival: '13:15', duration: '0h 55m' },
-            { plane: 'A220-300', origin: 'Centralny Port Komunikacyjny', destination: 'Szczecin-Goleniów', time: '14:00', arrival: '15:00', duration: '1h 00m' },
-            { plane: 'A220-300', origin: 'Szczecin-Goleniów', destination: 'Centralny Port Komunikacyjny', time: '15:45', arrival: '16:45', duration: '1h 00m' },
-            { plane: 'A220-300', origin: 'Centralny Port Komunikacyjny', destination: 'Frankfurt nad Menem', time: '17:30', arrival: '19:00', duration: '1h 30m' },
-            { plane: 'A220-300', origin: 'Frankfurt nad Menem', destination: 'Centralny Port Komunikacyjny', time: '19:45', arrival: '20:15', duration: '1h 30m' },
-            { plane: 'A220-300', origin: 'Centralny Port Komunikacyjny', destination: 'Gdańsk-Lech Wałęsa', time: '21:00', arrival: '22:00', duration: '1h 00m' },
-            { plane: 'A320 NEO', origin: 'Kraków-Balice', destination: 'Centralny Port Komunikacyjny', time: '06:00', arrival: '07:00', duration: '1h 00m' },
-            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Frankfurt nad Menem', time: '07:45', arrival: '09:25', duration: '1h 40m' },
-            { plane: 'A320 NEO', origin: 'Frankfurt nad Menem', destination: 'Centralny Port Komunikacyjny', time: '10:10', arrival: '11:50', duration: '1h 40m' },
-            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Paryż-Charles de Gaulle', time: '12:35', arrival: '15:05', duration: '2h 30m' },
-            { plane: 'A320 NEO', origin: 'Paryż-Charles de Gaulle', destination: 'Centralny Port Komunikacyjny', time: '15:50', arrival: '18:20', duration: '2h 30m' },
-            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Monachium', time: '19:05', arrival: '20:35', duration: '1h 30m' },
-            { plane: 'A320 NEO', origin: 'Monachium', destination: 'Centralny Port Komunikacyjny', time: '21:20', arrival: '22:50', duration: '1h 30m' },
-            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Kraków-Balice', time: '23:20', arrival: '00:20', duration: '1h 00m' },
-            { plane: 'A320 NEO', origin: 'Manchester', destination: 'Centralny Port Komunikacyjny', time: '06:00', arrival: '08:45', duration: '2h 45m' },
-            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Londyn-Heathrow', time: '09:30', arrival: '12:10', duration: '2h 40m' },
-            { plane: 'A320 NEO', origin: 'Londyn-Heathrow', destination: 'Centralny Port Komunikacyjny', time: '12:55', arrival: '15:35', duration: '2h 40m' },
-            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Rzym-Fiumicino', time: '16:20', arrival: '18:50', duration: '2h 30m' },
-            { plane: 'A320 NEO', origin: 'Rzym-Fiumicino', destination: 'Centralny Port Komunikacyjny', time: '19:35', arrival: '22:05', duration: '2h 30m' },
-            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Manchester', time: '22:50', arrival: '01:20', duration: '2h 30m' },
-            { plane: 'A330-900', origin: 'Centralny Port Komunikacyjny', destination: 'Nowy Jork-JFK', time: '23:00', arrival: '08:30', duration: '9h 30m' },
-            { plane: 'A330-900', origin: 'Nowy Jork-JFK', destination: 'Centralny Port Komunikacyjny', time: '11:00', arrival: '20:30', duration: '9h 30m' },
-            { plane: 'A330-900', origin: 'Centralny Port Komunikacyjny', destination: 'Nowy Jork-JFK', time: '14:00', arrival: '23:30', duration: '9h 30m' },
-            { plane: 'A330-900', origin: 'Nowy Jork-JFK', destination: 'Centralny Port Komunikacyjny', time: '02:00', arrival: '11:30', duration: '9h 30m' },
-            { plane: 'A330-900', origin: 'Centralny Port Komunikacyjny', destination: 'Nowy Jork-JFK', time: '18:30', arrival: '04:00', duration: '9h 30m' },
-            { plane: 'A330-900', origin: 'Nowy Jork-JFK', destination: 'Centralny Port Komunikacyjny', time: '06:30', arrival: '16:00', duration: '9h 30m' },
-            { plane: 'A350-1000', origin: 'Centralny Port Komunikacyjny', destination: 'Los Angeles-LAX', time: '16:00', arrival: '03:40', duration: '11h 40m' },
-            { plane: 'A350-1000', origin: 'Los Angeles-LAX', destination: 'Centralny Port Komunikacyjny', time: '08:00', arrival: '21:40', duration: '11h 40m' }
+            { plane: 'A220-100', origin: 'Szczecin-Goleniów', destination: 'Centralny Port Komunikacyjny', time: '05:00', arrival: '06:00', duration: '1h 00m', prices: { Ekonomi: '199 PLN', Biznes: '399 PLN' } },
+            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Brno-Tuřany', time: '06:45', arrival: '07:55', duration: '1h 10m', prices: { Ekonomi: '249 PLN', Biznes: '449 PLN' } },
+            { plane: 'A220-100', origin: 'Brno-Tuřany', destination: 'Centralny Port Komunikacyjny', time: '08:40', arrival: '09:50', duration: '1h 10m', prices: { Ekonomi: '249 PLN', Biznes: '449 PLN' } },
+            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Ostrawa-Leoš Janáček', time: '10:35', arrival: '11:30', duration: '0h 55m', prices: { Ekonomi: '199 PLN', Biznes: '399 PLN' } },
+            { plane: 'A220-100', origin: 'Ostrawa-Leoš Janáček', destination: 'Centralny Port Komunikacyjny', time: '12:15', arrival: '13:10', duration: '0h 55m', prices: { Ekonomi: '199 PLN', Biznes: '399 PLN' } },
+            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Hanower-Langenhagen', time: '13:55', arrival: '15:35', duration: '1h 40m', prices: { Ekonomi: '299 PLN', Biznes: '499 PLN' } },
+            { plane: 'A220-100', origin: 'Hanower-Langenhagen', destination: 'Centralny Port Komunikacyjny', time: '16:20', arrival: '18:00', duration: '1h 40m', prices: { Ekonomi: '299 PLN', Biznes: '499 PLN' } },
+            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Berlin-Tegel', time: '18:45', arrival: '19:55', duration: '1h 10m', prices: { Ekonomi: '229 PLN', Biznes: '429 PLN' } },
+            { plane: 'A220-100', origin: 'Berlin-Tegel', destination: 'Centralny Port Komunikacyjny', time: '20:40', arrival: '21:50', duration: '1h 10m', prices: { Ekonomi: '229 PLN', Biznes: '429 PLN' } },
+            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Szczecin-Goleniów', time: '22:20', arrival: '23:20', duration: '1h 00m', prices: { Ekonomi: '199 PLN', Biznes: '399 PLN' } },
+            { plane: 'A220-300', origin: 'Gdańsk-Lech Wałęsa', destination: 'Centralny Port Komunikacyjny', time: '04:30', arrival: '05:25', duration: '0h 55m', prices: { Ekonomi: '179 PLN', Biznes: '379 PLN' } },
+            { plane: 'A220-300', origin: 'Centralny Port Komunikacyjny', destination: 'Monachium', time: '06:10', arrival: '07:40', duration: '1h 30m', prices: { Ekonomi: '239 PLN', Biznes: '439 PLN' } },
+            { plane: 'A220-300', origin: 'Monachium', destination: 'Centralny Port Komunikacyjny', time: '08:25', arrival: '09:55', duration: '1h 30m', prices: { Ekonomi: '239 PLN', Biznes: '439 PLN' } },
+            { plane: 'A220-300', origin: 'Centralny Port Komunikacyjny', destination: 'Gdańsk-Lech Wałęsa', time: '10:40', arrival: '11:35', duration: '0h 55m', prices: { Ekonomi: '179 PLN', Biznes: '379 PLN' } },
+            { plane: 'A220-300', origin: 'Gdańsk-Lech Wałęsa', destination: 'Centralny Port Komunikacyjny', time: '12:20', arrival: '13:15', duration: '0h 55m', prices: { Ekonomi: '179 PLN', Biznes: '379 PLN' } },
+            { plane: 'A220-300', origin: 'Centralny Port Komunikacyjny', destination: 'Szczecin-Goleniów', time: '14:00', arrival: '15:00', duration: '1h 00m', prices: { Ekonomi: '199 PLN', Biznes: '399 PLN' } },
+            { plane: 'A220-300', origin: 'Szczecin-Goleniów', destination: 'Centralny Port Komunikacyjny', time: '15:45', arrival: '16:45', duration: '1h 00m', prices: { Ekonomi: '199 PLN', Biznes: '399 PLN' } },
+            { plane: 'A220-300', origin: 'Centralny Port Komunikacyjny', destination: 'Frankfurt nad Menem', time: '17:30', arrival: '19:00', duration: '1h 30m', prices: { Ekonomi: '259 PLN', Biznes: '459 PLN' } },
+            { plane: 'A220-300', origin: 'Frankfurt nad Menem', destination: 'Centralny Port Komunikacyjny', time: '19:45', arrival: '20:15', duration: '1h 30m', prices: { Ekonomi: '259 PLN', Biznes: '459 PLN' } },
+            { plane: 'A220-300', origin: 'Centralny Port Komunikacyjny', destination: 'Gdańsk-Lech Wałęsa', time: '21:00', arrival: '22:00', duration: '1h 00m', prices: { Ekonomi: '179 PLN', Biznes: '379 PLN' } },
+            { plane: 'A320 NEO', origin: 'Kraków-Balice', destination: 'Centralny Port Komunikacyjny', time: '06:00', arrival: '07:00', duration: '1h 00m', prices: { Ekonomi: '189 PLN', Biznes: '389 PLN' } },
+            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Frankfurt nad Menem', time: '07:45', arrival: '09:25', duration: '1h 40m', prices: { Ekonomi: '259 PLN', Biznes: '459 PLN' } },
+            { plane: 'A320 NEO', origin: 'Frankfurt nad Menem', destination: 'Centralny Port Komunikacyjny', time: '10:10', arrival: '11:50', duration: '1h 40m', prices: { Ekonomi: '259 PLN', Biznes: '459 PLN' } },
+            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Paryż-Charles de Gaulle', time: '12:35', arrival: '15:05', duration: '2h 30m', prices: { Ekonomi: '299 PLN', Biznes: '499 PLN' } },
+            { plane: 'A320 NEO', origin: 'Paryż-Charles de Gaulle', destination: 'Centralny Port Komunikacyjny', time: '15:50', arrival: '18:20', duration: '2h 30m', prices: { Ekonomi: '299 PLN', Biznes: '499 PLN' } },
+            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Monachium', time: '19:05', arrival: '20:35', duration: '1h 30m', prices: { Ekonomi: '239 PLN', Biznes: '439 PLN' } },
+            { plane: 'A320 NEO', origin: 'Monachium', destination: 'Centralny Port Komunikacyjny', time: '21:20', arrival: '22:50', duration: '1h 30m', prices: { Ekonomi: '239 PLN', Biznes: '439 PLN' } },
+            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Kraków-Balice', time: '23:20', arrival: '00:20', duration: '1h 00m', prices: { Ekonomi: '189 PLN', Biznes: '389 PLN' } },
+            { plane: 'A320 NEO', origin: 'Manchester', destination: 'Centralny Port Komunikacyjny', time: '06:00', arrival: '08:45', duration: '2h 45m', prices: { Ekonomi: '319 PLN', Biznes: '519 PLN' } },
+            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Londyn-Heathrow', time: '09:30', arrival: '12:10', duration: '2h 40m', prices: { Ekonomi: '309 PLN', Biznes: '509 PLN' } },
+            { plane: 'A320 NEO', origin: 'Londyn-Heathrow', destination: 'Centralny Port Komunikacyjny', time: '12:55', arrival: '15:35', duration: '2h 40m', prices: { Ekonomi: '309 PLN', Biznes: '509 PLN' } },
+            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Rzym-Fiumicino', time: '16:20', arrival: '18:50', duration: '2h 30m', prices: { Ekonomi: '289 PLN', Biznes: '489 PLN' } },
+            { plane: 'A320 NEO', origin: 'Rzym-Fiumicino', destination: 'Centralny Port Komunikacyjny', time: '19:35', arrival: '22:05', duration: '2h 30m', prices: { Ekonomi: '289 PLN', Biznes: '489 PLN' } },
+            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Manchester', time: '22:50', arrival: '01:20', duration: '2h 30m', prices: { Ekonomi: '319 PLN', Biznes: '519 PLN' } },
+            { plane: 'A330-900', origin: 'Centralny Port Komunikacyjny', destination: 'Nowy Jork-JFK', time: '23:00', arrival: '08:30', duration: '9h 30m', prices: { Ekonomi: '1299 PLN', 'Ekonomi Premium': '1499 PLN', Biznes: '1999 PLN', 'Pierwsza Klasa': '2999 PLN' } },
+            { plane: 'A330-900', origin: 'Nowy Jork-JFK', destination: 'Centralny Port Komunikacyjny', time: '11:00', arrival: '20:30', duration: '9h 30m', prices: { Ekonomi: '1299 PLN', 'Ekonomi Premium': '1499 PLN', Biznes: '1999 PLN', 'Pierwsza Klasa': '2999 PLN' } },
+            { plane: 'A330-900', origin: 'Centralny Port Komunikacyjny', destination: 'Nowy Jork-JFK', time: '14:00', arrival: '23:30', duration: '9h 30m', prices: { Ekonomi: '1299 PLN', 'Ekonomi Premium': '1499 PLN', Biznes: '1999 PLN', 'Pierwsza Klasa': '2999 PLN' } },
+            { plane: 'A330-900', origin: 'Nowy Jork-JFK', destination: 'Centralny Port Komunikacyjny', time: '02:00', arrival: '11:30', duration: '9h 30m', prices: { Ekonomi: '1299 PLN', 'Ekonomi Premium': '1499 PLN', Biznes: '1999 PLN', 'Pierwsza Klasa': '2999 PLN' } },
+            { plane: 'A330-900', origin: 'Centralny Port Komunikacyjny', destination: 'Nowy Jork-JFK', time: '18:30', arrival: '04:00', duration: '9h 30m', prices: { Ekonomi: '1299 PLN', 'Ekonomi Premium': '1499 PLN', Biznes: '1999 PLN', 'Pierwsza Klasa': '2999 PLN' } },
+            { plane: 'A330-900', origin: 'Nowy Jork-JFK', destination: 'Centralny Port Komunikacyjny', time: '06:30', arrival: '16:00', duration: '9h 30m', prices: { Ekonomi: '1299 PLN', 'Ekonomi Premium': '1499 PLN', Biznes: '1999 PLN', 'Pierwsza Klasa': '2999 PLN' } },
+            { plane: 'A350-1000', origin: 'Centralny Port Komunikacyjny', destination: 'Los Angeles-LAX', time: '16:00', arrival: '03:40', duration: '11h 40m', prices: { Ekonomi: '1499 PLN', 'Ekonomi Premium': '1799 PLN', Biznes: '2499 PLN', 'Pierwsza Klasa': '3499 PLN' } },
+            { plane: 'A350-1000', origin: 'Los Angeles-LAX', destination: 'Centralny Port Komunikacyjny', time: '08:00', arrival: '21:40', duration: '11h 40m', prices: { Ekonomi: '1499 PLN', 'Ekonomi Premium': '1799 PLN', Biznes: '2499 PLN', 'Pierwsza Klasa': '3499 PLN' } }
         ];
 
         // Filtrowanie lotów
@@ -358,14 +360,14 @@
             filteredFlights = [...outboundFlights, ...returnFlights];
         }
 
-        // Funkcja określająca dostępne klasy w zależności od modelu samolotu
-        function getClasses(plane) {
-            if (plane.includes('A220-100') || plane.includes('A220-300') || plane.includes('A320 NEO')) {
-                return 'Ekonomi, Biznes';
-            } else if (plane.includes('A330-900') || plane.includes('A350-1000')) {
-                return 'Ekonomi, Ekonomi Premium, Biznes, Pierwsza Klasa';
+        // Funkcja określająca dostępne klasy i cenę
+        function getClassAndPrice(flight) {
+            if (selectedClass && flight.prices[selectedClass]) {
+                return `${selectedClass} - ${flight.prices[selectedClass]}`;
+            } else {
+                const availableClasses = Object.keys(flight.prices).join(', ');
+                return `Wybierz klasę: ${availableClasses}`;
             }
-            return 'Brak danych';
         }
 
         // Wyświetlanie lotów
@@ -387,7 +389,7 @@
                         <td>${flight.duration}</td>
                         <td>${flight.origin} (${airportIata[flight.origin] || ''})</td>
                         <td>${flight.destination} (${airportIata[flight.destination] || ''})</td>
-                        <td>${getClasses(flight.plane)}</td>
+                        <td>${getClassAndPrice(flight)}</td>
                         <td><button class="select-btn">Wybierz</button></td>
                     `;
                     departureList.appendChild(row);
@@ -414,7 +416,7 @@
                             <td>${flight.duration}</td>
                             <td>${flight.origin} (${airportIata[flight.origin] || ''})</td>
                             <td>${flight.destination} (${airportIata[flight.destination] || ''})</td>
-                            <td>${getClasses(flight.plane)}</td>
+                            <td>${getClassAndPrice(flight)}</td>
                             <td><button class="select-btn">Wybierz</button></td>
                         `;
                         departureList.appendChild(row);
@@ -435,7 +437,7 @@
                             <td>${flight.duration}</td>
                             <td>${flight.origin} (${airportIata[flight.origin] || ''})</td>
                             <td>${flight.destination} (${airportIata[flight.destination] || ''})</td>
-                            <td>${getClasses(flight.plane)}</td>
+                            <td>${getClassAndPrice(flight)}</td>
                             <td><button class="select-btn">Wybierz</button></td>
                         `;
                         returnList.appendChild(row);
