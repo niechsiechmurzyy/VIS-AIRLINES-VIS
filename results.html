@@ -178,6 +178,11 @@
         const passengers = urlParams.get('passengers') || '1 Pasażer, Ekonomiczna';
         const tripType = urlParams.get('trip-type') || 'one-way';
 
+        // Funkcja do czyszczenia nazwy z nawiasów (np. "Szczecin-Goleniów (SZZ)" -> "Szczecin-Goleniów")
+        function cleanAirportName(name) {
+            return name.replace(/\s\([^)]+\)$/, '');
+        }
+
         // Wyświetlanie podsumowania
         document.getElementById('summary-text').textContent = `Wyszukiwanie: ${origin} → ${destination}, ${departure}${tripType === 'round-trip' ? `, Powrót: ${returnDate}` : ''}, ${passengers}`;
 
@@ -233,14 +238,14 @@
         let filteredFlights = [];
         if (tripType === 'one-way') {
             filteredFlights = flights.filter(flight => 
-                flight.origin === origin.replace(' (.*)', '') && flight.destination === destination.replace(' (.*)', '')
+                cleanAirportName(flight.origin) === cleanAirportName(origin) && cleanAirportName(flight.destination) === cleanAirportName(destination)
             );
         } else if (tripType === 'round-trip') {
             const outboundFlights = flights.filter(flight => 
-                flight.origin === origin.replace(' (.*)', '') && flight.destination === destination.replace(' (.*)', '')
+                cleanAirportName(flight.origin) === cleanAirportName(origin) && cleanAirportName(flight.destination) === cleanAirportName(destination)
             );
             const returnFlights = flights.filter(flight => 
-                flight.origin === destination.replace(' (.*)', '') && flight.destination === origin.replace(' (.*)', '')
+                cleanAirportName(flight.origin) === cleanAirportName(destination) && cleanAirportName(flight.destination) === cleanAirportName(origin)
             );
             filteredFlights = [...outboundFlights, ...returnFlights];
         }
@@ -312,7 +317,6 @@
                         calendar.textContent = `${day} ${months[month]} ${year}`;
                         calendar.dataset.value = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                         document.getElementById('return-modal').style.display = 'none';
-                        // Aktualizacja URL z nową datą powrotu
                         const params = new URLSearchParams(window.location.search);
                         params.set('return', calendar.dataset.value);
                         window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
