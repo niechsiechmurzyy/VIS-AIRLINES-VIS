@@ -436,9 +436,7 @@
             const layoverFlights = [];
             const departureTime = new Date(departureDate);
 
-            // Filtrujemy loty z origin do CPK
             const firstLegs = flights.filter(f => cleanAirportName(f.origin) === cleanAirportName(origin) && cleanAirportName(f.destination) === 'Centralny Port Komunikacyjny');
-            // Filtrujemy loty z CPK do destination
             const secondLegs = flights.filter(f => cleanAirportName(f.origin) === 'Centralny Port Komunikacyjny' && cleanAirportName(f.destination) === cleanAirportName(destination));
 
             firstLegs.forEach(firstLeg => {
@@ -452,7 +450,7 @@
                     secondDeparture.setHours(secondHour, secondMinute, 0, 0);
 
                     const timeDiff = (secondDeparture - firstArrival) / (1000 * 60); // Różnica w minutach
-                    if (timeDiff > 0 && timeDiff <= 600) { // Maksymalnie 10 godzin (600 minut) na przesiadkę
+                    if (timeDiff > 0 && timeDiff <= 600) { // Maksymalnie 10 godzin na przesiadkę
                         layoverFlights.push({
                             segments: [firstLeg, secondLeg],
                             layoverDuration: `${Math.floor(timeDiff / 60)}h ${timeDiff % 60}min`
@@ -477,7 +475,6 @@
             const departureDate = new Date(departure);
 
             if (tripType === 'one-way') {
-                // Wyświetlanie wszystkich bezpośrednich lotów
                 let directFlights = flights.filter(flight => 
                     cleanAirportName(flight.origin) === cleanAirportName(origin) && cleanAirportName(flight.destination) === cleanAirportName(destination)
                 );
@@ -490,7 +487,7 @@
                         <td>${flight.origin} (${airportIata[flight.origin] || ''})</td>
                         <td>${flight.destination} (${airportIata[flight.destination] || ''})</td>
                         <td>${getClassAndPrice(flight)}</td>
-                        <td><button class="select-btn">Wybierz</button></td>
+                        <td><button class="select-btn" onclick="selectFlight('${flight.time}', '${flight.arrival}', 'direct', '${encodeURIComponent(JSON.stringify(flight))}')">Wybierz</button></td>
                     `;
                     departureList.appendChild(row);
                     const airlineInfo = document.createElement('tr');
@@ -498,7 +495,6 @@
                     departureList.appendChild(airlineInfo);
                 });
 
-                // Wyświetlanie wszystkich możliwych przesiadek
                 const layoverFlights = generateLayoverFlights(origin, destination, departureDate);
                 layoverFlights.forEach(layover => {
                     const [firstLeg, secondLeg] = layover.segments;
@@ -522,7 +518,7 @@
                         <td>${secondLeg.origin} (${airportIata[secondLeg.origin] || ''})</td>
                         <td>${secondLeg.destination} (${airportIata[secondLeg.destination] || ''})</td>
                         <td>${getClassAndPrice(secondLeg)}</td>
-                        <td><button class="select-btn">Wybierz</button></td>
+                        <td><button class="select-btn" onclick="selectFlight('${firstLeg.time},${secondLeg.time}', '${firstLeg.arrival},${secondLeg.arrival}', 'layover', '${encodeURIComponent(JSON.stringify([firstLeg, secondLeg]))}')">Wybierz</button></td>
                     `;
                     departureList.appendChild(row2);
 
@@ -546,7 +542,6 @@
                 returnSection.style.display = 'block';
                 returnCalendar.style.display = 'flex';
 
-                // Wylot - bezpośrednie loty
                 let outboundDirectFlights = flights.filter(flight => 
                     cleanAirportName(flight.origin) === cleanAirportName(origin) && cleanAirportName(flight.destination) === cleanAirportName(destination)
                 );
@@ -559,7 +554,7 @@
                         <td>${flight.origin} (${airportIata[flight.origin] || ''})</td>
                         <td>${flight.destination} (${airportIata[flight.destination] || ''})</td>
                         <td>${getClassAndPrice(flight)}</td>
-                        <td><button class="select-btn">Wybierz</button></td>
+                        <td><button class="select-btn" onclick="selectOutbound('${flight.time}', '${flight.arrival}', 'direct', '${encodeURIComponent(JSON.stringify(flight))}')">Wybierz</button></td>
                     `;
                     departureList.appendChild(row);
                     const airlineInfo = document.createElement('tr');
@@ -567,7 +562,6 @@
                     departureList.appendChild(airlineInfo);
                 });
 
-                // Wylot - przesiadki
                 const outboundLayoverFlights = generateLayoverFlights(origin, destination, departureDate);
                 outboundLayoverFlights.forEach(layover => {
                     const [firstLeg, secondLeg] = layover.segments;
@@ -591,7 +585,7 @@
                         <td>${secondLeg.origin} (${airportIata[secondLeg.origin] || ''})</td>
                         <td>${secondLeg.destination} (${airportIata[secondLeg.destination] || ''})</td>
                         <td>${getClassAndPrice(secondLeg)}</td>
-                        <td><button class="select-btn">Wybierz</button></td>
+                        <td><button class="select-btn" onclick="selectOutbound('${firstLeg.time},${secondLeg.time}', '${firstLeg.arrival},${secondLeg.arrival}', 'layover', '${encodeURIComponent(JSON.stringify([firstLeg, secondLeg]))}')">Wybierz</button></td>
                     `;
                     departureList.appendChild(row2);
 
@@ -604,7 +598,6 @@
                     departureList.appendChild(airlineInfo);
                 });
 
-                // Powrót - bezpośrednie loty
                 if (returnDate !== '' && returnDate !== 'Nie wybrano') {
                     const returnDateObj = new Date(returnDate);
                     let returnDirectFlights = flights.filter(flight => 
@@ -619,7 +612,7 @@
                             <td>${flight.origin} (${airportIata[flight.origin] || ''})</td>
                             <td>${flight.destination} (${airportIata[flight.destination] || ''})</td>
                             <td>${getClassAndPrice(flight)}</td>
-                            <td><button class="select-btn">Wybierz</button></td>
+                            <td><button class="select-btn" onclick="selectReturn('${flight.time}', '${flight.arrival}', 'direct', '${encodeURIComponent(JSON.stringify(flight))}')">Wybierz</button></td>
                         `;
                         returnList.appendChild(row);
                         const airlineInfo = document.createElement('tr');
@@ -627,7 +620,6 @@
                         returnList.appendChild(airlineInfo);
                     });
 
-                    // Powrót - przesiadki
                     const returnLayoverFlights = generateLayoverFlights(destination, origin, returnDateObj);
                     returnLayoverFlights.forEach(layover => {
                         const [firstLeg, secondLeg] = layover.segments;
@@ -651,7 +643,7 @@
                             <td>${secondLeg.origin} (${airportIata[secondLeg.origin] || ''})</td>
                             <td>${secondLeg.destination} (${airportIata[secondLeg.destination] || ''})</td>
                             <td>${getClassAndPrice(secondLeg)}</td>
-                            <td><button class="select-btn">Wybierz</button></td>
+                            <td><button class="select-btn" onclick="selectReturn('${firstLeg.time},${secondLeg.time}', '${firstLeg.arrival},${secondLeg.arrival}', 'layover', '${encodeURIComponent(JSON.stringify([firstLeg, secondLeg]))}')">Wybierz</button></td>
                         `;
                         returnList.appendChild(row2);
 
@@ -683,6 +675,49 @@
             const row = document.createElement('tr');
             row.innerHTML = `<td colspan="7">Nie wybrano daty wylotu.</td>`;
             departureList.appendChild(row);
+        }
+
+        // Funkcje do wyboru lotów i przekierowania
+        let selectedOutbound = null;
+        let selectedReturn = null;
+
+        function selectOutbound(times, arrivals, type, flightData) {
+            selectedOutbound = { times, arrivals, type, flightData };
+            if (tripType === 'round-trip' && selectedReturn) {
+                redirectToExtras();
+            } else if (tripType === 'one-way') {
+                redirectToExtras();
+            }
+        }
+
+        function selectReturn(times, arrivals, type, flightData) {
+            selectedReturn = { times, arrivals, type, flightData };
+            if (selectedOutbound) {
+                redirectToExtras();
+            }
+        }
+
+        function redirectToExtras() {
+            const params = new URLSearchParams();
+            params.set('origin', origin);
+            params.set('destination', destination);
+            params.set('departure', departure);
+            if (returnDate) params.set('return', returnDate);
+            params.set('passengers', passengers);
+            params.set('class', selectedClass);
+            if (selectedOutbound) {
+                params.set('outboundTimes', selectedOutbound.times);
+                params.set('outboundArrivals', selectedOutbound.arrivals);
+                params.set('outboundType', selectedOutbound.type);
+                params.set('outboundFlightData', selectedOutbound.flightData);
+            }
+            if (selectedReturn) {
+                params.set('returnTimes', selectedReturn.times);
+                params.set('returnArrivals', selectedReturn.arrivals);
+                params.set('returnType', selectedReturn.type);
+                params.set('returnFlightData', selectedReturn.flightData);
+            }
+            window.location.href = `extras.html?${params.toString()}`;
         }
 
         // Kalendarz z 10 dniami i suwakami
@@ -733,7 +768,6 @@
             }
         }
 
-        // Ustawienie początkowego widoku kalendarza
         const monthDeparture = document.createElement('div');
         monthDeparture.id = 'current-month-departure';
         monthDeparture.style.textAlign = 'center';
