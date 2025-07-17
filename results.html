@@ -181,18 +181,10 @@
         // Wyświetlanie podsumowania
         document.getElementById('summary-text').textContent = `Wyszukiwanie: ${origin} → ${destination}, ${departure}${tripType === 'round-trip' ? `, Powrót: ${returnDate}` : ''}, ${passengers}`;
 
-        // Dane lotów
+        // Dane lotów (do wypełnienia przesłaną listą)
         const flights = [
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Gdańsk-Rębiechowo (GDN)', time: '05:00', arrival: '06:00', duration: '1h 00m', price: '150 PLN' },
-            { plane: 'A220-100', origin: 'Gdańsk-Rębiechowo (GDN)', destination: 'Centralny Port Komunikacyjny', time: '06:45', arrival: '07:55', duration: '1h 10m', price: '180 PLN' },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Warszawa-Chopina (WAW)', time: '08:40', arrival: '09:50', duration: '1h 10m', price: '180 PLN' },
-            { plane: 'A220-100', origin: 'Warszawa-Chopina (WAW)', destination: 'Centralny Port Komunikacyjny', time: '10:35', arrival: '11:30', duration: '0h 55m', price: '160 PLN' },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Kraków-Balice (KRK)', time: '13:55', arrival: '15:35', duration: '1h 40m', price: '200 PLN' },
-            { plane: 'A220-100', origin: 'Kraków-Balice (KRK)', destination: 'Centralny Port Komunikacyjny', time: '16:20', arrival: '18:00', duration: '1h 40m', price: '200 PLN' },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Wrocław-Strachowice (WRO)', time: '18:45', arrival: '19:55', duration: '1h 10m', price: '180 PLN' },
-            { plane: 'A220-100', origin: 'Wrocław-Strachowice (WRO)', destination: 'Centralny Port Komunikacyjny', time: '20:40', arrival: '21:50', duration: '1h 10m', price: '180 PLN' },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Berlin-Tegel (TXL)', time: '09:00', arrival: '10:10', duration: '1h 10m', price: '250 PLN' },
-            { plane: 'A220-100', origin: 'Berlin-Tegel (TXL)', destination: 'Centralny Port Komunikacyjny', time: '11:00', arrival: '12:10', duration: '1h 10m', price: '250 PLN' }
+            // Proszę wstawić tu swoje trasy, np.:
+            // { plane: 'TwojSamolot', origin: 'LotniskoWylotu', destination: 'LotniskoPrzylotu', time: 'HH:MM', arrival: 'HH:MM', duration: 'Xh Ym', price: 'XXX PLN' },
         ];
 
         // Filtrowanie lotów
