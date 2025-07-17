@@ -6,120 +6,168 @@
     <title>VIS - Dostępne loty</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #f0f4f8, #e0e8f0);
             margin: 0;
             padding: 0;
-            color: #333;
+            color: #2c3e50;
         }
         header {
-            background-color: #fff;
-            padding: 15px 20px;
-            border-bottom: 1px solid #e0e0e0;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background: #fff;
+            padding: 15px 30px;
+            border-bottom: 1px solid #ecf0f1;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
         nav a {
-            color: #0071c2;
+            color: #3498db;
             text-decoration: none;
-            margin: 0 15px;
-            font-weight: bold;
+            margin: 0 20px;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        nav a:hover {
+            color: #2980b9;
         }
         .container {
             max-width: 1200px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 30px auto;
+            padding: 25px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
         .summary {
-            background-color: #f8f8f8;
-            padding: 15px;
-            border-radius: 4px;
+            background: #f9fbfd;
+            padding: 15px 20px;
+            border-radius: 8px;
             margin-bottom: 20px;
-            color: #666;
+            color: #7f8c8d;
+            font-size: 0.95rem;
         }
         .calendar-container {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             flex-wrap: wrap;
+            gap: 15px;
         }
         .calendar {
             display: flex;
             align-items: center;
-            background-color: #f8f8f8;
-            padding: 10px;
-            border-radius: 4px;
+            background: #f9fbfd;
+            padding: 10px 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         .calendar button {
             background: none;
             border: none;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             cursor: pointer;
-            color: #0071c2;
+            color: #3498db;
             margin: 0 10px;
+            transition: color 0.3s;
+        }
+        .calendar button:hover {
+            color: #2980b9;
         }
         .calendar-day {
-            padding: 5px 10px;
+            padding: 8px 12px;
             cursor: pointer;
-            border: 1px solid #ddd;
+            border: 1px solid #ecf0f1;
             border-radius: 4px;
             margin: 0 5px;
+            font-weight: 500;
+            transition: all 0.3s;
         }
         .calendar-day:hover {
-            background: #0071c2;
+            background: #3498db;
             color: #fff;
+            border-color: #3498db;
         }
         .section {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
         h3 {
-            color: #0071c2;
-            margin-bottom: 10px;
-            font-size: 1.2rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            border-bottom: 2px solid #3498db;
+            display: inline-block;
         }
         table {
             width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
         }
         th, td {
-            padding: 10px;
+            padding: 12px 15px;
             text-align: left;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid #ecf0f1;
         }
         th {
-            background-color: #f8f8f8;
-            color: #333;
+            background: #f9fbfd;
+            color: #2c3e50;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+        tr:last-child td {
+            border-bottom: none;
         }
         tr:hover {
-            background-color: #f0f0f0;
+            background: #f9fbfd;
         }
         .select-btn {
-            background-color: #ff6200;
+            background: linear-gradient(90deg, #ff6200, #ff7e00);
             color: #fff;
             border: none;
-            padding: 8px 15px;
-            border-radius: 4px;
+            padding: 8px 18px;
+            border-radius: 20px;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 500;
+            transition: all 0.3s;
         }
         .select-btn:hover {
-            background-color: #e65c00;
+            background: linear-gradient(90deg, #e65c00, #e66b00);
+            transform: translateY(-2px);
         }
         .back-btn {
-            background-color: #0071c2;
+            background: #3498db;
             color: #fff;
             border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
+            padding: 10px 25px;
+            border-radius: 20px;
             text-decoration: none;
             display: inline-block;
-            font-weight: bold;
+            font-weight: 500;
+            transition: all 0.3s;
         }
         .back-btn:hover {
-            background-color: #005ea6;
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+        @media (max-width: 768px) {
+            .calendar-container {
+                flex-direction: column;
+            }
+            .calendar {
+                width: 100%;
+                justify-content: space-between;
+            }
+            table {
+                font-size: 0.9rem;
+            }
+            th, td {
+                padding: 10px;
+            }
         }
     </style>
 </head>
@@ -201,22 +249,72 @@
         const airportIata = {
             'Szczecin-Goleniów': 'SZZ',
             'Centralny Port Komunikacyjny': 'WAW',
-            'Gdańsk-Lech Wałęsa': 'GDN',
+            'Brno-Tuřany': 'BRQ',
+            'Ostrawa-Leoš Janáček': 'OSR',
+            'Hanower-Langenhagen': 'HAJ',
+            'Berlin-Tegel': 'TXL',
+            'Nowy Jork-JFK': 'JFK',
+            'Chicago-O’Hare': 'ORD',
             'Kraków-Balice': 'KRK',
             'Frankfurt nad Menem': 'FRA',
-            'Paryż-Charles de Gaulle': 'CDG'
+            'Paryż-Charles de Gaulle': 'CDG',
+            'Monachium': 'MUC',
+            'Gdańsk-Lech Wałęsa': 'GDN',
+            'Manchester': 'MAN',
+            'Londyn-Heathrow': 'LHR',
+            'Rzym-Fiumicino': 'FCO',
+            'Los Angeles-LAX': 'LAX'
         };
 
         // Wyświetlanie podsumowania
         document.getElementById('summary-text').textContent = `Wyszukiwanie: ${origin} → ${destination}, ${departure}${tripType === 'round-trip' ? `, Powrót: ${returnDate}` : ''}, ${passengers}`;
 
-        // Dane lotów
+        // Pełna lista lotów
         const flights = [
-            { origin: 'Szczecin-Goleniów', destination: 'Centralny Port Komunikacyjny', time: '05:00', arrival: '06:00', duration: '1h 00m', price: '199 PLN' },
-            { origin: 'Gdańsk-Lech Wałęsa', destination: 'Centralny Port Komunikacyjny', time: '04:30', arrival: '05:25', duration: '0h 55m', price: '179 PLN' },
-            { origin: 'Centralny Port Komunikacyjny', destination: 'Frankfurt nad Menem', time: '07:45', arrival: '09:25', duration: '1h 40m', price: '249 PLN' },
-            { origin: 'Frankfurt nad Menem', destination: 'Centralny Port Komunikacyjny', time: '10:10', arrival: '11:50', duration: '1h 40m', price: '249 PLN' },
-            { origin: 'Centralny Port Komunikacyjny', destination: 'Gdańsk-Lech Wałęsa', time: '12:20', arrival: '13:15', duration: '0h 55m', price: '179 PLN' }
+            { plane: 'A220-100', origin: 'Szczecin-Goleniów', destination: 'Centralny Port Komunikacyjny', time: '05:00', arrival: '06:00', duration: '1h 00m', price: '' },
+            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Brno-Tuřany', time: '06:45', arrival: '07:55', duration: '1h 10m', price: '' },
+            { plane: 'A220-100', origin: 'Brno-Tuřany', destination: 'Centralny Port Komunikacyjny', time: '08:40', arrival: '09:50', duration: '1h 10m', price: '' },
+            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Ostrawa-Leoš Janáček', time: '10:35', arrival: '11:30', duration: '0h 55m', price: '' },
+            { plane: 'A220-100', origin: 'Ostrawa-Leoš Janáček', destination: 'Centralny Port Komunikacyjny', time: '12:15', arrival: '13:10', duration: '0h 55m', price: '' },
+            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Hanower-Langenhagen', time: '13:55', arrival: '15:35', duration: '1h 40m', price: '' },
+            { plane: 'A220-100', origin: 'Hanower-Langenhagen', destination: 'Centralny Port Komunikacyjny', time: '16:20', arrival: '18:00', duration: '1h 40m', price: '' },
+            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Berlin-Tegel', time: '18:45', arrival: '19:55', duration: '1h 10m', price: '' },
+            { plane: 'A220-100', origin: 'Berlin-Tegel', destination: 'Centralny Port Komunikacyjny', time: '20:40', arrival: '21:50', duration: '1h 10m', price: '' },
+            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Szczecin-Goleniów', time: '22:20', arrival: '23:20', duration: '1h 00m', price: '' },
+            { plane: 'A330-800 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Nowy Jork-JFK', time: '23:00', arrival: '08:30', duration: '9h 30m', price: '' },
+            { plane: 'A330-800 NEO', origin: 'Nowy Jork-JFK', destination: 'Centralny Port Komunikacyjny', time: '11:00', arrival: '20:30', duration: '9h 30m', price: '' },
+            { plane: 'A330-800 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Nowy Jork-JFK', time: '14:00', arrival: '23:30', duration: '9h 30m', price: '' },
+            { plane: 'A330-800 NEO', origin: 'Nowy Jork-JFK', destination: 'Centralny Port Komunikacyjny', time: '02:00', arrival: '11:30', duration: '9h 30m', price: '' },
+            { plane: 'A330-800 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Nowy Jork-JFK', time: '18:30', arrival: '04:00', duration: '9h 30m', price: '' },
+            { plane: 'A330-800 NEO', origin: 'Nowy Jork-JFK', destination: 'Centralny Port Komunikacyjny', time: '06:30', arrival: '16:00', duration: '9h 30m', price: '' },
+            { plane: 'A350-900', origin: 'Centralny Port Komunikacyjny', destination: 'Chicago-O’Hare', time: '12:00', arrival: '22:00', duration: '10h 00m', price: '' },
+            { plane: 'A350-900', origin: 'Chicago-O’Hare', destination: 'Centralny Port Komunikacyjny', time: '00:00', arrival: '10:00', duration: '10h 00m', price: '' },
+            { plane: 'A320 NEO', origin: 'Kraków-Balice', destination: 'Centralny Port Komunikacyjny', time: '06:00', arrival: '07:00', duration: '1h 00m', price: '' },
+            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Frankfurt nad Menem', time: '07:45', arrival: '09:25', duration: '1h 40m', price: '' },
+            { plane: 'A320 NEO', origin: 'Frankfurt nad Menem', destination: 'Centralny Port Komunikacyjny', time: '10:10', arrival: '11:50', duration: '1h 40m', price: '' },
+            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Paryż-Charles de Gaulle', time: '12:35', arrival: '15:05', duration: '2h 30m', price: '' },
+            { plane: 'A320 NEO', origin: 'Paryż-Charles de Gaulle', destination: 'Centralny Port Komunikacyjny', time: '15:50', arrival: '18:20', duration: '2h 30m', price: '' },
+            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Monachium', time: '19:05', arrival: '20:35', duration: '1h 30m', price: '' },
+            { plane: 'A320 NEO', origin: 'Monachium', destination: 'Centralny Port Komunikacyjny', time: '21:20', arrival: '22:50', duration: '1h 30m', price: '' },
+            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Kraków-Balice', time: '23:20', arrival: '00:20', duration: '1h 00m', price: '' },
+            { plane: 'A220-300', origin: 'Gdańsk-Lech Wałęsa', destination: 'Centralny Port Komunikacyjny', time: '04:30', arrival: '05:25', duration: '0h 55m', price: '' },
+            { plane: 'A220-300', origin: 'Centralny Port Komunikacyjny', destination: 'Monachium', time: '06:10', arrival: '07:40', duration: '1h 30m', price: '' },
+            { plane: 'A220-300', origin: 'Monachium', destination: 'Centralny Port Komunikacyjny', time: '08:25', arrival: '09:55', duration: '1h 30m', price: '' },
+            { plane: 'A220-300', origin: 'Centralny Port Komunikacyjny', destination: 'Gdańsk-Lech Wałęsa', time: '10:40', arrival: '11:35', duration: '0h 55m', price: '' },
+            { plane: 'A220-300', origin: 'Gdańsk-Lech Wałęsa', destination: 'Centralny Port Komunikacyjny', time: '12:20', arrival: '13:15', duration: '0h 55m', price: '' },
+            { plane: 'A220-300', origin: 'Centralny Port Komunikacyjny', destination: 'Szczecin-Goleniów', time: '14:00', arrival: '15:00', duration: '1h 00m', price: '' },
+            { plane: 'A220-300', origin: 'Szczecin-Goleniów', destination: 'Centralny Port Komunikacyjny', time: '15:45', arrival: '16:45', duration: '1h 00m', price: '' },
+            { plane: 'A220-300', origin: 'Centralny Port Komunikacyjny', destination: 'Frankfurt nad Menem', time: '17:30', arrival: '19:00', duration: '1h 30m', price: '' },
+            { plane: 'A220-300', origin: 'Frankfurt nad Menem', destination: 'Centralny Port Komunikacyjny', time: '19:45', arrival: '20:15', duration: '1h 30m', price: '' },
+            { plane: 'A220-300', origin: 'Centralny Port Komunikacyjny', destination: 'Gdańsk-Lech Wałęsa', time: '21:00', arrival: '22:00', duration: '1h 00m', price: '' },
+            { plane: 'A320 NEO', origin: 'Manchester', destination: 'Centralny Port Komunikacyjny', time: '06:00', arrival: '08:45', duration: '2h 45m', price: '' },
+            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Londyn-Heathrow', time: '09:30', arrival: '12:10', duration: '2h 40m', price: '' },
+            { plane: 'A320 NEO', origin: 'Londyn-Heathrow', destination: 'Centralny Port Komunikacyjny', time: '12:55', arrival: '15:35', duration: '2h 40m', price: '' },
+            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Rzym-Fiumicino', time: '16:20', arrival: '18:50', duration: '2h 30m', price: '' },
+            { plane: 'A320 NEO', origin: 'Rzym-Fiumicino', destination: 'Centralny Port Komunikacyjny', time: '19:35', arrival: '22:05', duration: '2h 30m', price: '' },
+            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Manchester', time: '22:50', arrival: '01:20', duration: '2h 30m', price: '' },
+            { plane: 'A350-1000', origin: 'Centralny Port Komunikacyjny', destination: 'Los Angeles-LAX', time: '16:00', arrival: '03:40', duration: '11h 40m', price: '' },
+            { plane: 'A350-1000', origin: 'Los Angeles-LAX', destination: 'Centralny Port Komunikacyjny', time: '08:00', arrival: '21:40', duration: '11h 40m', price: '' }
         ];
 
         // Filtrowanie lotów
@@ -252,7 +350,7 @@
                         <td>${flight.duration}</td>
                         <td>${flight.origin} (${airportIata[flight.origin] || ''})</td>
                         <td>${flight.destination} (${airportIata[flight.destination] || ''})</td>
-                        <td>${flight.price}</td>
+                        <td>${flight.price || 'Brak ceny'}</td>
                         <td><button class="select-btn">Wybierz</button></td>
                     `;
                     departureList.appendChild(row);
@@ -262,40 +360,52 @@
                 returnSection.style.display = 'block';
                 returnCalendar.style.display = 'flex';
 
-                const outboundFlights = filteredFlights.filter(flight => 
+                const outboundFlights = flights.filter(flight => 
                     cleanAirportName(flight.origin) === cleanAirportName(origin) && cleanAirportName(flight.destination) === cleanAirportName(destination)
                 );
-                const returnFlights = filteredFlights.filter(flight => 
+                const returnFlights = flights.filter(flight => 
                     cleanAirportName(flight.origin) === cleanAirportName(destination) && cleanAirportName(flight.destination) === cleanAirportName(origin)
                 );
 
-                outboundFlights.forEach(flight => {
+                if (outboundFlights.length > 0) {
+                    outboundFlights.forEach(flight => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${flight.time}</td>
+                            <td>${flight.arrival}</td>
+                            <td>${flight.duration}</td>
+                            <td>${flight.origin} (${airportIata[flight.origin] || ''})</td>
+                            <td>${flight.destination} (${airportIata[flight.destination] || ''})</td>
+                            <td>${flight.price || 'Brak ceny'}</td>
+                            <td><button class="select-btn">Wybierz</button></td>
+                        `;
+                        departureList.appendChild(row);
+                    });
+                } else {
                     const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${flight.time}</td>
-                        <td>${flight.arrival}</td>
-                        <td>${flight.duration}</td>
-                        <td>${flight.origin} (${airportIata[flight.origin] || ''})</td>
-                        <td>${flight.destination} (${airportIata[flight.destination] || ''})</td>
-                        <td>${flight.price}</td>
-                        <td><button class="select-btn">Wybierz</button></td>
-                    `;
+                    row.innerHTML = `<td colspan="7">Nie znaleziono lotów wylotowych.</td>`;
                     departureList.appendChild(row);
-                });
+                }
 
-                returnFlights.forEach(flight => {
+                if (returnFlights.length > 0) {
+                    returnFlights.forEach(flight => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${flight.time}</td>
+                            <td>${flight.arrival}</td>
+                            <td>${flight.duration}</td>
+                            <td>${flight.origin} (${airportIata[flight.origin] || ''})</td>
+                            <td>${flight.destination} (${airportIata[flight.destination] || ''})</td>
+                            <td>${flight.price || 'Brak ceny'}</td>
+                            <td><button class="select-btn">Wybierz</button></td>
+                        `;
+                        returnList.appendChild(row);
+                    });
+                } else {
                     const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${flight.time}</td>
-                        <td>${flight.arrival}</td>
-                        <td>${flight.duration}</td>
-                        <td>${flight.origin} (${airportIata[flight.origin] || ''})</td>
-                        <td>${flight.destination} (${airportIata[flight.destination] || ''})</td>
-                        <td>${flight.price}</td>
-                        <td><button class="select-btn">Wybierz</button></td>
-                    `;
+                    row.innerHTML = `<td colspan="7">Nie znaleziono lotów powrotnych.</td>`;
                     returnList.appendChild(row);
-                });
+                }
             }
         } else {
             const row = document.createElement('tr');
@@ -312,7 +422,6 @@
         const maxDate = new Date(today);
         maxDate.setFullYear(maxDate.getFullYear() + 1); // Do 17 lipca 2026
         const months = ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'];
-        const days = ['Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So', 'Nd'];
 
         function renderCalendar(date, gridId, monthId, prevId, nextId) {
             const year = date.getFullYear();
@@ -353,7 +462,7 @@
                 }
                 calendar.appendChild(dayElement);
             }
-            const calendarContainer = document.getElementById(gridId.replace('-grid', ''));
+            const calendarContainer = document.getElementById(gridId);
             calendarContainer.innerHTML = '';
             calendarContainer.appendChild(calendar);
         }
