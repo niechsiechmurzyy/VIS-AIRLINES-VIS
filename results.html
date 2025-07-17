@@ -169,115 +169,30 @@
     </div>
 
     <script>
-        // Funkcja do obliczania czasu trwania lotu
-        function calculateDuration(departure, arrival, isTransatlantic = false) {
-            const [depHours, depMinutes] = departure.split(':').map(Number);
-            const [arrHours, arrMinutes] = arrival.split(':').map(Number);
-            let depTotal = depHours * 60 + depMinutes;
-            let arrTotal = arrHours * 60 + arrMinutes;
-            if (isTransatlantic) {
-                if (arrival.includes('Nowy Jork')) arrTotal += 6 * 60;
-                else if (arrival.includes('Chicago')) arrTotal += 7 * 60;
-                else if (arrival.includes('Los Angeles')) arrTotal += 9 * 60;
-            }
-            let duration = arrTotal - depTotal;
-            if (duration < 0) duration += 24 * 60; // Poprawka na zmianę daty
-            const hours = Math.floor(duration / 60);
-            const minutes = duration % 60;
-            return `${hours}h ${minutes}m`;
-        }
-
-        // Funkcja do normalizacji nazw miast
-        function normalizeCity(city) {
-            const normalized = city.replace(/ \([^)]+\)$/, '').trim(); // Usuwa kody IATA w nawiasach
-            return normalized === 'Warszawa - Chopin' ? 'Warszawa' : 
-                   normalized === 'Gdańsk - Lech Wałęsa' ? 'Gdańsk' : 
-                   normalized === 'Wrocław - Copernicus' ? 'Wrocław' : 
-                   normalized === 'Kraków - Balice' ? 'Kraków' : 
-                   normalized === 'Katowice - Pyrzowice' ? 'Katowice' : 
-                   normalized === 'Poznań - Ławica' ? 'Poznań' : 
-                   normalized === 'Szczecin - Goleniów' ? 'Szczecin' : 
-                   normalized === 'Frankfurt nad Menem' ? 'Frankfurt' : 
-                   normalized === 'Paryż - Charles de Gaulle' ? 'Paryż' : 
-                   normalized === 'Monachium' ? 'Munich' : 
-                   normalized;
-        }
-
         // Pobieranie parametrów z URL
         const urlParams = new URLSearchParams(window.location.search);
-        const origin = normalizeCity(decodeURIComponent(urlParams.get('origin') || 'Nie wybrano'));
-        const destination = normalizeCity(decodeURIComponent(urlParams.get('destination') || 'Nie wybrano'));
+        const origin = urlParams.get('origin') || 'Nie wybrano';
+        const destination = urlParams.get('destination') || 'Nie wybrano';
         const departure = urlParams.get('departure') || 'Nie wybrano';
         const returnDate = urlParams.get('return') || '';
-        const passengers = decodeURIComponent(urlParams.get('passengers') || '1 Pasażer, Ekonomiczna');
+        const passengers = urlParams.get('passengers') || '1 Pasażer, Ekonomiczna';
         const tripType = urlParams.get('trip-type') || 'one-way';
-
-        console.log('URL Params:', window.location.search);
-        console.log('Normalized Origin:', origin);
-        console.log('Normalized Destination:', destination);
-        console.log('Trip Type:', tripType);
 
         // Wyświetlanie podsumowania
         document.getElementById('summary-text').textContent = `Wyszukiwanie: ${origin} → ${destination}, ${departure}${tripType === 'round-trip' ? `, Powrót: ${returnDate}` : ''}, ${passengers}`;
 
-        // Dane lotów
+        // Dane lotów (do wypełnienia przesłaną listą)
         const flights = [
-            { plane: 'A220-100', origin: 'Szczecin', destination: 'Centralny Port Komunikacyjny', time: '05:00', arrival: '06:00', duration: calculateDuration('05:00', '06:00'), price: '200 PLN' },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Brno', time: '06:45', arrival: '07:55', duration: calculateDuration('06:45', '07:55'), price: '250 PLN' },
-            { plane: 'A220-100', origin: 'Brno', destination: 'Centralny Port Komunikacyjny', time: '08:40', arrival: '09:50', duration: calculateDuration('08:40', '09:50'), price: '250 PLN' },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Ostrawa', time: '10:35', arrival: '11:30', duration: calculateDuration('10:35', '11:30'), price: '220 PLN' },
-            { plane: 'A220-100', origin: 'Ostrawa', destination: 'Centralny Port Komunikacyjny', time: '12:15', arrival: '13:10', duration: calculateDuration('12:15', '13:10'), price: '220 PLN' },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Hannover', time: '13:55', arrival: '15:35', duration: calculateDuration('13:55', '15:35'), price: '280 PLN' },
-            { plane: 'A220-100', origin: 'Hannover', destination: 'Centralny Port Komunikacyjny', time: '16:20', arrival: '18:00', duration: calculateDuration('16:20', '18:00'), price: '280 PLN' },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Berlin', time: '18:45', arrival: '19:55', duration: calculateDuration('18:45', '19:55'), price: '260 PLN' },
-            { plane: 'A220-100', origin: 'Berlin', destination: 'Centralny Port Komunikacyjny', time: '20:40', arrival: '21:50', duration: calculateDuration('20:40', '21:50'), price: '260 PLN' },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Szczecin', time: '22:20', arrival: '23:20', duration: calculateDuration('22:20', '23:20'), price: '200 PLN' },
-            { plane: 'A330-800 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Nowy Jork', time: '23:00', arrival: '08:30', duration: calculateDuration('23:00', '08:30', true), price: '2500 PLN' },
-            { plane: 'A330-800 NEO', origin: 'Nowy Jork', destination: 'Centralny Port Komunikacyjny', time: '11:00', arrival: '20:30', duration: calculateDuration('11:00', '20:30', true), price: '2600 PLN' },
-            { plane: 'A330-800 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Nowy Jork', time: '14:00', arrival: '23:30', duration: calculateDuration('14:00', '23:30', true), price: '2500 PLN' },
-            { plane: 'A330-800 NEO', origin: 'Nowy Jork', destination: 'Centralny Port Komunikacyjny', time: '02:00', arrival: '11:30', duration: calculateDuration('02:00', '11:30', true), price: '2600 PLN' },
-            { plane: 'A330-800 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Nowy Jork', time: '18:30', arrival: '04:00', duration: calculateDuration('18:30', '04:00', true), price: '2500 PLN' },
-            { plane: 'A330-800 NEO', origin: 'Nowy Jork', destination: 'Centralny Port Komunikacyjny', time: '06:30', arrival: '16:00', duration: calculateDuration('06:30', '16:00', true), price: '2600 PLN' },
-            { plane: 'A350-900', origin: 'Centralny Port Komunikacyjny', destination: 'Chicago', time: '12:00', arrival: '22:00', duration: calculateDuration('12:00', '22:00', true), price: '2800 PLN' },
-            { plane: 'A350-900', origin: 'Chicago', destination: 'Centralny Port Komunikacyjny', time: '00:00', arrival: '10:00', duration: calculateDuration('00:00', '10:00', true), price: '2900 PLN' },
-            { plane: 'A320 NEO', origin: 'Kraków', destination: 'Centralny Port Komunikacyjny', time: '06:00', arrival: '07:00', duration: calculateDuration('06:00', '07:00'), price: '200 PLN' },
-            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Frankfurt', time: '07:45', arrival: '09:25', duration: calculateDuration('07:45', '09:25'), price: '270 PLN' },
-            { plane: 'A320 NEO', origin: 'Frankfurt', destination: 'Centralny Port Komunikacyjny', time: '10:10', arrival: '11:50', duration: calculateDuration('10:10', '11:50'), price: '270 PLN' },
-            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Paryż', time: '12:35', arrival: '15:05', duration: calculateDuration('12:35', '15:05'), price: '290 PLN' },
-            { plane: 'A320 NEO', origin: 'Paryż', destination: 'Centralny Port Komunikacyjny', time: '15:50', arrival: '18:20', duration: calculateDuration('15:50', '18:20'), price: '290 PLN' },
-            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Munich', time: '19:05', arrival: '20:35', duration: calculateDuration('19:05', '20:35'), price: '260 PLN' },
-            { plane: 'A320 NEO', origin: 'Munich', destination: 'Centralny Port Komunikacyjny', time: '21:20', arrival: '22:50', duration: calculateDuration('21:20', '22:50'), price: '260 PLN' },
-            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Kraków', time: '23:20', arrival: '00:20', duration: calculateDuration('23:20', '00:20'), price: '200 PLN' },
-            { plane: 'A220-300', origin: 'Gdańsk', destination: 'Centralny Port Komunikacyjny', time: '04:30', arrival: '05:25', duration: calculateDuration('04:30', '05:25'), price: '200 PLN' },
-            { plane: 'A220-300', origin: 'Centralny Port Komunikacyjny', destination: 'Munich', time: '06:10', arrival: '07:40', duration: calculateDuration('06:10', '07:40'), price: '260 PLN' },
-            { plane: 'A220-300', origin: 'Munich', destination: 'Centralny Port Komunikacyjny', time: '08:25', arrival: '09:55', duration: calculateDuration('08:25', '09:55'), price: '260 PLN' },
-            { plane: 'A220-300', origin: 'Centralny Port Komunikacyjny', destination: 'Gdańsk', time: '10:40', arrival: '11:35', duration: calculateDuration('10:40', '11:35'), price: '200 PLN' },
-            { plane: 'A220-300', origin: 'Gdańsk', destination: 'Centralny Port Komunikacyjny', time: '12:20', arrival: '13:15', duration: calculateDuration('12:20', '13:15'), price: '200 PLN' },
-            { plane: 'A220-300', origin: 'Centralny Port Komunikacyjny', destination: 'Szczecin', time: '14:00', arrival: '15:00', duration: calculateDuration('14:00', '15:00'), price: '200 PLN' },
-            { plane: 'A220-300', origin: 'Szczecin', destination: 'Centralny Port Komunikacyjny', time: '15:45', arrival: '16:45', duration: calculateDuration('15:45', '16:45'), price: '200 PLN' },
-            { plane: 'A220-300', origin: 'Centralny Port Komunikacyjny', destination: 'Frankfurt', time: '17:30', arrival: '19:00', duration: calculateDuration('17:30', '19:00'), price: '270 PLN' },
-            { plane: 'A220-300', origin: 'Frankfurt', destination: 'Centralny Port Komunikacyjny', time: '19:45', arrival: '21:15', duration: calculateDuration('19:45', '21:15'), price: '270 PLN' },
-            { plane: 'A220-300', origin: 'Centralny Port Komunikacyjny', destination: 'Gdańsk', time: '21:00', arrival: '22:00', duration: calculateDuration('21:00', '22:00'), price: '200 PLN' },
-            { plane: 'A320 NEO', origin: 'Manchester', destination: 'Centralny Port Komunikacyjny', time: '06:00', arrival: '08:45', duration: calculateDuration('06:00', '08:45'), price: '300 PLN' },
-            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Londyn', time: '09:30', arrival: '12:10', duration: calculateDuration('09:30', '12:10'), price: '290 PLN' },
-            { plane: 'A320 NEO', origin: 'Londyn', destination: 'Centralny Port Komunikacyjny', time: '12:55', arrival: '15:35', duration: calculateDuration('12:55', '15:35'), price: '290 PLN' },
-            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Rzym', time: '16:20', arrival: '18:50', duration: calculateDuration('16:20', '18:50'), price: '300 PLN' },
-            { plane: 'A320 NEO', origin: 'Rzym', destination: 'Centralny Port Komunikacyjny', time: '19:35', arrival: '22:05', duration: calculateDuration('19:35', '22:05'), price: '300 PLN' },
-            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Manchester', time: '22:50', arrival: '01:20', duration: calculateDuration('22:50', '01:20'), price: '300 PLN' },
-            { plane: 'A350-1000', origin: 'Centralny Port Komunikacyjny', destination: 'Los Angeles', time: '16:00', arrival: '03:40', duration: calculateDuration('16:00', '03:40', true), price: '3000 PLN' },
-            { plane: 'A350-1000', origin: 'Los Angeles', destination: 'Centralny Port Komunikacyjny', time: '08:00', arrival: '21:40', duration: calculateDuration('08:00', '21:40', true), price: '3100 PLN' }
+            // Proszę wstawić tu swoje trasy, np.:
+            // { plane: 'TwojSamolot', origin: 'LotniskoWylotu', destination: 'LotniskoPrzylotu', time: 'HH:MM', arrival: 'HH:MM', duration: 'Xh Ym', price: 'XXX PLN' },
         ];
 
         // Filtrowanie lotów
         let filteredFlights = [];
-        if (origin === 'Nie wybrano' || destination === 'Nie wybrano') {
-            console.log('Brak parametrów, wyświetlam wszystkie loty.');
-            filteredFlights = flights;
-        } else if (tripType === 'one-way') {
+        if (tripType === 'one-way') {
             filteredFlights = flights.filter(flight => 
                 flight.origin === origin && flight.destination === destination
             );
-            console.log('One-way flights:', filteredFlights);
         } else if (tripType === 'round-trip') {
             const outboundFlights = flights.filter(flight => 
                 flight.origin === origin && flight.destination === destination
@@ -286,9 +201,6 @@
                 flight.origin === destination && flight.destination === origin
             );
             filteredFlights = [...outboundFlights, ...returnFlights];
-            console.log('Outbound flights:', outboundFlights);
-            console.log('Return flights:', returnFlights);
-            console.log('All round-trip flights:', filteredFlights);
         }
 
         // Wyświetlanie lotów
@@ -306,12 +218,10 @@
                 `;
                 flightsList.appendChild(row);
             });
-            console.log('Tabela zaktualizowana z', filteredFlights.length, 'lotami.');
         } else {
             const row = document.createElement('tr');
             row.innerHTML = `<td colspan="6">Nie znaleziono lotów dla podanych kryteriów.</td>`;
             flightsList.appendChild(row);
-            console.log('Tabela zaktualizowana z komunikatem o braku lotów.');
         }
 
         // Kalendarz powrotu
@@ -360,6 +270,7 @@
                         calendar.textContent = `${day} ${months[month]} ${year}`;
                         calendar.dataset.value = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                         document.getElementById('return-modal').style.display = 'none';
+                        // Aktualizacja URL z nową datą powrotu
                         const params = new URLSearchParams(window.location.search);
                         params.set('return', calendar.dataset.value);
                         window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
