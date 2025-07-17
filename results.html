@@ -393,8 +393,11 @@
                         <td><button class="select-btn">Wybierz</button></td>
                     `;
                     departureList.appendChild(row);
+                    const airlineInfo = document.createElement('tr');
+                    airlineInfo.innerHTML = `<td colspan="7" class="airline-info">Obsługiwane przez VIS Airlines | Model samolotu: ${flight.plane}</td>`;
+                    departureList.appendChild(airlineInfo);
                 });
-                departureAirline.textContent = `Obsługiwany przez VIS Airlines | Model samolotu: ${filteredFlights[0].plane}`;
+                departureAirline.textContent = '';
             } else if (tripType === 'round-trip') {
                 departureSection.style.display = 'block';
                 returnSection.style.display = 'block';
@@ -420,8 +423,11 @@
                             <td><button class="select-btn">Wybierz</button></td>
                         `;
                         departureList.appendChild(row);
+                        const airlineInfo = document.createElement('tr');
+                        airlineInfo.innerHTML = `<td colspan="7" class="airline-info">Obsługiwane przez VIS Airlines | Model samolotu: ${flight.plane}</td>`;
+                        departureList.appendChild(airlineInfo);
                     });
-                    departureAirline.textContent = `Obsługiwany przez VIS Airlines | Model samolotu: ${outboundFlights[0].plane}`;
+                    departureAirline.textContent = '';
                 } else {
                     const row = document.createElement('tr');
                     row.innerHTML = `<td colspan="7">Nie znaleziono lotów wylotowych.</td>`;
@@ -441,8 +447,11 @@
                             <td><button class="select-btn">Wybierz</button></td>
                         `;
                         returnList.appendChild(row);
+                        const airlineInfo = document.createElement('tr');
+                        airlineInfo.innerHTML = `<td colspan="7" class="airline-info">Obsługiwane przez VIS Airlines | Model samolotu: ${flight.plane}</td>`;
+                        returnList.appendChild(airlineInfo);
                     });
-                    returnAirline.textContent = `Obsługiwany przez VIS Airlines | Model samolotu: ${returnFlights[0].plane}`;
+                    returnAirline.textContent = '';
                 } else {
                     const row = document.createElement('tr');
                     row.innerHTML = `<td colspan="7">Nie znaleziono lotów powrotnych.</td>`;
