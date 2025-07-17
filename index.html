@@ -458,26 +458,26 @@
 
     <div class="main-content">
         <div class="search-container">
-            <form class="search-form" action="results.html">
+            <form class="search-form" action="results.html" method="GET">
                 <div>
                     <label for="origin">Skąd</label>
-                    <div class="dropdown-select" id="origin-select">Wybierz lotnisko</div>
+                    <div class="dropdown-select" id="origin-select" name="origin">Wybierz lotnisko</div>
                 </div>
                 <div>
                     <label for="destination">Dokąd</label>
-                    <div class="dropdown-select" id="destination-select">Wybierz lotnisko</div>
+                    <div class="dropdown-select" id="destination-select" name="destination">Wybierz lotnisko</div>
                 </div>
                 <div>
                     <label>Wylot</label>
-                    <div class="calendar" id="departure-calendar">Wybierz datę</div>
+                    <div class="calendar" id="departure-calendar" name="departure">Wybierz datę</div>
                 </div>
                 <div id="return-div" style="display: block;">
                     <label>Powrót</label>
-                    <div class="calendar" id="return-calendar">Wybierz datę (opcjonalne)</div>
+                    <div class="calendar" id="return-calendar" name="return">Wybierz datę (opcjonalne)</div>
                 </div>
                 <div>
                     <label>Pasażerowie i klasa</label>
-                    <div class="dropdown-select" id="passengers-class">1 Pasażer, Ekonomiczna</div>
+                    <div class="dropdown-select" id="passengers-class" name="passengers">1 Pasażer, Ekonomiczna</div>
                 </div>
                 <div style="grid-column: 1 / 4; display: flex; gap: 1rem;">
                     <label><input type="radio" name="trip-type" value="one-way" checked onchange="toggleReturn()"> Lot w jedną stronę</label>
@@ -829,6 +829,31 @@
             if (!passengersClass.contains(e.target) && !passengersModal.contains(e.target)) {
                 passengersModal.style.display = 'none';
             }
+        });
+
+        // Obsługa przesyłania formularza
+        document.querySelector('.search-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const origin = document.getElementById('origin-select').dataset.value;
+            const destination = document.getElementById('destination-select').dataset.value;
+            const departure = document.getElementById('departure-calendar').dataset.value;
+            const returnDate = document.getElementById('return-calendar').dataset.value;
+            const passengers = document.getElementById('passengers-class').textContent;
+            const tripType = document.querySelector('input[name="trip-type"]:checked').value;
+
+            // Utwórz URL z parametrami
+            const params = new URLSearchParams({
+                origin: origin || 'Nie wybrano',
+                destination: destination || 'Nie wybrano',
+                departure: departure || 'Nie wybrano',
+                return: tripType === 'round-trip' ? returnDate || 'Nie wybrano' : '',
+                passengers: passengers,
+                'trip-type': tripType
+            });
+
+            // Przekieruj do results.html z parametrami
+            window.location.href = `results.html?${params.toString()}`;
         });
     </script>
 </body>
