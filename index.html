@@ -1097,7 +1097,10 @@
             const passengers = document.getElementById('passengers-class').textContent;
             const tripType = document.querySelector('input[name="trip-type"]:checked').value;
 
+            // Zapisz dane przed przekierowaniem
             saveFlightData();
+
+            // Przekieruj do results.html z parametrami
             const params = new URLSearchParams({
                 origin,
                 destination,
