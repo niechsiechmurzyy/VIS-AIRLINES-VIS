@@ -102,8 +102,75 @@
     </div>
 
     <script>
+        // Pobieranie parametrów z URL lub localStorage
+        const urlParams = new URLSearchParams(window.location.search);
+        let storedData = JSON.parse(localStorage.getItem('flightData')) || {};
+        const origin = urlParams.get('origin') || storedData.origin || 'Nie wybrano';
+        const destination = urlParams.get('destination') || storedData.destination || 'Nie wybrano';
+        const departure = urlParams.get('departure') || storedData.departure || 'Nie wybrano';
+        const returnDate = urlParams.get('return') || storedData.return || '';
+        const passengers = urlParams.get('passengers') || storedData.passengers || '1 Pasażer, Ekonomiczna';
+        const selectedClass = urlParams.get('class') || storedData.class || 'Ekonomi';
+        const outboundTimes = urlParams.get('outboundTimes') || storedData.selectedOutbound?.times || '';
+        const outboundArrivals = urlParams.get('outboundArrivals') || storedData.selectedOutbound?.arrivals || '';
+        const outboundType = urlParams.get('outboundType') || storedData.selectedOutbound?.type || 'direct';
+        const outboundFlightData = urlParams.get('outboundFlightData') ? JSON.parse(decodeURIComponent(urlParams.get('outboundFlightData'))) : storedData.selectedOutbound?.flightData || null;
+        const returnTimes = urlParams.get('returnTimes') || storedData.selectedReturn?.times || '';
+        const returnArrivals = urlParams.get('returnArrivals') || storedData.selectedReturn?.arrivals || '';
+        const returnType = urlParams.get('returnType') || storedData.selectedReturn?.type || 'direct';
+        const returnFlightData = urlParams.get('returnFlightData') ? JSON.parse(decodeURIComponent(urlParams.get('returnFlightData'))) : storedData.selectedReturn?.flightData || null;
+
+        // Wyświetlanie podsumowania (już w górnej części strony)
+
         // Pobieranie i obliczanie całkowitej ceny
         window.onload = () => {
+            const ticketPrice = parseFloat(localStorage.getItem('ticketPrice')) || 0;
+            const extraPrice = parseFloat(localStorage.getItem('extraPrice')) || 0;
+            const totalCost = ticketPrice + extraPrice;
+            document.getElementById('total-cost').textContent = `Suma: ${totalCost} PLN`;
+        };
+
+        // Zapisywanie danych formularza w localStorage
+        document.getElementById('passengerForm').addEventListener('input', () => {
+            const formData = new FormData(document.getElementById('passengerForm'));
+            const passengerData = {
+                firstName: formData.get('firstName'),
+                lastName: formData.get('lastName'),
+                middleName: formData.get('middleName') || '',
+                address: formData.get('address'),
+                buildingNumber: formData.get('buildingNumber'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
+                travelZone: formData.get('travelZone'),
+                idNumber: formData.get('idNumber'),
+                passportNumber: formData.get('passportNumber')
+            };
+            localStorage.setItem('passengerData', JSON.stringify(passengerData));
+        });
+
+        // Przywracanie danych formularza przy załadowaniu
+        window.onload = () => {
+            const passengerData = JSON.parse(localStorage.getItem('passengerData')) || {};
+            const form = document.getElementById('passengerForm');
+            form.querySelector('[name="firstName"]').value = passengerData.firstName || '';
+            form.querySelector('[name="lastName"]').value = passengerData.lastName || '';
+            form.querySelector('[name="middleName"]').value = passengerData.middleName || '';
+            form.querySelector('[name="address"]').value = passengerData.address || '';
+            form.querySelector('[name="buildingNumber"]').value = passengerData.buildingNumber || '';
+            form.querySelector('[name="email"]').value = passengerData.email || '';
+            form.querySelector('[name="phone"]').value = passengerData.phone || '';
+            form.querySelector('[name="travelZone"]').value = passengerData.travelZone || '';
+            updateDocumentFields(); // Upewnienie się, że pola dokumentu są poprawnie zainicjalizowane
+            if (passengerData.travelZone) {
+                setTimeout(() => {
+                    if (passengerData.travelZone === 'eu') {
+                        form.querySelector('[name="idNumber"]').value = passengerData.idNumber || '';
+                    } else if (passengerData.travelZone === 'non-eu') {
+                        form.querySelector('[name="passportNumber"]').value = passengerData.passportNumber || '';
+                    }
+                }, 0);
+            }
+
             const ticketPrice = parseFloat(localStorage.getItem('ticketPrice')) || 0;
             const extraPrice = parseFloat(localStorage.getItem('extraPrice')) || 0;
             const totalCost = ticketPrice + extraPrice;
