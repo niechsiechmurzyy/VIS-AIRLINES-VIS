@@ -67,8 +67,6 @@
             justify-content: center;
             width: 80%;
             flex-wrap: nowrap;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
         }
         .calendar button {
             background: none;
@@ -205,6 +203,9 @@
             .calendar {
                 width: 100%;
                 justify-content: center;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
             }
             .calendar-day {
                 min-width: 30px;
@@ -233,7 +234,6 @@
         <div class="section" id="departure-section">
             <div class="calendar-container" id="departure-calendar">
                 <button id="prev-departure"><</button>
-                <div id="current-month-departure" style="text-align: center; flex-grow: 1;"></div>
                 <div class="calendar" id="calendar-departure"></div>
                 <button id="next-departure">></button>
             </div>
@@ -257,7 +257,6 @@
         <div class="section" id="return-section" style="display: none;">
             <div class="calendar-container" id="return-calendar">
                 <button id="prev-return"><</button>
-                <div id="current-month-return" style="text-align: center; flex-grow: 1;"></div>
                 <div class="calendar" id="calendar-return"></div>
                 <button id="next-return">></button>
             </div>
@@ -282,48 +281,68 @@
     </div>
 
     <script>
-        // Pobieranie parametrów z URL z priorytetem
+        // Pobieranie parametrów z URL
         const urlParams = new URLSearchParams(window.location.search);
-        let storedData = JSON.parse(localStorage.getItem('flightData')) || {};
-        const origin = urlParams.get('origin') || storedData.origin || '';
-        const destination = urlParams.get('destination') || storedData.destination || '';
-        const departure = urlParams.get('departure') || storedData.departure || '';
-        const returnDate = urlParams.get('return') || storedData.return || '';
-        const passengers = urlParams.get('passengers') || storedData.passengers || '1 Pasażer, Ekonomiczna';
-        const tripType = urlParams.get('trip-type') || storedData.tripType || 'one-way';
-        const selectedClass = urlParams.get('class') || storedData.class || 'Ekonomi';
-        const selectedOutbound = storedData.selectedOutbound || null;
-        const selectedReturn = storedData.selectedReturn || null;
+        const origin = urlParams.get('origin') || 'Nie wybrano';
+        const destination = urlParams.get('destination') || 'Nie wybrano';
+        const departure = urlParams.get('departure') || 'Nie wybrano';
+        const returnDate = urlParams.get('return') || '';
+        const passengers = urlParams.get('passengers') || '1 Pasażer, Ekonomiczna';
+        const tripType = urlParams.get('trip-type') || 'one-way';
+        const selectedClass = urlParams.get('class') || 'Ekonomi';
+        const selectedPrice = urlParams.get('price') || '';
 
-        // Zapis danych do localStorage tylko jeśli dane są poprawne
-        function saveFlightData() {
-            if (origin && destination && departure) {
-                localStorage.setItem('flightData', JSON.stringify({
-                    origin, destination, departure, return: returnDate, passengers, tripType, class: selectedClass,
-                    selectedOutbound, selectedReturn
-                }));
-            }
+        // Funkcja do czyszczenia nazwy z nawiasów
+        function cleanAirportName(name) {
+            return name.replace(/\s\([^)]+\)$/, '');
         }
 
-        // Wyświetlanie podsumowania
-        document.getElementById('summary-text').textContent = `Wyszukiwanie: ${origin || 'Nie wybrano'} → ${destination || 'Nie wybrano'}, ${departure || 'Nie wybrano'}${tripType === 'round-trip' && returnDate ? `, Powrót: ${returnDate}` : ''}, ${passengers}${selectedClass ? `, Klasa: ${selectedClass}` : ''}`;
-
-        // Mapowanie pełnych nazw na kody IATA
+        // Mapowanie pełnych nazw na kody IATA i synonimy
         const airportIata = {
-            'Szczecin-Goleniów': 'SZZ', 'Centralny Port Komunikacyjny': 'WAW', 'Gdańsk-Rębiechowo': 'GDN',
-            'Brno-Tuřany': 'BRQ', 'Ostrawa-Leoš Janáček': 'OSR', 'Hanower-Langenhagen': 'HAJ',
-            'Berlin-Tegel': 'TXL', 'Nowy Jork-JFK': 'JFK', 'Chicago-O’Hare': 'ORD', 'Kraków-Balice': 'KRK',
-            'Frankfurt nad Menem': 'FRA', 'Paryż-Charles de Gaulle': 'CDG', 'Monachium': 'MUC',
-            'Manchester': 'MAN', 'Londyn-Heathrow': 'LHR', 'Rzym-Fiumicino': 'FCO', 'Los Angeles-LAX': 'LAX',
-            'Poznań-Ławica': 'POZ', 'Mediolan-Malpensa': 'MXP', 'Verona-Valerio Catullo': 'VRN',
-            'Stuttgart-Echterdingen': 'STR', 'Liverpool-John Lennon': 'LPL', 'Birmingham': 'BHX',
-            'Bristol': 'BRS', 'San Francisco': 'SFO', 'Warszawa-Okęcie': 'WAW', 'Teneryfa-Północna': 'TFN',
-            'Madryt-Barajas': 'MAD', 'Wrocław-Copernicus': 'WRO', 'Bydgoszcz-Szwederowo': 'BZG',
-            'Olsztyn-Mazury': 'SZY', 'Zielona Góra-Babimost': 'IEG', 'Praga-Ruzyně': 'PRG',
-            'Lublin': 'LUZ', 'Katowice-Pyrzowice': 'KTW', 'Gdańsk': 'GDN'
+            'Szczecin-Goleniów': 'SZZ',
+            'Centralny Port Komunikacyjny': 'WAW',
+            'Gdańsk-Rębiechowo': 'GDN',
+            'Gdańsk-Lech Wałęsa': 'GDN',
+            'Brno-Tuřany': 'BRQ',
+            'Ostrawa-Leoš Janáček': 'OSR',
+            'Hanower-Langenhagen': 'HAJ',
+            'Berlin-Tegel': 'TXL',
+            'Nowy Jork-JFK': 'JFK',
+            'Chicago-O’Hare': 'ORD',
+            'Kraków-Balice': 'KRK',
+            'Frankfurt nad Menem': 'FRA',
+            'Paryż-Charles de Gaulle': 'CDG',
+            'Monachium': 'MUC',
+            'Manchester': 'MAN',
+            'Londyn-Heathrow': 'LHR',
+            'Rzym-Fiumicino': 'FCO',
+            'Los Angeles-LAX': 'LAX',
+            'Poznań-Ławica': 'POZ',
+            'Mediolan-Malpensa': 'MXP',
+            'Verona-Valerio Catullo': 'VRN',
+            'Stuttgart-Echterdingen': 'STR',
+            'Liverpool-John Lennon': 'LPL',
+            'Birmingham': 'BHX',
+            'Bristol': 'BRS',
+            'San Francisco': 'SFO',
+            'Warszawa-Okęcie': 'WAW',
+            'Teneryfa-Północna': 'TFN',
+            'Madryt-Barajas': 'MAD',
+            'Wrocław-Copernicus': 'WRO',
+            'Rzym-Fiumicino': 'FCO',
+            'Bydgoszcz-Szwederowo': 'BZG',
+            'Olsztyn-Mazury': 'SZY',
+            'Zielona Góra-Babimost': 'IEG',
+            'Praga-Ruzyně': 'PRG',
+            'Lublin': 'LUZ',
+            'Katowice-Pyrzowice': 'KTW',
+            'Gdańsk': 'GDN'
         };
 
-        // Pełna lista lotów
+        // Wyświetlanie podsumowania
+        document.getElementById('summary-text').textContent = `Wyszukiwanie: ${origin} → ${destination}, ${departure}${tripType === 'round-trip' ? `, Powrót: ${returnDate}` : ''}, ${passengers}${selectedClass ? `, Klasa: ${selectedClass}` : ''}`;
+
+        // Pełna lista lotów z cenami według klasy
         const flights = [
             { plane: 'A220-100', origin: 'Szczecin-Goleniów', destination: 'Centralny Port Komunikacyjny', time: '05:00', arrival: '06:00', duration: '1h 00m', prices: { Ekonomi: '199 PLN', Biznes: '399 PLN' } },
             { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Brno-Tuřany', time: '06:45', arrival: '07:55', duration: '1h 10m', prices: { Ekonomi: '249 PLN', Biznes: '449 PLN' } },
@@ -335,26 +354,104 @@
             { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Berlin-Tegel', time: '18:45', arrival: '19:55', duration: '1h 10m', prices: { Ekonomi: '229 PLN', Biznes: '429 PLN' } },
             { plane: 'A220-100', origin: 'Berlin-Tegel', destination: 'Centralny Port Komunikacyjny', time: '20:40', arrival: '21:50', duration: '1h 10m', prices: { Ekonomi: '229 PLN', Biznes: '429 PLN' } },
             { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Szczecin-Goleniów', time: '22:20', arrival: '23:20', duration: '1h 00m', prices: { Ekonomi: '199 PLN', Biznes: '399 PLN' } },
+            { plane: 'A220-300', origin: 'Gdańsk-Lech Wałęsa', destination: 'Centralny Port Komunikacyjny', time: '04:30', arrival: '05:25', duration: '0h 55m', prices: { Ekonomi: '179 PLN', Biznes: '379 PLN' } },
+            { plane: 'A220-300', origin: 'Centralny Port Komunikacyjny', destination: 'Monachium', time: '06:10', arrival: '07:40', duration: '1h 30m', prices: { Ekonomi: '239 PLN', Biznes: '439 PLN' } },
+            { plane: 'A220-300', origin: 'Monachium', destination: 'Centralny Port Komunikacyjny', time: '08:25', arrival: '09:55', duration: '1h 30m', prices: { Ekonomi: '239 PLN', Biznes: '439 PLN' } },
+            { plane: 'A220-300', origin: 'Centralny Port Komunikacyjny', destination: 'Gdańsk-Lech Wałęsa', time: '10:40', arrival: '11:35', duration: '0h 55m', prices: { Ekonomi: '179 PLN', Biznes: '379 PLN' } },
+            { plane: 'A220-300', origin: 'Gdańsk-Lech Wałęsa', destination: 'Centralny Port Komunikacyjny', time: '12:20', arrival: '13:15', duration: '0h 55m', prices: { Ekonomi: '179 PLN', Biznes: '379 PLN' } },
+            { plane: 'A220-300', origin: 'Centralny Port Komunikacyjny', destination: 'Szczecin-Goleniów', time: '14:00', arrival: '15:00', duration: '1h 00m', prices: { Ekonomi: '199 PLN', Biznes: '399 PLN' } },
+            { plane: 'A220-300', origin: 'Szczecin-Goleniów', destination: 'Centralny Port Komunikacyjny', time: '15:45', arrival: '16:45', duration: '1h 00m', prices: { Ekonomi: '199 PLN', Biznes: '399 PLN' } },
+            { plane: 'A220-300', origin: 'Centralny Port Komunikacyjny', destination: 'Frankfurt nad Menem', time: '17:30', arrival: '19:00', duration: '1h 30m', prices: { Ekonomi: '259 PLN', Biznes: '459 PLN' } },
+            { plane: 'A220-300', origin: 'Frankfurt nad Menem', destination: 'Centralny Port Komunikacyjny', time: '19:45', arrival: '21:15', duration: '1h 30m', prices: { Ekonomi: '259 PLN', Biznes: '459 PLN' } },
+            { plane: 'A220-300', origin: 'Centralny Port Komunikacyjny', destination: 'Gdańsk-Lech Wałęsa', time: '21:00', arrival: '22:00', duration: '1h 00m', prices: { Ekonomi: '179 PLN', Biznes: '379 PLN' } },
+            { plane: 'A320 NEO', origin: 'Kraków-Balice', destination: 'Centralny Port Komunikacyjny', time: '06:00', arrival: '07:00', duration: '1h 00m', prices: { Ekonomi: '189 PLN', Biznes: '389 PLN' } },
+            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Frankfurt nad Menem', time: '07:45', arrival: '09:25', duration: '1h 40m', prices: { Ekonomi: '259 PLN', Biznes: '459 PLN' } },
+            { plane: 'A320 NEO', origin: 'Frankfurt nad Menem', destination: 'Centralny Port Komunikacyjny', time: '10:10', arrival: '11:50', duration: '1h 40m', prices: { Ekonomi: '259 PLN', Biznes: '459 PLN' } },
+            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Paryż-Charles de Gaulle', time: '12:35', arrival: '15:05', duration: '2h 30m', prices: { Ekonomi: '299 PLN', Biznes: '499 PLN' } },
+            { plane: 'A320 NEO', origin: 'Paryż-Charles de Gaulle', destination: 'Centralny Port Komunikacyjny', time: '15:50', arrival: '18:20', duration: '2h 30m', prices: { Ekonomi: '299 PLN', Biznes: '499 PLN' } },
+            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Monachium', time: '19:05', arrival: '20:35', duration: '1h 30m', prices: { Ekonomi: '239 PLN', Biznes: '439 PLN' } },
+            { plane: 'A320 NEO', origin: 'Monachium', destination: 'Centralny Port Komunikacyjny', time: '21:20', arrival: '22:50', duration: '1h 30m', prices: { Ekonomi: '239 PLN', Biznes: '439 PLN' } },
+            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Kraków-Balice', time: '23:20', arrival: '00:20', duration: '1h 00m', prices: { Ekonomi: '189 PLN', Biznes: '389 PLN' } },
+            { plane: 'A320 NEO', origin: 'Manchester', destination: 'Centralny Port Komunikacyjny', time: '06:00', arrival: '08:45', duration: '2h 45m', prices: { Ekonomi: '319 PLN', Biznes: '519 PLN' } },
+            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Londyn-Heathrow', time: '09:30', arrival: '12:10', duration: '2h 40m', prices: { Ekonomi: '309 PLN', Biznes: '509 PLN' } },
+            { plane: 'A320 NEO', origin: 'Londyn-Heathrow', destination: 'Centralny Port Komunikacyjny', time: '12:55', arrival: '15:35', duration: '2h 40m', prices: { Ekonomi: '309 PLN', Biznes: '509 PLN' } },
+            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Rzym-Fiumicino', time: '16:20', arrival: '18:50', duration: '2h 30m', prices: { Ekonomi: '289 PLN', Biznes: '489 PLN' } },
+            { plane: 'A320 NEO', origin: 'Rzym-Fiumicino', destination: 'Centralny Port Komunikacyjny', time: '19:35', arrival: '22:05', duration: '2h 30m', prices: { Ekonomi: '289 PLN', Biznes: '489 PLN' } },
+            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Manchester', time: '22:50', arrival: '01:20', duration: '2h 30m', prices: { Ekonomi: '319 PLN', Biznes: '519 PLN' } },
+            { plane: 'A330-900', origin: 'Centralny Port Komunikacyjny', destination: 'Nowy Jork-JFK', time: '23:00', arrival: '08:30', duration: '9h 30m', prices: { Ekonomi: '1299 PLN', 'Ekonomi Premium': '1499 PLN', Biznes: '1999 PLN', 'Pierwsza Klasa': '2999 PLN' } },
+            { plane: 'A330-900', origin: 'Nowy Jork-JFK', destination: 'Centralny Port Komunikacyjny', time: '11:00', arrival: '20:30', duration: '9h 30m', prices: { Ekonomi: '1299 PLN', 'Ekonomi Premium': '1499 PLN', Biznes: '1999 PLN', 'Pierwsza Klasa': '2999 PLN' } },
+            { plane: 'A330-900', origin: 'Centralny Port Komunikacyjny', destination: 'Nowy Jork-JFK', time: '14:00', arrival: '23:30', duration: '9h 30m', prices: { Ekonomi: '1299 PLN', 'Ekonomi Premium': '1499 PLN', Biznes: '1999 PLN', 'Pierwsza Klasa': '2999 PLN' } },
+            { plane: 'A330-900', origin: 'Nowy Jork-JFK', destination: 'Centralny Port Komunikacyjny', time: '02:00', arrival: '11:30', duration: '9h 30m', prices: { Ekonomi: '1299 PLN', 'Ekonomi Premium': '1499 PLN', Biznes: '1999 PLN', 'Pierwsza Klasa': '2999 PLN' } },
+            { plane: 'A330-900', origin: 'Centralny Port Komunikacyjny', destination: 'Nowy Jork-JFK', time: '18:30', arrival: '04:00', duration: '9h 30m', prices: { Ekonomi: '1299 PLN', 'Ekonomi Premium': '1499 PLN', Biznes: '1999 PLN', 'Pierwsza Klasa': '2999 PLN' } },
+            { plane: 'A330-900', origin: 'Nowy Jork-JFK', destination: 'Centralny Port Komunikacyjny', time: '06:30', arrival: '16:00', duration: '9h 30m', prices: { Ekonomi: '1299 PLN', 'Ekonomi Premium': '1499 PLN', Biznes: '1999 PLN', 'Pierwsza Klasa': '2999 PLN' } },
+            { plane: 'A350-1000', origin: 'Centralny Port Komunikacyjny', destination: 'Los Angeles-LAX', time: '16:00', arrival: '03:40', duration: '11h 40m', prices: { Ekonomi: '1499 PLN', 'Ekonomi Premium': '1799 PLN', Biznes: '2499 PLN', 'Pierwsza Klasa': '3499 PLN' } },
+            { plane: 'A350-1000', origin: 'Los Angeles-LAX', destination: 'Centralny Port Komunikacyjny', time: '08:00', arrival: '21:40', duration: '11h 40m', prices: { Ekonomi: '1499 PLN', 'Ekonomi Premium': '1799 PLN', Biznes: '2499 PLN', 'Pierwsza Klasa': '3499 PLN' } },
+            { plane: 'A220-100', origin: 'Poznań-Ławica', destination: 'Centralny Port Komunikacyjny', time: '05:00', arrival: '05:50', duration: '0h 50m', prices: { Ekonomi: '189 PLN', Biznes: '389 PLN' } },
+            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Mediolan-Malpensa', time: '06:35', arrival: '08:45', duration: '2h 10m', prices: { Ekonomi: '299 PLN', Biznes: '499 PLN' } },
+            { plane: 'A220-100', origin: 'Mediolan-Malpensa', destination: 'Centralny Port Komunikacyjny', time: '09:30', arrival: '11:50', duration: '2h 20m', prices: { Ekonomi: '299 PLN', Biznes: '499 PLN' } },
+            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Verona-Valerio Catullo', time: '12:35', arrival: '14:40', duration: '2h 05m', prices: { Ekonomi: '279 PLN', Biznes: '479 PLN' } },
+            { plane: 'A220-100', origin: 'Verona-Valerio Catullo', destination: 'Centralny Port Komunikacyjny', time: '15:25', arrival: '17:30', duration: '2h 05m', prices: { Ekonomi: '279 PLN', Biznes: '479 PLN' } },
+            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Stuttgart-Echterdingen', time: '18:15', arrival: '20:05', duration: '1h 50m', prices: { Ekonomi: '259 PLN', Biznes: '459 PLN' } },
+            { plane: 'A220-100', origin: 'Stuttgart-Echterdingen', destination: 'Centralny Port Komunikacyjny', time: '20:50', arrival: '22:40', duration: '1h 50m', prices: { Ekonomi: '259 PLN', Biznes: '459 PLN' } },
+            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Poznań-Ławica', time: '23:25', arrival: '00:20', duration: '0h 55m', prices: { Ekonomi: '189 PLN', Biznes: '389 PLN' } },
+            { plane: 'A319 NEO', origin: 'Liverpool-John Lennon', destination: 'Centralny Port Komunikacyjny', time: '05:00', arrival: '07:40', duration: '2h 40m', prices: { Ekonomi: '309 PLN', Biznes: '509 PLN' } },
+            { plane: 'A319 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Birmingham', time: '08:25', arrival: '11:05', duration: '2h 40m', prices: { Ekonomi: '309 PLN', Biznes: '509 PLN' } },
+            { plane: 'A319 NEO', origin: 'Birmingham', destination: 'Centralny Port Komunikacyjny', time: '11:50', arrival: '14:30', duration: '2h 40m', prices: { Ekonomi: '309 PLN', Biznes: '509 PLN' } },
+            { plane: 'A319 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Bristol', time: '15:15', arrival: '17:00', duration: '1h 45m', prices: { Ekonomi: '259 PLN', Biznes: '459 PLN' } },
+            { plane: 'A319 NEO', origin: 'Bristol', destination: 'Centralny Port Komunikacyjny', time: '17:45', arrival: '20:30', duration: '2h 45m', prices: { Ekonomi: '319 PLN', Biznes: '519 PLN' } },
+            { plane: 'A319 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Liverpool-John Lennon', time: '21:15', arrival: '00:00', duration: '2h 45m', prices: { Ekonomi: '309 PLN', Biznes: '509 PLN' } },
+            { plane: 'A350-1000', origin: 'Centralny Port Komunikacyjny', destination: 'San Francisco', time: '13:00', arrival: '00:20', duration: '11h 20m', prices: { Ekonomi: '1499 PLN', 'Ekonomi Premium': '1799 PLN', Biznes: '2499 PLN', 'Pierwsza Klasa': '3499 PLN' } },
+            { plane: 'A350-1000', origin: 'San Francisco', destination: 'Centralny Port Komunikacyjny', time: '02:40', arrival: '14:00', duration: '11h 20m', prices: { Ekonomi: '1499 PLN', 'Ekonomi Premium': '1799 PLN', Biznes: '2499 PLN', 'Pierwsza Klasa': '3499 PLN' } },
+            { plane: 'A321 XLR', origin: 'Warszawa-Okęcie', destination: 'Teneryfa-Północna', time: '00:00', arrival: '06:00', duration: '6h 00m', prices: { Ekonomi: '799 PLN', Biznes: '1299 PLN' } },
+            { plane: 'A321 XLR', origin: 'Teneryfa-Północna', destination: 'Warszawa-Okęcie', time: '08:00', arrival: '14:00', duration: '6h 00m', prices: { Ekonomi: '799 PLN', Biznes: '1299 PLN' } },
+            { plane: 'A321 XLR', origin: 'Warszawa-Okęcie', destination: 'Madryt-Barajas', time: '14:45', arrival: '18:40', duration: '3h 55m', prices: { Ekonomi: '499 PLN', Biznes: '799 PLN' } },
+            { plane: 'A321 XLR', origin: 'Madryt-Barajas', destination: 'Warszawa-Okęcie', time: '19:25', arrival: '23:15', duration: '3h 50m', prices: { Ekonomi: '499 PLN', Biznes: '799 PLN' } },
+            { plane: 'A220-100', origin: 'Wrocław-Copernicus', destination: 'Centralny Port Komunikacyjny', time: '06:00', arrival: '06:55', duration: '0h 55m', prices: { Ekonomi: '179 PLN', Biznes: '379 PLN' } },
+            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Stuttgart-Echterdingen', time: '07:40', arrival: '09:30', duration: '1h 50m', prices: { Ekonomi: '259 PLN', Biznes: '459 PLN' } },
+            { plane: 'A220-100', origin: 'Stuttgart-Echterdingen', destination: 'Centralny Port Komunikacyjny', time: '10:15', arrival: '12:05', duration: '1h 50m', prices: { Ekonomi: '259 PLN', Biznes: '459 PLN' } },
+            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Rzym-Fiumicino', time: '12:50', arrival: '15:20', duration: '2h 30m', prices: { Ekonomi: '289 PLN', Biznes: '489 PLN' } },
+            { plane: 'A220-100', origin: 'Rzym-Fiumicino', destination: 'Centralny Port Komunikacyjny', time: '16:05', arrival: '18:35', duration: '2h 30m', prices: { Ekonomi: '289 PLN', Biznes: '489 PLN' } },
+            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Kraków-Balice', time: '19:20', arrival: '20:15', duration: '0h 55m', prices: { Ekonomi: '179 PLN', Biznes: '379 PLN' } },
+            { plane: 'A220-100', origin: 'Kraków-Balice', destination: 'Centralny Port Komunikacyjny', time: '21:00', arrival: '21:55', duration: '0h 55m', prices: { Ekonomi: '179 PLN', Biznes: '379 PLN' } },
+            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Wrocław-Copernicus', time: '22:40', arrival: '23:35', duration: '0h 55m', prices: { Ekonomi: '179 PLN', Biznes: '379 PLN' } },
+            { plane: 'A220-100', origin: 'Katowice-Pyrzowice', destination: 'Centralny Port Komunikacyjny', time: '05:00', arrival: '05:55', duration: '0h 55m', prices: { Ekonomi: '179 PLN', Biznes: '379 PLN' } },
+            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Gdańsk', time: '06:40', arrival: '07:35', duration: '0h 55m', prices: { Ekonomi: '179 PLN', Biznes: '379 PLN' } },
+            { plane: 'A220-100', origin: 'Gdańsk', destination: 'Centralny Port Komunikacyjny', time: '08:20', arrival: '09:15', duration: '0h 55m', prices: { Ekonomi: '179 PLN', Biznes: '379 PLN' } },
+            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Bydgoszcz-Szwederowo', time: '10:00', arrival: '10:55', duration: '0h 55m', prices: { Ekonomi: '189 PLN', Biznes: '389 PLN' } },
+            { plane: 'A220-100', origin: 'Bydgoszcz-Szwederowo', destination: 'Centralny Port Komunikacyjny', time: '11:40', arrival: '12:35', duration: '0h 55m', prices: { Ekonomi: '189 PLN', Biznes: '389 PLN' } },
+            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Olsztyn-Mazury', time: '13:20', arrival: '14:10', duration: '0h 50m', prices: { Ekonomi: '189 PLN', Biznes: '389 PLN' } },
+            { plane: 'A220-100', origin: 'Olsztyn-Mazury', destination: 'Centralny Port Komunikacyjny', time: '14:55', arrival: '15:45', duration: '0h 50m', prices: { Ekonomi: '189 PLN', Biznes: '389 PLN' } },
+            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Zielona Góra-Babimost', time: '16:30', arrival: '17:30', duration: '1h 00m', prices: { Ekonomi: '199 PLN', Biznes: '399 PLN' } },
+            { plane: 'A220-100', origin: 'Zielona Góra-Babimost', destination: 'Centralny Port Komunikacyjny', time: '18:15', arrival: '19:10', duration: '0h 55m', prices: { Ekonomi: '199 PLN', Biznes: '399 PLN' } },
+            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Praga-Ruzyně', time: '19:55', arrival: '21:05', duration: '1h 10m', prices: { Ekonomi: '229 PLN', Biznes: '429 PLN' } },
+            { plane: 'A220-100', origin: 'Praga-Ruzyně', destination: 'Centralny Port Komunikacyjny', time: '21:50', arrival: '23:00', duration: '1h 10m', prices: { Ekonomi: '229 PLN', Biznes: '429 PLN' } },
+            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Katowice-Pyrzowice', time: '23:45', arrival: '00:40', duration: '0h 55m', prices: { Ekonomi: '179 PLN', Biznes: '379 PLN' } },
+            { plane: 'A220-100', origin: 'Katowice-Pyrzowice', destination: 'Centralny Port Komunikacyjny', time: '07:00', arrival: '07:55', duration: '0h 55m', prices: { Ekonomi: '179 PLN', Biznes: '379 PLN' } },
+            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Lublin', time: '08:40', arrival: '09:30', duration: '0h 50m', prices: { Ekonomi: '189 PLN', Biznes: '389 PLN' } },
+            { plane: 'A220-100', origin: 'Lublin', destination: 'Centralny Port Komunikacyjny', time: '10:15', arrival: '11:05', duration: '0h 50m', prices: { Ekonomi: '189 PLN', Biznes: '389 PLN' } },
+            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Praga-Ruzyně', time: '11:50', arrival: '13:00', duration: '1h 10m', prices: { Ekonomi: '229 PLN', Biznes: '429 PLN' } },
+            { plane: 'A220-100', origin: 'Praga-Ruzyně', destination: 'Centralny Port Komunikacyjny', time: '13:45', arrival: '14:55', duration: '1h 10m', prices: { Ekonomi: '229 PLN', Biznes: '429 PLN' } },
+            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Mediolan-Malpensa', time: '15:40', arrival: '17:50', duration: '2h 10m', prices: { Ekonomi: '299 PLN', Biznes: '499 PLN' } },
+            { plane: 'A220-100', origin: 'Mediolan-Malpensa', destination: 'Centralny Port Komunikacyjny', time: '18:35', arrival: '20:45', duration: '2h 10m', prices: { Ekonomi: '299 PLN', Biznes: '499 PLN' } },
+            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Katowice-Pyrzowice', time: '21:30', arrival: '22:30', duration: '1h 00m', prices: { Ekonomi: '179 PLN', Biznes: '379 PLN' } }
         ];
 
         // Funkcja określająca wybraną klasę i cenę
         function getClassAndPrice(flight) {
-            return selectedClass && flight.prices[selectedClass] ? `${selectedClass} - ${flight.prices[selectedClass]}` : 'Klasa nie dostępna';
+            if (selectedClass && flight.prices[selectedClass]) {
+                return `${selectedClass} - ${flight.prices[selectedClass]}`;
+            } else {
+                return 'Klasa nie dostępna';
+            }
         }
 
-        // Funkcja generująca możliwe przesiadki
+        // Funkcja generująca możliwe przesiadki na podstawie istniejących lotów
         function generateLayoverFlights(origin, destination, departureDate) {
             const layoverFlights = [];
             const departureTime = new Date(departureDate);
 
-            const firstLegs = flights.filter(f => 
-                f.origin.toLowerCase().includes(origin.toLowerCase()) && 
-                f.destination.toLowerCase().includes('Centralny Port Komunikacyjny')
-            );
-            const secondLegs = flights.filter(f => 
-                f.origin.toLowerCase().includes('Centralny Port Komunikacyjny') && 
-                f.destination.toLowerCase().includes(destination.toLowerCase())
-            );
+            const firstLegs = flights.filter(f => cleanAirportName(f.origin) === cleanAirportName(origin) && cleanAirportName(f.destination) === 'Centralny Port Komunikacyjny');
+            const secondLegs = flights.filter(f => cleanAirportName(f.origin) === 'Centralny Port Komunikacyjny' && cleanAirportName(f.destination) === cleanAirportName(destination));
 
             firstLegs.forEach(firstLeg => {
                 secondLegs.forEach(secondLeg => {
@@ -366,8 +463,8 @@
                     const [secondHour, secondMinute] = secondLeg.time.split(':').map(Number);
                     secondDeparture.setHours(secondHour, secondMinute, 0, 0);
 
-                    const timeDiff = (secondDeparture - firstArrival) / (1000 * 60);
-                    if (timeDiff > 0 && timeDiff <= 600) {
+                    const timeDiff = (secondDeparture - firstArrival) / (1000 * 60); // Różnica w minutach
+                    if (timeDiff > 0 && timeDiff <= 600) { // Maksymalnie 10 godzin na przesiadkę
                         layoverFlights.push({
                             segments: [firstLeg, secondLeg],
                             layoverDuration: `${Math.floor(timeDiff / 60)}h ${timeDiff % 60}min`
@@ -388,148 +485,138 @@
         const departureAirline = document.getElementById('departure-airline');
         const returnAirline = document.getElementById('return-airline');
 
-        if (origin && destination && departure) {
+        if (departure !== 'Nie wybrano') {
             const departureDate = new Date(departure);
 
             if (tripType === 'one-way') {
                 let directFlights = flights.filter(flight => 
-                    flight.origin.toLowerCase().includes(origin.toLowerCase()) && 
-                    flight.destination.toLowerCase().includes(destination.toLowerCase())
+                    cleanAirportName(flight.origin) === cleanAirportName(origin) && cleanAirportName(flight.destination) === cleanAirportName(destination)
                 );
-                if (directFlights.length > 0) {
-                    directFlights.forEach(flight => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${flight.time}</td>
-                            <td>${flight.arrival}</td>
-                            <td>${flight.duration}</td>
-                            <td>${flight.origin} (${airportIata[flight.origin] || ''})</td>
-                            <td>${flight.destination} (${airportIata[flight.destination] || ''})</td>
-                            <td>${getClassAndPrice(flight)}</td>
-                            <td><button class="select-btn" onclick="selectFlight('${flight.time}', '${flight.arrival}', 'direct', '${encodeURIComponent(JSON.stringify(flight))}')">Wybierz</button></td>
-                        `;
-                        departureList.appendChild(row);
-                        const airlineInfo = document.createElement('tr');
-                        airlineInfo.innerHTML = `<td colspan="7" class="airline-info">Obsługiwane przez VIS Airlines | Model samolotu: ${flight.plane}</td>`;
-                        departureList.appendChild(airlineInfo);
-                    });
-                }
+                directFlights.forEach(flight => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${flight.time}</td>
+                        <td>${flight.arrival}</td>
+                        <td>${flight.duration}</td>
+                        <td>${flight.origin} (${airportIata[flight.origin] || ''})</td>
+                        <td>${flight.destination} (${airportIata[flight.destination] || ''})</td>
+                        <td>${getClassAndPrice(flight)}</td>
+                        <td><button class="select-btn" onclick="selectFlight('${flight.time}', '${flight.arrival}', 'direct', '${encodeURIComponent(JSON.stringify(flight))}')">Wybierz</button></td>
+                    `;
+                    departureList.appendChild(row);
+                    const airlineInfo = document.createElement('tr');
+                    airlineInfo.innerHTML = `<td colspan="7" class="airline-info">Obsługiwane przez VIS Airlines | Model samolotu: ${flight.plane}</td>`;
+                    departureList.appendChild(airlineInfo);
+                });
 
                 const layoverFlights = generateLayoverFlights(origin, destination, departureDate);
-                if (layoverFlights.length > 0) {
-                    layoverFlights.forEach(layover => {
-                        const [firstLeg, secondLeg] = layover.segments;
-                        const row1 = document.createElement('tr');
-                        row1.innerHTML = `
-                            <td>${firstLeg.time}</td>
-                            <td>${firstLeg.arrival}</td>
-                            <td>${firstLeg.duration}</td>
-                            <td>${firstLeg.origin} (${airportIata[firstLeg.origin] || ''})</td>
-                            <td>${firstLeg.destination} (${airportIata[firstLeg.destination] || ''})</td>
-                            <td>${getClassAndPrice(firstLeg)}</td>
-                            <td></td>
-                        `;
-                        departureList.appendChild(row1);
+                layoverFlights.forEach(layover => {
+                    const [firstLeg, secondLeg] = layover.segments;
+                    const row1 = document.createElement('tr');
+                    row1.innerHTML = `
+                        <td>${firstLeg.time}</td>
+                        <td>${firstLeg.arrival}</td>
+                        <td>${firstLeg.duration}</td>
+                        <td>${firstLeg.origin} (${airportIata[firstLeg.origin] || ''})</td>
+                        <td>${firstLeg.destination} (${airportIata[firstLeg.destination] || ''})</td>
+                        <td>${getClassAndPrice(firstLeg)}</td>
+                        <td></td>
+                    `;
+                    departureList.appendChild(row1);
 
-                        const row2 = document.createElement('tr');
-                        row2.innerHTML = `
-                            <td>${secondLeg.time}</td>
-                            <td>${secondLeg.arrival}</td>
-                            <td>${secondLeg.duration}</td>
-                            <td>${secondLeg.origin} (${airportIata[secondLeg.origin] || ''})</td>
-                            <td>${secondLeg.destination} (${airportIata[secondLeg.destination] || ''})</td>
-                            <td>${getClassAndPrice(secondLeg)}</td>
-                            <td><button class="select-btn" onclick="selectFlight('${firstLeg.time},${secondLeg.time}', '${firstLeg.arrival},${secondLeg.arrival}', 'layover', '${encodeURIComponent(JSON.stringify([firstLeg, secondLeg]))}')">Wybierz</button></td>
-                        `;
-                        departureList.appendChild(row2);
+                    const row2 = document.createElement('tr');
+                    row2.innerHTML = `
+                        <td>${secondLeg.time}</td>
+                        <td>${secondLeg.arrival}</td>
+                        <td>${secondLeg.duration}</td>
+                        <td>${secondLeg.origin} (${airportIata[secondLeg.origin] || ''})</td>
+                        <td>${secondLeg.destination} (${airportIata[secondLeg.destination] || ''})</td>
+                        <td>${getClassAndPrice(secondLeg)}</td>
+                        <td><button class="select-btn" onclick="selectFlight('${firstLeg.time},${secondLeg.time}', '${firstLeg.arrival},${secondLeg.arrival}', 'layover', '${encodeURIComponent(JSON.stringify([firstLeg, secondLeg]))}')">Wybierz</button></td>
+                    `;
+                    departureList.appendChild(row2);
 
-                        const layoverInfo = document.createElement('tr');
-                        layoverInfo.innerHTML = `<td colspan="7" class="airline-info">Przesiadka w ${firstLeg.destination}: ${layover.layoverDuration}</td>`;
-                        departureList.appendChild(layoverInfo);
+                    const layoverInfo = document.createElement('tr');
+                    layoverInfo.innerHTML = `<td colspan="7" class="airline-info">Przesiadka w ${firstLeg.destination}: ${layover.layoverDuration}</td>`;
+                    departureList.appendChild(layoverInfo);
 
-                        const airlineInfo = document.createElement('tr');
-                        airlineInfo.innerHTML = `<td colspan="7" class="airline-info">Obsługiwane przez VIS Airlines | Model samolotu: ${firstLeg.plane} / ${secondLeg.plane}</td>`;
-                        departureList.appendChild(airlineInfo);
-                    });
-                }
+                    const airlineInfo = document.createElement('tr');
+                    airlineInfo.innerHTML = `<td colspan="7" class="airline-info">Obsługiwane przez VIS Airlines | Model samolotu: ${firstLeg.plane} / ${secondLeg.plane}</td>`;
+                    departureList.appendChild(airlineInfo);
+                });
 
                 if (directFlights.length === 0 && layoverFlights.length === 0) {
                     const row = document.createElement('tr');
                     row.innerHTML = `<td colspan="7">Brak dostępnych lotów.</td>`;
                     departureList.appendChild(row);
                 }
-            } else if (tripType === 'round-trip' && returnDate) {
+                departureAirline.textContent = '';
+            } else if (tripType === 'round-trip') {
                 departureSection.style.display = 'block';
                 returnSection.style.display = 'block';
                 returnCalendar.style.display = 'flex';
 
                 let outboundDirectFlights = flights.filter(flight => 
-                    flight.origin.toLowerCase().includes(origin.toLowerCase()) && 
-                    flight.destination.toLowerCase().includes(destination.toLowerCase())
+                    cleanAirportName(flight.origin) === cleanAirportName(origin) && cleanAirportName(flight.destination) === cleanAirportName(destination)
                 );
-                if (outboundDirectFlights.length > 0) {
-                    outboundDirectFlights.forEach(flight => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${flight.time}</td>
-                            <td>${flight.arrival}</td>
-                            <td>${flight.duration}</td>
-                            <td>${flight.origin} (${airportIata[flight.origin] || ''})</td>
-                            <td>${flight.destination} (${airportIata[flight.destination] || ''})</td>
-                            <td>${getClassAndPrice(flight)}</td>
-                            <td><button class="select-btn" onclick="selectOutbound('${flight.time}', '${flight.arrival}', 'direct', '${encodeURIComponent(JSON.stringify(flight))}')">Wybierz</button></td>
-                        `;
-                        departureList.appendChild(row);
-                        const airlineInfo = document.createElement('tr');
-                        airlineInfo.innerHTML = `<td colspan="7" class="airline-info">Obsługiwane przez VIS Airlines | Model samolotu: ${flight.plane}</td>`;
-                        departureList.appendChild(airlineInfo);
-                    });
-                }
+                outboundDirectFlights.forEach(flight => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${flight.time}</td>
+                        <td>${flight.arrival}</td>
+                        <td>${flight.duration}</td>
+                        <td>${flight.origin} (${airportIata[flight.origin] || ''})</td>
+                        <td>${flight.destination} (${airportIata[flight.destination] || ''})</td>
+                        <td>${getClassAndPrice(flight)}</td>
+                        <td><button class="select-btn" onclick="selectOutbound('${flight.time}', '${flight.arrival}', 'direct', '${encodeURIComponent(JSON.stringify(flight))}')">Wybierz</button></td>
+                    `;
+                    departureList.appendChild(row);
+                    const airlineInfo = document.createElement('tr');
+                    airlineInfo.innerHTML = `<td colspan="7" class="airline-info">Obsługiwane przez VIS Airlines | Model samolotu: ${flight.plane}</td>`;
+                    departureList.appendChild(airlineInfo);
+                });
 
                 const outboundLayoverFlights = generateLayoverFlights(origin, destination, departureDate);
-                if (outboundLayoverFlights.length > 0) {
-                    outboundLayoverFlights.forEach(layover => {
-                        const [firstLeg, secondLeg] = layover.segments;
-                        const row1 = document.createElement('tr');
-                        row1.innerHTML = `
-                            <td>${firstLeg.time}</td>
-                            <td>${firstLeg.arrival}</td>
-                            <td>${firstLeg.duration}</td>
-                            <td>${firstLeg.origin} (${airportIata[firstLeg.origin] || ''})</td>
-                            <td>${firstLeg.destination} (${airportIata[firstLeg.destination] || ''})</td>
-                            <td>${getClassAndPrice(firstLeg)}</td>
-                            <td></td>
-                        `;
-                        departureList.appendChild(row1);
+                outboundLayoverFlights.forEach(layover => {
+                    const [firstLeg, secondLeg] = layover.segments;
+                    const row1 = document.createElement('tr');
+                    row1.innerHTML = `
+                        <td>${firstLeg.time}</td>
+                        <td>${firstLeg.arrival}</td>
+                        <td>${firstLeg.duration}</td>
+                        <td>${firstLeg.origin} (${airportIata[firstLeg.origin] || ''})</td>
+                        <td>${firstLeg.destination} (${airportIata[firstLeg.destination] || ''})</td>
+                        <td>${getClassAndPrice(firstLeg)}</td>
+                        <td></td>
+                    `;
+                    departureList.appendChild(row1);
 
-                        const row2 = document.createElement('tr');
-                        row2.innerHTML = `
-                            <td>${secondLeg.time}</td>
-                            <td>${secondLeg.arrival}</td>
-                            <td>${secondLeg.duration}</td>
-                            <td>${secondLeg.origin} (${airportIata[secondLeg.origin] || ''})</td>
-                            <td>${secondLeg.destination} (${airportIata[secondLeg.destination] || ''})</td>
-                            <td>${getClassAndPrice(secondLeg)}</td>
-                            <td><button class="select-btn" onclick="selectOutbound('${firstLeg.time},${secondLeg.time}', '${firstLeg.arrival},${secondLeg.arrival}', 'layover', '${encodeURIComponent(JSON.stringify([firstLeg, secondLeg]))}')">Wybierz</button></td>
-                        `;
-                        departureList.appendChild(row2);
+                    const row2 = document.createElement('tr');
+                    row2.innerHTML = `
+                        <td>${secondLeg.time}</td>
+                        <td>${secondLeg.arrival}</td>
+                        <td>${secondLeg.duration}</td>
+                        <td>${secondLeg.origin} (${airportIata[secondLeg.origin] || ''})</td>
+                        <td>${secondLeg.destination} (${airportIata[secondLeg.destination] || ''})</td>
+                        <td>${getClassAndPrice(secondLeg)}</td>
+                        <td><button class="select-btn" onclick="selectOutbound('${firstLeg.time},${secondLeg.time}', '${firstLeg.arrival},${secondLeg.arrival}', 'layover', '${encodeURIComponent(JSON.stringify([firstLeg, secondLeg]))}')">Wybierz</button></td>
+                    `;
+                    departureList.appendChild(row2);
 
-                        const layoverInfo = document.createElement('tr');
-                        layoverInfo.innerHTML = `<td colspan="7" class="airline-info">Przesiadka w ${firstLeg.destination}: ${layover.layoverDuration}</td>`;
-                        departureList.appendChild(layoverInfo);
+                    const layoverInfo = document.createElement('tr');
+                    layoverInfo.innerHTML = `<td colspan="7" class="airline-info">Przesiadka w ${firstLeg.destination}: ${layover.layoverDuration}</td>`;
+                    departureList.appendChild(layoverInfo);
 
-                        const airlineInfo = document.createElement('tr');
-                        airlineInfo.innerHTML = `<td colspan="7" class="airline-info">Obsługiwane przez VIS Airlines | Model samolotu: ${firstLeg.plane} / ${secondLeg.plane}</td>`;
-                        departureList.appendChild(airlineInfo);
-                    });
-                }
+                    const airlineInfo = document.createElement('tr');
+                    airlineInfo.innerHTML = `<td colspan="7" class="airline-info">Obsługiwane przez VIS Airlines | Model samolotu: ${firstLeg.plane} / ${secondLeg.plane}</td>`;
+                    departureList.appendChild(airlineInfo);
+                });
 
-                const returnDateObj = new Date(returnDate);
-                let returnDirectFlights = flights.filter(flight => 
-                    flight.origin.toLowerCase().includes(destination.toLowerCase()) && 
-                    flight.destination.toLowerCase().includes(origin.toLowerCase())
-                );
-                if (returnDirectFlights.length > 0) {
+                if (returnDate !== '' && returnDate !== 'Nie wybrano') {
+                    const returnDateObj = new Date(returnDate);
+                    let returnDirectFlights = flights.filter(flight => 
+                        cleanAirportName(flight.origin) === cleanAirportName(destination) && cleanAirportName(flight.destination) === cleanAirportName(origin)
+                    );
                     returnDirectFlights.forEach(flight => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
@@ -546,10 +633,8 @@
                         airlineInfo.innerHTML = `<td colspan="7" class="airline-info">Obsługiwane przez VIS Airlines | Model samolotu: ${flight.plane}</td>`;
                         returnList.appendChild(airlineInfo);
                     });
-                }
 
-                const returnLayoverFlights = generateLayoverFlights(destination, origin, returnDateObj);
-                if (returnLayoverFlights.length > 0) {
+                    const returnLayoverFlights = generateLayoverFlights(destination, origin, returnDateObj);
                     returnLayoverFlights.forEach(layover => {
                         const [firstLeg, secondLeg] = layover.segments;
                         const row1 = document.createElement('tr');
@@ -584,6 +669,13 @@
                         airlineInfo.innerHTML = `<td colspan="7" class="airline-info">Obsługiwane przez VIS Airlines | Model samolotu: ${firstLeg.plane} / ${secondLeg.plane}</td>`;
                         returnList.appendChild(airlineInfo);
                     });
+
+                    if (returnDirectFlights.length === 0 && returnLayoverFlights.length === 0) {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `<td colspan="7">Brak dostępnych lotów powrotnych.</td>`;
+                        returnList.appendChild(row);
+                    }
+                    returnAirline.textContent = '';
                 }
 
                 if (outboundDirectFlights.length === 0 && outboundLayoverFlights.length === 0) {
@@ -591,40 +683,33 @@
                     row.innerHTML = `<td colspan="7">Brak dostępnych lotów wylotowych.</td>`;
                     departureList.appendChild(row);
                 }
-                if (returnDirectFlights.length === 0 && returnLayoverFlights.length === 0) {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `<td colspan="7">Brak dostępnych lotów powrotnych.</td>`;
-                    returnList.appendChild(row);
-                }
+                departureAirline.textContent = '';
             }
         } else {
             const row = document.createElement('tr');
-            row.innerHTML = `<td colspan="7">Nie wybrano trasy lub daty wylotu.</td>`;
+            row.innerHTML = `<td colspan="7">Nie wybrano daty wylotu.</td>`;
             departureList.appendChild(row);
         }
 
         // Zmienne do przechowywania wybranych lotów
-        let selectedOutboundVar = selectedOutbound;
-        let selectedReturnVar = selectedReturn;
+        let selectedOutbound = null;
+        let selectedReturn = null;
 
         // Funkcje do wyboru lotów
-        window.selectFlight = function(times, arrivals, type, flightData) {
-            selectedOutboundVar = { times, arrivals, type, flightData: decodeURIComponent(flightData) };
-            saveFlightData();
+        function selectFlight(times, arrivals, type, flightData) {
+            selectedOutbound = { times, arrivals, type, flightData };
             updateButtons();
-        };
+        }
 
-        window.selectOutbound = function(times, arrivals, type, flightData) {
-            selectedOutboundVar = { times, arrivals, type, flightData: decodeURIComponent(flightData) };
-            saveFlightData();
+        function selectOutbound(times, arrivals, type, flightData) {
+            selectedOutbound = { times, arrivals, type, flightData };
             updateButtons();
-        };
+        }
 
-        window.selectReturn = function(times, arrivals, type, flightData) {
-            selectedReturnVar = { times, arrivals, type, flightData: decodeURIComponent(flightData) };
-            saveFlightData();
+        function selectReturn(times, arrivals, type, flightData) {
+            selectedReturn = { times, arrivals, type, flightData };
             updateButtons();
-        };
+        }
 
         function updateButtons() {
             const buttons = document.querySelectorAll('#departure-list .select-btn, #return-list .select-btn');
@@ -636,45 +721,44 @@
                 }
             });
 
-            if (tripType === 'one-way' && selectedOutboundVar) {
+            if (tripType === 'one-way' && selectedOutbound) {
                 redirectToExtras();
-            } else if (tripType === 'round-trip' && selectedOutboundVar && selectedReturnVar) {
+            } else if (tripType === 'round-trip' && selectedOutbound && selectedReturn) {
                 redirectToExtras();
             }
         }
 
         function redirectToExtras() {
             const params = new URLSearchParams();
-            if (origin) params.set('origin', origin);
-            if (destination) params.set('destination', destination);
-            if (departure) params.set('departure', departure);
+            params.set('origin', origin);
+            params.set('destination', destination);
+            params.set('departure', departure);
             if (returnDate) params.set('return', returnDate);
-            if (passengers) params.set('passengers', passengers);
-            if (selectedClass) params.set('class', selectedClass);
-            if (selectedOutboundVar) {
-                params.set('outboundTimes', selectedOutboundVar.times);
-                params.set('outboundArrivals', selectedOutboundVar.arrivals);
-                params.set('outboundType', selectedOutboundVar.type);
-                params.set('outboundFlightData', selectedOutboundVar.flightData);
+            params.set('passengers', passengers);
+            params.set('class', selectedClass);
+            if (selectedOutbound) {
+                params.set('outboundTimes', selectedOutbound.times);
+                params.set('outboundArrivals', selectedOutbound.arrivals);
+                params.set('outboundType', selectedOutbound.type);
+                params.set('outboundFlightData', selectedOutbound.flightData);
             }
-            if (selectedReturnVar) {
-                params.set('returnTimes', selectedReturnVar.times);
-                params.set('returnArrivals', selectedReturnVar.arrivals);
-                params.set('returnType', selectedReturnVar.type);
-                params.set('returnFlightData', selectedReturnVar.flightData);
+            if (selectedReturn) {
+                params.set('returnTimes', selectedReturn.times);
+                params.set('returnArrivals', selectedReturn.arrivals);
+                params.set('returnType', selectedReturn.type);
+                params.set('returnFlightData', selectedReturn.flightData);
             }
             window.location.href = `extras.html?${params.toString()}`;
         }
 
-        // Kalendarz
+        // Kalendarz z 10 dniami i suwakami
         let currentDateDeparture = departure ? new Date(departure) : new Date();
         let currentDateReturn = returnDate ? new Date(returnDate) : new Date();
         currentDateDeparture.setHours(0, 0, 0, 0);
         currentDateReturn.setHours(0, 0, 0, 0);
         const today = new Date();
-        today.setHours(0, 0, 0, 0);
         const maxDate = new Date(today);
-        maxDate.setFullYear(maxDate.getFullYear() + 1); // Do 18 lipca 2026
+        maxDate.setFullYear(maxDate.getFullYear() + 1); // Do 17 lipca 2026
         const months = ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'];
 
         function renderCalendar(date, calendarId, monthId, prevId, nextId) {
@@ -698,16 +782,12 @@
                         const newDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(current.getDate()).padStart(2, '0')}`;
                         if (calendarId.includes('departure')) {
                             currentDateDeparture = current;
-                            storedData.departure = newDate;
-                            saveFlightData();
                             const params = new URLSearchParams(window.location.search);
                             params.set('departure', newDate);
                             window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
                             location.reload();
                         } else {
                             currentDateReturn = current;
-                            storedData.return = newDate;
-                            saveFlightData();
                             const params = new URLSearchParams(window.location.search);
                             params.set('return', newDate);
                             window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
@@ -715,16 +795,23 @@
                         }
                     });
                 }
-                if ((calendarId.includes('departure') && newDate === departure) || (calendarId.includes('return') && newDate === returnDate)) {
-                    dayElement.classList.add('selected');
-                }
                 calendar.appendChild(dayElement);
             }
         }
 
+        const monthDeparture = document.createElement('div');
+        monthDeparture.id = 'current-month-departure';
+        monthDeparture.style.textAlign = 'center';
+        monthDeparture.style.flexGrow = '1';
+        document.getElementById('departure-calendar').insertBefore(monthDeparture, document.getElementById('calendar-departure'));
         renderCalendar(currentDateDeparture, 'calendar-departure', 'current-month-departure', 'prev-departure', 'next-departure');
 
         if (tripType === 'round-trip' && returnDate) {
+            const monthReturn = document.createElement('div');
+            monthReturn.id = 'current-month-return';
+            monthReturn.style.textAlign = 'center';
+            monthReturn.style.flexGrow = '1';
+            document.getElementById('return-calendar').insertBefore(monthReturn, document.getElementById('calendar-return'));
             renderCalendar(currentDateReturn, 'calendar-return', 'current-month-return', 'prev-return', 'next-return');
         }
 
