@@ -281,21 +281,29 @@
     </div>
 
     <script>
-        // Pobieranie parametrów z URL
+        // Pobieranie parametrów z URL lub localStorage
         const urlParams = new URLSearchParams(window.location.search);
-        const origin = urlParams.get('origin') || 'Nie wybrano';
-        const destination = urlParams.get('destination') || 'Nie wybrano';
-        const departure = urlParams.get('departure') || 'Nie wybrano';
-        const returnDate = urlParams.get('return') || '';
-        const passengers = urlParams.get('passengers') || '1 Pasażer, Ekonomiczna';
-        const tripType = urlParams.get('trip-type') || 'one-way';
-        const selectedClass = urlParams.get('class') || 'Ekonomi';
-        const selectedPrice = urlParams.get('price') || '';
+        let storedData = JSON.parse(localStorage.getItem('flightData')) || {};
+        const origin = urlParams.get('origin') || storedData.origin || 'Nie wybrano';
+        const destination = urlParams.get('destination') || storedData.destination || 'Nie wybrano';
+        const departure = urlParams.get('departure') || storedData.departure || 'Nie wybrano';
+        const returnDate = urlParams.get('return') || storedData.return || '';
+        const passengers = urlParams.get('passengers') || storedData.passengers || '1 Pasażer, Ekonomiczna';
+        const tripType = urlParams.get('trip-type') || storedData.tripType || 'one-way';
+        const selectedClass = urlParams.get('class') || storedData.class || 'Ekonomi';
+        const selectedOutbound = storedData.selectedOutbound || null;
+        const selectedReturn = storedData.selectedReturn || null;
 
-        // Funkcja do czyszczenia nazwy z nawiasów
-        function cleanAirportName(name) {
-            return name.replace(/\s\([^)]+\)$/, '');
+        // Zapis danych do localStorage
+        function saveFlightData() {
+            localStorage.setItem('flightData', JSON.stringify({
+                origin, destination, departure, return: returnDate, passengers, tripType, class: selectedClass,
+                selectedOutbound, selectedReturn
+            }));
         }
+
+        // Wyświetlanie podsumowania
+        document.getElementById('summary-text').textContent = `Wyszukiwanie: ${origin} → ${destination}, ${departure}${tripType === 'round-trip' ? `, Powrót: ${returnDate}` : ''}, ${passengers}${selectedClass ? `, Klasa: ${selectedClass}` : ''}`;
 
         // Mapowanie pełnych nazw na kody IATA i synonimy
         const airportIata = {
@@ -338,9 +346,6 @@
             'Katowice-Pyrzowice': 'KTW',
             'Gdańsk': 'GDN'
         };
-
-        // Wyświetlanie podsumowania
-        document.getElementById('summary-text').textContent = `Wyszukiwanie: ${origin} → ${destination}, ${departure}${tripType === 'round-trip' ? `, Powrót: ${returnDate}` : ''}, ${passengers}${selectedClass ? `, Klasa: ${selectedClass}` : ''}`;
 
         // Pełna lista lotów z cenami według klasy
         const flights = [
@@ -402,10 +407,10 @@
             { plane: 'A319 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Liverpool-John Lennon', time: '21:15', arrival: '00:00', duration: '2h 45m', prices: { Ekonomi: '309 PLN', Biznes: '509 PLN' } },
             { plane: 'A350-1000', origin: 'Centralny Port Komunikacyjny', destination: 'San Francisco', time: '13:00', arrival: '00:20', duration: '11h 20m', prices: { Ekonomi: '1499 PLN', 'Ekonomi Premium': '1799 PLN', Biznes: '2499 PLN', 'Pierwsza Klasa': '3499 PLN' } },
             { plane: 'A350-1000', origin: 'San Francisco', destination: 'Centralny Port Komunikacyjny', time: '02:40', arrival: '14:00', duration: '11h 20m', prices: { Ekonomi: '1499 PLN', 'Ekonomi Premium': '1799 PLN', Biznes: '2499 PLN', 'Pierwsza Klasa': '3499 PLN' } },
-            { plane: 'A321 XLR', origin: 'Warszawa-Okęcie', destination: 'Teneryfa-Północna', time: '00:00', arrival: '06:00', duration: '6h 00m', prices: { Ekonomi: '799 PLN', Biznes: '1299 PLN' } },
-            { plane: 'A321 XLR', origin: 'Teneryfa-Północna', destination: 'Warszawa-Okęcie', time: '08:00', arrival: '14:00', duration: '6h 00m', prices: { Ekonomi: '799 PLN', Biznes: '1299 PLN' } },
-            { plane: 'A321 XLR', origin: 'Warszawa-Okęcie', destination: 'Madryt-Barajas', time: '14:45', arrival: '18:40', duration: '3h 55m', prices: { Ekonomi: '499 PLN', Biznes: '799 PLN' } },
-            { plane: 'A321 XLR', origin: 'Madryt-Barajas', destination: 'Warszawa-Okęcie', time: '19:25', arrival: '23:15', duration: '3h 50m', prices: { Ekonomi: '499 PLN', Biznes: '799 PLN' } },
+            { plane: 'A321 XLR', origin: 'Centralny Port Komunikacyjny', destination: 'Teneryfa-Północna', time: '00:00', arrival: '06:00', duration: '6h 00m', prices: { Ekonomi: '799 PLN', Biznes: '1299 PLN' } },
+            { plane: 'A321 XLR', origin: 'Teneryfa-Północna', destination: 'Centralny Port Komunikacyjny', time: '08:00', arrival: '14:00', duration: '6h 00m', prices: { Ekonomi: '799 PLN', Biznes: '1299 PLN' } },
+            { plane: 'A321 XLR', origin: 'Centralny Port Komunikacyjny', destination: 'Madryt-Barajas', time: '14:45', arrival: '18:40', duration: '3h 55m', prices: { Ekonomi: '499 PLN', Biznes: '799 PLN' } },
+            { plane: 'A321 XLR', origin: 'Madryt-Barajas', destination: 'Centralny Port Komunikacyjny', time: '19:25', arrival: '23:15', duration: '3h 50m', prices: { Ekonomi: '499 PLN', Biznes: '799 PLN' } },
             { plane: 'A220-100', origin: 'Wrocław-Copernicus', destination: 'Centralny Port Komunikacyjny', time: '06:00', arrival: '06:55', duration: '0h 55m', prices: { Ekonomi: '179 PLN', Biznes: '379 PLN' } },
             { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Stuttgart-Echterdingen', time: '07:40', arrival: '09:30', duration: '1h 50m', prices: { Ekonomi: '259 PLN', Biznes: '459 PLN' } },
             { plane: 'A220-100', origin: 'Stuttgart-Echterdingen', destination: 'Centralny Port Komunikacyjny', time: '10:15', arrival: '12:05', duration: '1h 50m', prices: { Ekonomi: '259 PLN', Biznes: '459 PLN' } },
@@ -692,17 +697,25 @@
         }
 
         // Zmienne do przechowywania wybranych lotów
-        let selectedOutbound = null;
-        let selectedReturn = null;
+        let selectedOutbound = storedData.selectedOutbound || null;
+        let selectedReturn = storedData.selectedReturn || null;
 
         // Funkcje do wyboru lotów
+        function selectFlight(times, arrivals, type, flightData) {
+            selectedOutbound = { times, arrivals, type, flightData };
+            saveFlightData();
+            updateButtons();
+        }
+
         function selectOutbound(times, arrivals, type, flightData) {
             selectedOutbound = { times, arrivals, type, flightData };
+            saveFlightData();
             updateButtons();
         }
 
         function selectReturn(times, arrivals, type, flightData) {
             selectedReturn = { times, arrivals, type, flightData };
+            saveFlightData();
             updateButtons();
         }
 
@@ -716,7 +729,9 @@
                 }
             });
 
-            if ((tripType === 'one-way' && selectedOutbound) || (tripType === 'round-trip' && selectedOutbound && selectedReturn)) {
+            if (tripType === 'one-way' && selectedOutbound) {
+                redirectToExtras();
+            } else if (tripType === 'round-trip' && selectedOutbound && selectedReturn) {
                 redirectToExtras();
             }
         }
@@ -775,18 +790,25 @@
                         const newDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(current.getDate()).padStart(2, '0')}`;
                         if (calendarId.includes('departure')) {
                             currentDateDeparture = current;
+                            storedData.departure = newDate;
+                            saveFlightData();
                             const params = new URLSearchParams(window.location.search);
                             params.set('departure', newDate);
                             window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
                             location.reload();
                         } else {
                             currentDateReturn = current;
+                            storedData.return = newDate;
+                            saveFlightData();
                             const params = new URLSearchParams(window.location.search);
                             params.set('return', newDate);
                             window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
                             location.reload();
                         }
                     });
+                }
+                if ((calendarId.includes('departure') && newDate === departure) || (calendarId.includes('return') && newDate === returnDate)) {
+                    dayElement.classList.add('selected');
                 }
                 calendar.appendChild(dayElement);
             }
