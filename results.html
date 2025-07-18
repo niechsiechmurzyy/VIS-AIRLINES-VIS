@@ -281,12 +281,12 @@
     </div>
 
     <script>
-        // Pobieranie parametrów z URL lub localStorage
+        // Pobieranie parametrów z URL z priorytetem
         const urlParams = new URLSearchParams(window.location.search);
         let storedData = JSON.parse(localStorage.getItem('flightData')) || {};
-        const origin = urlParams.get('origin') || storedData.origin || 'Nie wybrano';
-        const destination = urlParams.get('destination') || storedData.destination || 'Nie wybrano';
-        const departure = urlParams.get('departure') || storedData.departure || 'Nie wybrano';
+        const origin = urlParams.get('origin') || storedData.origin || '';
+        const destination = urlParams.get('destination') || storedData.destination || '';
+        const departure = urlParams.get('departure') || storedData.departure || '';
         const returnDate = urlParams.get('return') || storedData.return || '';
         const passengers = urlParams.get('passengers') || storedData.passengers || '1 Pasażer, Ekonomiczna';
         const tripType = urlParams.get('trip-type') || storedData.tripType || 'one-way';
@@ -294,59 +294,35 @@
         const selectedOutbound = storedData.selectedOutbound || null;
         const selectedReturn = storedData.selectedReturn || null;
 
-        // Zapis danych do localStorage
+        // Zapis danych do localStorage tylko jeśli dane są poprawne
         function saveFlightData() {
-            localStorage.setItem('flightData', JSON.stringify({
-                origin, destination, departure, return: returnDate, passengers, tripType, class: selectedClass,
-                selectedOutbound, selectedReturn
-            }));
+            if (origin && destination && departure) {
+                localStorage.setItem('flightData', JSON.stringify({
+                    origin, destination, departure, return: returnDate, passengers, tripType, class: selectedClass,
+                    selectedOutbound, selectedReturn
+                }));
+            }
         }
 
         // Wyświetlanie podsumowania
-        document.getElementById('summary-text').textContent = `Wyszukiwanie: ${origin} → ${destination}, ${departure}${tripType === 'round-trip' ? `, Powrót: ${returnDate}` : ''}, ${passengers}${selectedClass ? `, Klasa: ${selectedClass}` : ''}`;
+        document.getElementById('summary-text').textContent = `Wyszukiwanie: ${origin || 'Nie wybrano'} → ${destination || 'Nie wybrano'}, ${departure || 'Nie wybrano'}${tripType === 'round-trip' && returnDate ? `, Powrót: ${returnDate}` : ''}, ${passengers}${selectedClass ? `, Klasa: ${selectedClass}` : ''}`;
 
-        // Mapowanie pełnych nazw na kody IATA i synonimy
+        // Mapowanie pełnych nazw na kody IATA
         const airportIata = {
-            'Szczecin-Goleniów': 'SZZ',
-            'Centralny Port Komunikacyjny': 'WAW',
-            'Gdańsk-Rębiechowo': 'GDN',
-            'Gdańsk-Lech Wałęsa': 'GDN',
-            'Brno-Tuřany': 'BRQ',
-            'Ostrawa-Leoš Janáček': 'OSR',
-            'Hanower-Langenhagen': 'HAJ',
-            'Berlin-Tegel': 'TXL',
-            'Nowy Jork-JFK': 'JFK',
-            'Chicago-O’Hare': 'ORD',
-            'Kraków-Balice': 'KRK',
-            'Frankfurt nad Menem': 'FRA',
-            'Paryż-Charles de Gaulle': 'CDG',
-            'Monachium': 'MUC',
-            'Manchester': 'MAN',
-            'Londyn-Heathrow': 'LHR',
-            'Rzym-Fiumicino': 'FCO',
-            'Los Angeles-LAX': 'LAX',
-            'Poznań-Ławica': 'POZ',
-            'Mediolan-Malpensa': 'MXP',
-            'Verona-Valerio Catullo': 'VRN',
-            'Stuttgart-Echterdingen': 'STR',
-            'Liverpool-John Lennon': 'LPL',
-            'Birmingham': 'BHX',
-            'Bristol': 'BRS',
-            'San Francisco': 'SFO',
-            'Warszawa-Okęcie': 'WAW',
-            'Teneryfa-Północna': 'TFN',
-            'Madryt-Barajas': 'MAD',
-            'Wrocław-Copernicus': 'WRO',
-            'Bydgoszcz-Szwederowo': 'BZG',
-            'Olsztyn-Mazury': 'SZY',
-            'Zielona Góra-Babimost': 'IEG',
-            'Praga-Ruzyně': 'PRG',
-            'Lublin': 'LUZ',
-            'Katowice-Pyrzowice': 'KTW',
-            'Gdańsk': 'GDN'
+            'Szczecin-Goleniów': 'SZZ', 'Centralny Port Komunikacyjny': 'WAW', 'Gdańsk-Rębiechowo': 'GDN',
+            'Brno-Tuřany': 'BRQ', 'Ostrawa-Leoš Janáček': 'OSR', 'Hanower-Langenhagen': 'HAJ',
+            'Berlin-Tegel': 'TXL', 'Nowy Jork-JFK': 'JFK', 'Chicago-O’Hare': 'ORD', 'Kraków-Balice': 'KRK',
+            'Frankfurt nad Menem': 'FRA', 'Paryż-Charles de Gaulle': 'CDG', 'Monachium': 'MUC',
+            'Manchester': 'MAN', 'Londyn-Heathrow': 'LHR', 'Rzym-Fiumicino': 'FCO', 'Los Angeles-LAX': 'LAX',
+            'Poznań-Ławica': 'POZ', 'Mediolan-Malpensa': 'MXP', 'Verona-Valerio Catullo': 'VRN',
+            'Stuttgart-Echterdingen': 'STR', 'Liverpool-John Lennon': 'LPL', 'Birmingham': 'BHX',
+            'Bristol': 'BRS', 'San Francisco': 'SFO', 'Warszawa-Okęcie': 'WAW', 'Teneryfa-Północna': 'TFN',
+            'Madryt-Barajas': 'MAD', 'Wrocław-Copernicus': 'WRO', 'Bydgoszcz-Szwederowo': 'BZG',
+            'Olsztyn-Mazury': 'SZY', 'Zielona Góra-Babimost': 'IEG', 'Praga-Ruzyně': 'PRG',
+            'Lublin': 'LUZ', 'Katowice-Pyrzowice': 'KTW', 'Gdańsk': 'GDN'
         };
 
-        // Pełna lista lotów z cenami według klasy
+        // Pełna lista lotów
         const flights = [
             { plane: 'A220-100', origin: 'Szczecin-Goleniów', destination: 'Centralny Port Komunikacyjny', time: '05:00', arrival: '06:00', duration: '1h 00m', prices: { Ekonomi: '199 PLN', Biznes: '399 PLN' } },
             { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Brno-Tuřany', time: '06:45', arrival: '07:55', duration: '1h 10m', prices: { Ekonomi: '249 PLN', Biznes: '449 PLN' } },
@@ -358,16 +334,12 @@
             { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Berlin-Tegel', time: '18:45', arrival: '19:55', duration: '1h 10m', prices: { Ekonomi: '229 PLN', Biznes: '429 PLN' } },
             { plane: 'A220-100', origin: 'Berlin-Tegel', destination: 'Centralny Port Komunikacyjny', time: '20:40', arrival: '21:50', duration: '1h 10m', prices: { Ekonomi: '229 PLN', Biznes: '429 PLN' } },
             { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Szczecin-Goleniów', time: '22:20', arrival: '23:20', duration: '1h 00m', prices: { Ekonomi: '199 PLN', Biznes: '399 PLN' } },
-            // ... (pozostałe loty z poprzedniej wersji, pominięte dla zwięzłości, ale są w pełnej wersji)
+            // ... (dodaj resztę lotów z poprzedniej wersji, jeśli potrzebne)
         ];
 
         // Funkcja określająca wybraną klasę i cenę
         function getClassAndPrice(flight) {
-            if (selectedClass && flight.prices[selectedClass]) {
-                return `${selectedClass} - ${flight.prices[selectedClass]}`;
-            } else {
-                return 'Klasa nie dostępna';
-            }
+            return selectedClass && flight.prices[selectedClass] ? `${selectedClass} - ${flight.prices[selectedClass]}` : 'Klasa nie dostępna';
         }
 
         // Funkcja generująca możliwe przesiadki
@@ -394,8 +366,8 @@
                     const [secondHour, secondMinute] = secondLeg.time.split(':').map(Number);
                     secondDeparture.setHours(secondHour, secondMinute, 0, 0);
 
-                    const timeDiff = (secondDeparture - firstArrival) / (1000 * 60); // Różnica w minutach
-                    if (timeDiff > 0 && timeDiff <= 600) { // Maksymalnie 10 godzin na przesiadkę
+                    const timeDiff = (secondDeparture - firstArrival) / (1000 * 60);
+                    if (timeDiff > 0 && timeDiff <= 600) {
                         layoverFlights.push({
                             segments: [firstLeg, secondLeg],
                             layoverDuration: `${Math.floor(timeDiff / 60)}h ${timeDiff % 60}min`
@@ -416,7 +388,7 @@
         const departureAirline = document.getElementById('departure-airline');
         const returnAirline = document.getElementById('return-airline');
 
-        if (departure !== 'Nie wybrano') {
+        if (origin && destination && departure) {
             const departureDate = new Date(departure);
 
             if (tripType === 'one-way') {
@@ -424,9 +396,6 @@
                     flight.origin.toLowerCase().includes(origin.toLowerCase()) && 
                     flight.destination.toLowerCase().includes(destination.toLowerCase())
                 );
-                if (directFlights.length === 0) {
-                    console.log(`Brak bezpośrednich lotów z ${origin} do ${destination}`);
-                }
                 directFlights.forEach(flight => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
@@ -445,9 +414,6 @@
                 });
 
                 const layoverFlights = generateLayoverFlights(origin, destination, departureDate);
-                if (layoverFlights.length === 0) {
-                    console.log(`Brak lotów z przesiadką z ${origin} do ${destination}`);
-                }
                 layoverFlights.forEach(layover => {
                     const [firstLeg, secondLeg] = layover.segments;
                     const row1 = document.createElement('tr');
@@ -488,8 +454,7 @@
                     row.innerHTML = `<td colspan="7">Brak dostępnych lotów.</td>`;
                     departureList.appendChild(row);
                 }
-                departureAirline.textContent = '';
-            } else if (tripType === 'round-trip') {
+            } else if (tripType === 'round-trip' && returnDate) {
                 departureSection.style.display = 'block';
                 returnSection.style.display = 'block';
                 returnCalendar.style.display = 'flex';
@@ -498,9 +463,6 @@
                     flight.origin.toLowerCase().includes(origin.toLowerCase()) && 
                     flight.destination.toLowerCase().includes(destination.toLowerCase())
                 );
-                if (outboundDirectFlights.length === 0) {
-                    console.log(`Brak bezpośrednich lotów wylotowych z ${origin} do ${destination}`);
-                }
                 outboundDirectFlights.forEach(flight => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
@@ -519,9 +481,6 @@
                 });
 
                 const outboundLayoverFlights = generateLayoverFlights(origin, destination, departureDate);
-                if (outboundLayoverFlights.length === 0) {
-                    console.log(`Brak lotów wylotowych z przesiadką z ${origin} do ${destination}`);
-                }
                 outboundLayoverFlights.forEach(layover => {
                     const [firstLeg, secondLeg] = layover.segments;
                     const row1 = document.createElement('tr');
@@ -557,114 +516,103 @@
                     departureList.appendChild(airlineInfo);
                 });
 
-                if (returnDate !== '' && returnDate !== 'Nie wybrano') {
-                    const returnDateObj = new Date(returnDate);
-                    let returnDirectFlights = flights.filter(flight => 
-                        flight.origin.toLowerCase().includes(destination.toLowerCase()) && 
-                        flight.destination.toLowerCase().includes(origin.toLowerCase())
-                    );
-                    if (returnDirectFlights.length === 0) {
-                        console.log(`Brak bezpośrednich lotów powrotnych z ${destination} do ${origin}`);
-                    }
-                    returnDirectFlights.forEach(flight => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${flight.time}</td>
-                            <td>${flight.arrival}</td>
-                            <td>${flight.duration}</td>
-                            <td>${flight.origin} (${airportIata[flight.origin] || ''})</td>
-                            <td>${flight.destination} (${airportIata[flight.destination] || ''})</td>
-                            <td>${getClassAndPrice(flight)}</td>
-                            <td><button class="select-btn" onclick="selectReturn('${flight.time}', '${flight.arrival}', 'direct', '${encodeURIComponent(JSON.stringify(flight))}')">Wybierz</button></td>
-                        `;
-                        returnList.appendChild(row);
-                        const airlineInfo = document.createElement('tr');
-                        airlineInfo.innerHTML = `<td colspan="7" class="airline-info">Obsługiwane przez VIS Airlines | Model samolotu: ${flight.plane}</td>`;
-                        returnList.appendChild(airlineInfo);
-                    });
+                const returnDateObj = new Date(returnDate);
+                let returnDirectFlights = flights.filter(flight => 
+                    flight.origin.toLowerCase().includes(destination.toLowerCase()) && 
+                    flight.destination.toLowerCase().includes(origin.toLowerCase())
+                );
+                returnDirectFlights.forEach(flight => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${flight.time}</td>
+                        <td>${flight.arrival}</td>
+                        <td>${flight.duration}</td>
+                        <td>${flight.origin} (${airportIata[flight.origin] || ''})</td>
+                        <td>${flight.destination} (${airportIata[flight.destination] || ''})</td>
+                        <td>${getClassAndPrice(flight)}</td>
+                        <td><button class="select-btn" onclick="selectReturn('${flight.time}', '${flight.arrival}', 'direct', '${encodeURIComponent(JSON.stringify(flight))}')">Wybierz</button></td>
+                    `;
+                    returnList.appendChild(row);
+                    const airlineInfo = document.createElement('tr');
+                    airlineInfo.innerHTML = `<td colspan="7" class="airline-info">Obsługiwane przez VIS Airlines | Model samolotu: ${flight.plane}</td>`;
+                    returnList.appendChild(airlineInfo);
+                });
 
-                    const returnLayoverFlights = generateLayoverFlights(destination, origin, returnDateObj);
-                    if (returnLayoverFlights.length === 0) {
-                        console.log(`Brak lotów powrotnych z przesiadką z ${destination} do ${origin}`);
-                    }
-                    returnLayoverFlights.forEach(layover => {
-                        const [firstLeg, secondLeg] = layover.segments;
-                        const row1 = document.createElement('tr');
-                        row1.innerHTML = `
-                            <td>${firstLeg.time}</td>
-                            <td>${firstLeg.arrival}</td>
-                            <td>${firstLeg.duration}</td>
-                            <td>${firstLeg.origin} (${airportIata[firstLeg.origin] || ''})</td>
-                            <td>${firstLeg.destination} (${airportIata[firstLeg.destination] || ''})</td>
-                            <td>${getClassAndPrice(firstLeg)}</td>
-                            <td></td>
-                        `;
-                        returnList.appendChild(row1);
+                const returnLayoverFlights = generateLayoverFlights(destination, origin, returnDateObj);
+                returnLayoverFlights.forEach(layover => {
+                    const [firstLeg, secondLeg] = layover.segments;
+                    const row1 = document.createElement('tr');
+                    row1.innerHTML = `
+                        <td>${firstLeg.time}</td>
+                        <td>${firstLeg.arrival}</td>
+                        <td>${firstLeg.duration}</td>
+                        <td>${firstLeg.origin} (${airportIata[firstLeg.origin] || ''})</td>
+                        <td>${firstLeg.destination} (${airportIata[firstLeg.destination] || ''})</td>
+                        <td>${getClassAndPrice(firstLeg)}</td>
+                        <td></td>
+                    `;
+                    returnList.appendChild(row1);
 
-                        const row2 = document.createElement('tr');
-                        row2.innerHTML = `
-                            <td>${secondLeg.time}</td>
-                            <td>${secondLeg.arrival}</td>
-                            <td>${secondLeg.duration}</td>
-                            <td>${secondLeg.origin} (${airportIata[secondLeg.origin] || ''})</td>
-                            <td>${secondLeg.destination} (${airportIata[secondLeg.destination] || ''})</td>
-                            <td>${getClassAndPrice(secondLeg)}</td>
-                            <td><button class="select-btn" onclick="selectReturn('${firstLeg.time},${secondLeg.time}', '${firstLeg.arrival},${secondLeg.arrival}', 'layover', '${encodeURIComponent(JSON.stringify([firstLeg, secondLeg]))}')">Wybierz</button></td>
-                        `;
-                        returnList.appendChild(row2);
+                    const row2 = document.createElement('tr');
+                    row2.innerHTML = `
+                        <td>${secondLeg.time}</td>
+                        <td>${secondLeg.arrival}</td>
+                        <td>${secondLeg.duration}</td>
+                        <td>${secondLeg.origin} (${airportIata[secondLeg.origin] || ''})</td>
+                        <td>${secondLeg.destination} (${airportIata[secondLeg.destination] || ''})</td>
+                        <td>${getClassAndPrice(secondLeg)}</td>
+                        <td><button class="select-btn" onclick="selectReturn('${firstLeg.time},${secondLeg.time}', '${firstLeg.arrival},${secondLeg.arrival}', 'layover', '${encodeURIComponent(JSON.stringify([firstLeg, secondLeg]))}')">Wybierz</button></td>
+                    `;
+                    returnList.appendChild(row2);
 
-                        const layoverInfo = document.createElement('tr');
-                        layoverInfo.innerHTML = `<td colspan="7" class="airline-info">Przesiadka w ${firstLeg.destination}: ${layover.layoverDuration}</td>`;
-                        returnList.appendChild(layoverInfo);
+                    const layoverInfo = document.createElement('tr');
+                    layoverInfo.innerHTML = `<td colspan="7" class="airline-info">Przesiadka w ${firstLeg.destination}: ${layover.layoverDuration}</td>`;
+                    returnList.appendChild(layoverInfo);
 
-                        const airlineInfo = document.createElement('tr');
-                        airlineInfo.innerHTML = `<td colspan="7" class="airline-info">Obsługiwane przez VIS Airlines | Model samolotu: ${firstLeg.plane} / ${secondLeg.plane}</td>`;
-                        returnList.appendChild(airlineInfo);
-                    });
-
-                    if (returnDirectFlights.length === 0 && returnLayoverFlights.length === 0) {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `<td colspan="7">Brak dostępnych lotów powrotnych.</td>`;
-                        returnList.appendChild(row);
-                    }
-                    returnAirline.textContent = '';
-                }
+                    const airlineInfo = document.createElement('tr');
+                    airlineInfo.innerHTML = `<td colspan="7" class="airline-info">Obsługiwane przez VIS Airlines | Model samolotu: ${firstLeg.plane} / ${secondLeg.plane}</td>`;
+                    returnList.appendChild(airlineInfo);
+                });
 
                 if (outboundDirectFlights.length === 0 && outboundLayoverFlights.length === 0) {
                     const row = document.createElement('tr');
                     row.innerHTML = `<td colspan="7">Brak dostępnych lotów wylotowych.</td>`;
                     departureList.appendChild(row);
                 }
-                departureAirline.textContent = '';
+                if (returnDirectFlights.length === 0 && returnLayoverFlights.length === 0) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td colspan="7">Brak dostępnych lotów powrotnych.</td>`;
+                    returnList.appendChild(row);
+                }
             }
         } else {
             const row = document.createElement('tr');
-            row.innerHTML = `<td colspan="7">Nie wybrano daty wylotu.</td>`;
+            row.innerHTML = `<td colspan="7">Nie wybrano trasy lub daty wylotu.</td>`;
             departureList.appendChild(row);
         }
 
         // Zmienne do przechowywania wybranych lotów
-        let selectedOutbound = storedData.selectedOutbound || null;
-        let selectedReturn = storedData.selectedReturn || null;
+        let selectedOutboundVar = selectedOutbound;
+        let selectedReturnVar = selectedReturn;
 
         // Funkcje do wyboru lotów
-        function selectFlight(times, arrivals, type, flightData) {
-            selectedOutbound = { times, arrivals, type, flightData };
+        window.selectFlight = function(times, arrivals, type, flightData) {
+            selectedOutboundVar = { times, arrivals, type, flightData: decodeURIComponent(flightData) };
             saveFlightData();
             updateButtons();
-        }
+        };
 
-        function selectOutbound(times, arrivals, type, flightData) {
-            selectedOutbound = { times, arrivals, type, flightData };
+        window.selectOutbound = function(times, arrivals, type, flightData) {
+            selectedOutboundVar = { times, arrivals, type, flightData: decodeURIComponent(flightData) };
             saveFlightData();
             updateButtons();
-        }
+        };
 
-        function selectReturn(times, arrivals, type, flightData) {
-            selectedReturn = { times, arrivals, type, flightData };
+        window.selectReturn = function(times, arrivals, type, flightData) {
+            selectedReturnVar = { times, arrivals, type, flightData: decodeURIComponent(flightData) };
             saveFlightData();
             updateButtons();
-        }
+        };
 
         function updateButtons() {
             const buttons = document.querySelectorAll('#departure-list .select-btn, #return-list .select-btn');
@@ -676,44 +624,45 @@
                 }
             });
 
-            if (tripType === 'one-way' && selectedOutbound) {
+            if (tripType === 'one-way' && selectedOutboundVar) {
                 redirectToExtras();
-            } else if (tripType === 'round-trip' && selectedOutbound && selectedReturn) {
+            } else if (tripType === 'round-trip' && selectedOutboundVar && selectedReturnVar) {
                 redirectToExtras();
             }
         }
 
         function redirectToExtras() {
             const params = new URLSearchParams();
-            params.set('origin', origin);
-            params.set('destination', destination);
-            params.set('departure', departure);
+            if (origin) params.set('origin', origin);
+            if (destination) params.set('destination', destination);
+            if (departure) params.set('departure', departure);
             if (returnDate) params.set('return', returnDate);
-            params.set('passengers', passengers);
-            params.set('class', selectedClass);
-            if (selectedOutbound) {
-                params.set('outboundTimes', selectedOutbound.times);
-                params.set('outboundArrivals', selectedOutbound.arrivals);
-                params.set('outboundType', selectedOutbound.type);
-                params.set('outboundFlightData', selectedOutbound.flightData);
+            if (passengers) params.set('passengers', passengers);
+            if (selectedClass) params.set('class', selectedClass);
+            if (selectedOutboundVar) {
+                params.set('outboundTimes', selectedOutboundVar.times);
+                params.set('outboundArrivals', selectedOutboundVar.arrivals);
+                params.set('outboundType', selectedOutboundVar.type);
+                params.set('outboundFlightData', selectedOutboundVar.flightData);
             }
-            if (selectedReturn) {
-                params.set('returnTimes', selectedReturn.times);
-                params.set('returnArrivals', selectedReturn.arrivals);
-                params.set('returnType', selectedReturn.type);
-                params.set('returnFlightData', selectedReturn.flightData);
+            if (selectedReturnVar) {
+                params.set('returnTimes', selectedReturnVar.times);
+                params.set('returnArrivals', selectedReturnVar.arrivals);
+                params.set('returnType', selectedReturnVar.type);
+                params.set('returnFlightData', selectedReturnVar.flightData);
             }
             window.location.href = `extras.html?${params.toString()}`;
         }
 
-        // Kalendarz z 10 dniami i suwakami
+        // Kalendarz
         let currentDateDeparture = departure ? new Date(departure) : new Date();
         let currentDateReturn = returnDate ? new Date(returnDate) : new Date();
         currentDateDeparture.setHours(0, 0, 0, 0);
         currentDateReturn.setHours(0, 0, 0, 0);
         const today = new Date();
+        today.setHours(0, 0, 0, 0);
         const maxDate = new Date(today);
-        maxDate.setFullYear(maxDate.getFullYear() + 1); // Do 17 lipca 2026
+        maxDate.setFullYear(maxDate.getFullYear() + 1); // Do 18 lipca 2026
         const months = ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'];
 
         function renderCalendar(date, calendarId, monthId, prevId, nextId) {
