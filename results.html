@@ -3,220 +3,420 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIS - Dostępne loty</title>
+    <title>VIS - Twoja Podróż</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(135deg, #f0f4f8, #e0e8f0);
+        * {
             margin: 0;
             padding: 0;
-            color: #2c3e50;
+            box-sizing: border-box;
+            font-family: 'Helvetica', sans-serif;
         }
+
+        body {
+            line-height: 1.6;
+            color: #1a2b3c;
+            background: #e6eef7;
+        }
+
         header {
-            background: #fff;
-            padding: 15px 30px;
-            border-bottom: 1px solid #ecf0f1;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            background: #ffffff;
+            padding: 1.5rem 3rem;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1e4a8a;
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
         nav a {
-            color: #3498db;
+            color: #1a2b3c;
             text-decoration: none;
-            margin: 0 20px;
-            font-weight: 500;
+            font-weight: 600;
             transition: color 0.3s;
         }
+
         nav a:hover {
-            color: #2980b9;
+            color: #ff6f61;
         }
-        .container {
-            max-width: 1200px;
-            margin: 30px auto;
-            padding: 25px;
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+
+        .dropdown {
+            position: relative;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
         }
-        .summary {
-            background: #f9fbfd;
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            color: #7f8c8d;
-            font-size: 0.95rem;
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            min-width: 200px;
+            z-index: 1001;
+            max-height: 300px;
+            overflow-y: auto;
         }
-        .calendar-container {
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-content div {
+            padding: 0.5rem 1rem;
+            color: #1a2b3c;
+            text-decoration: none;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            padding: 10px;
-            background: #f9fbfd;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            max-width: 900px;
-            margin-left: auto;
-            margin-right: auto;
-            width: 100%;
+            gap: 0.5rem;
         }
-        .calendar {
+
+        .dropdown-content div:hover {
+            background: #f0f6fa;
+        }
+
+        .main-content {
+            padding-top: 120px;
             display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 120px);
+            background: #e6eef7;
+        }
+
+        .search-container {
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .search-form {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-form div {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .search-form label {
+            font-size: 0.9rem;
+            color: #1a2b3c;
+            margin-bottom: 0.3rem;
+        }
+
+        .search-form .dropdown-select {
+            padding: 0.6rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .calendar {
+            padding: 0.6rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1002;
             align-items: center;
             justify-content: center;
-            width: 80%;
-            flex-wrap: nowrap;
         }
-        .calendar button {
+
+        .modal-content {
+            background: #fff;
+            padding: 1.5rem;
+            border-radius: 10px;
+            width: 350px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .modal-content .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .modal-content .calendar-header button {
             background: none;
             border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            color: #1e4a8a;
+        }
+
+        .modal-content .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.2rem;
+            margin-top: 0.5rem;
+        }
+
+        .modal-content .calendar-day {
+            padding: 0.5rem;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .modal-content .calendar-day:hover {
+            background: #f0f6fa;
+        }
+
+        .modal-content ul {
+            list-style: none;
+        }
+
+        .modal-content ul li {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+        }
+
+        .modal-content ul li:hover {
+            background: #f0f6fa;
+        }
+
+        .passengers-modal {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 2rem;
+            width: 600px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .passengers-modal h3 {
+            color: #1e4a8a;
             font-size: 1.5rem;
-            cursor: pointer;
-            color: #3498db;
-            padding: 5px 15px;
-            border-radius: 4px;
-            transition: background 0.3s, color 0.3s;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
         }
-        .calendar button:hover {
-            background: #3498db;
-            color: #fff;
+
+        .passengers-modal .class-options {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+            gap: 1.5rem;
         }
-        .calendar-day {
-            padding: 5px 10px;
-            margin: 0 2px;
-            cursor: pointer;
-            border: 1px solid #ecf0f1;
-            border-radius: 4px;
-            font-weight: 500;
-            transition: all 0.3s;
-            min-width: 30px;
-            text-align: center;
+
+        .passengers-modal .class-options label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
             background: #fff;
-        }
-        .calendar-day:hover {
-            background: #3498db;
-            color: #fff;
-            border-color: #3498db;
-        }
-        .calendar-day.disabled {
-            color: #ccc;
-            cursor: not-allowed;
-            background: #f1f1f1;
-        }
-        .calendar-day.selected {
-            background: #2980b9;
-            color: #fff;
-            border-color: #2980b9;
-        }
-        .section {
-            margin-bottom: 25px;
-        }
-        h3 {
-            color: #2c3e50;
-            margin-bottom: 15px;
-            font-size: 1.3rem;
-            font-weight: 600;
-            border-bottom: 2px solid #3498db;
-            display: inline-block;
-        }
-        table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            background: #fff;
+            padding: 1.2rem 1.8rem;
             border-radius: 8px;
-            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 20%;
+            justify-content: center;
+            text-align: center;
+            font-size: 1rem;
         }
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #ecf0f1;
+
+        .passengers-modal .class-options label:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
-        th {
-            background: #f9fbfd;
-            color: #2c3e50;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.9rem;
+
+        .passengers-modal .passenger-controls {
+            background: #fff;
+            padding: 1.8rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
         }
-        tr:last-child td {
+
+        .passengers-modal .passenger-controls div {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem;
+            border-bottom: 1px solid #eee;
+            font-size: 1.1rem;
+        }
+
+        .passengers-modal .passenger-controls div:last-child {
             border-bottom: none;
         }
-        tr:hover {
-            background: #f9fbfd;
-        }
-        .select-btn {
-            background: linear-gradient(90deg, #ff6200, #ff7e00);
+
+        .passengers-modal .passenger-controls button {
+            background: #1e4a8a;
             color: #fff;
             border: none;
-            padding: 8px 18px;
-            border-radius: 20px;
+            padding: 0.5rem 1.2rem;
+            border-radius: 5px;
             cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
+            transition: background 0.3s;
+            font-size: 1.1rem;
         }
-        .select-btn:hover {
-            background: linear-gradient(90deg, #e65c00, #e66b00);
-            transform: translateY(-2px);
+
+        .passengers-modal .passenger-controls button:hover {
+            background: #163a6a;
         }
-        .next-btn {
-            background: linear-gradient(90deg, #ff6200, #ff7e00);
+
+        .passengers-modal .confirm-btn {
+            background: linear-gradient(90deg, #ff6f61, #ff8a80);
             color: #fff;
             border: none;
-            padding: 8px 18px;
-            border-radius: 20px;
+            padding: 1.2rem 3rem;
+            border-radius: 8px;
+            font-size: 1.2rem;
             cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
         }
-        .next-btn:hover {
-            background: linear-gradient(90deg, #e65c00, #e66b00);
+
+        .passengers-modal .confirm-btn:hover {
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 111, 97, 0.3);
         }
-        .back-btn {
-            background: #3498db;
-            color: #fff;
+
+        .search-btn {
+            grid-column: 1 / 4;
+            background: #ff6f61;
+            color: white;
             border: none;
-            padding: 10px 25px;
-            border-radius: 20px;
+            padding: 0.8rem;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .search-btn:hover {
+            background: #e65b50;
+        }
+
+        .options {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #1a2b3c;
+        }
+
+        .options a {
+            color: #1e4a8a;
             text-decoration: none;
-            display: inline-block;
-            font-weight: 500;
-            transition: all 0.3s;
         }
-        .back-btn:hover {
-            background: #2980b9;
-            transform: translateY(-2px);
+
+        .options a:hover {
+            text-decoration: underline;
         }
-        .airline-info {
-            font-size: 0.85rem;
-            color: #7f8c8d;
-            margin-top: 5px;
+
+        .additional-options {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: #1a2b3c;
         }
+
+        .additional-options a {
+            color: #1e4a8a;
+            text-decoration: none;
+        }
+
+        .additional-options a:hover {
+            text-decoration: underline;
+        }
+
         @media (max-width: 768px) {
-            .calendar-container {
+            header {
+                padding: 1rem;
                 flex-direction: column;
-                padding: 5px;
-                max-width: 100%;
+                gap: 1rem;
             }
-            .calendar {
+
+            .logo {
+                font-size: 2rem;
+            }
+
+            nav {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .search-form {
+                grid-template-columns: 1fr;
+            }
+
+            .search-btn {
+                grid-column: 1;
+            }
+
+            .modal-content {
+                width: 90%;
+            }
+
+            .passengers-modal {
+                width: 90%;
+                padding: 1.5rem;
+            }
+
+            .passengers-modal .class-options {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .passengers-modal .class-options label {
                 width: 100%;
-                justify-content: center;
-                flex-wrap: nowrap;
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-            }
-            .calendar-day {
-                min-width: 30px;
+                padding: 1rem;
                 font-size: 1rem;
-                padding: 8px 12px;
             }
-            table {
-                font-size: 0.9rem;
+
+            .passengers-modal .passenger-controls div {
+                padding: 1rem;
+                font-size: 1rem;
             }
-            th, td {
-                padding: 10px;
+
+            .passengers-modal .passenger-controls button {
+                padding: 0.4rem 1rem;
+                font-size: 1rem;
+            }
+
+            .passengers-modal .confirm-btn {
+                padding: 1rem 2rem;
+                font-size: 1.1rem;
+            }
+
+            .additional-options {
+                flex-direction: column;
+                gap: 1rem;
             }
         }
     </style>
@@ -224,623 +424,586 @@
 <body>
     <header>
         <nav>
-            <a href="index.html">Zarezerwuj lot</a>
+            <a href="#book">Zarezerwuj lot</a>
             <a href="#checkin">Odpraw się</a>
             <a href="#manage">Zarządzaj rezerwacją</a>
         </nav>
+        <div class="logo">VIS</div>
+        <nav>
+            <div class="dropdown">
+                <span>Waluta</span>
+                <div class="dropdown-content">
+                    <div>🇵🇱 PLN - Polska</div>
+                    <div>🇺🇸 USD - USA</div>
+                    <div>🇪🇺 EUR - Euro</div>
+                </div>
+            </div>
+            <div class="dropdown">
+                <span>Język</span>
+                <div class="dropdown-content">
+                    <div>🇵🇱 PL - Polski</div>
+                    <div>🇬🇧 EN - English</div>
+                    <div>🇩🇪 DE - Deutsch</div>
+                </div>
+            </div>
+            <div class="dropdown">
+                <span class="account-icon">👤</span>
+                <div class="dropdown-content">
+                    <a href="#login">Zaloguj się</a>
+                    <a href="#register">Zarejestruj się</a>
+                </div>
+            </div>
+        </nav>
     </header>
-    <div class="container">
-        <div class="summary" id="summary-text"></div>
-        <div class="section" id="departure-section">
-            <div class="calendar-container" id="departure-calendar">
-                <button id="prev-departure"><</button>
-                <div class="calendar" id="calendar-departure"></div>
-                <button id="next-departure">></button>
+
+    <div class="main-content">
+        <div class="search-container">
+            <form class="search-form" id="flightSearchForm">
+                <div>
+                    <label for="origin">Skąd</label>
+                    <div class="dropdown-select" id="origin-select" name="origin">Wybierz lotnisko</div>
+                </div>
+                <div>
+                    <label for="destination">Dokąd</label>
+                    <div class="dropdown-select" id="destination-select" name="destination">Wybierz lotnisko</div>
+                </div>
+                <div>
+                    <label>Wylot</label>
+                    <div class="calendar" id="departure-calendar" name="departure">Wybierz datę</div>
+                </div>
+                <div id="return-div" style="display: block;">
+                    <label>Powrót</label>
+                    <div class="calendar" id="return-calendar" name="return">Wybierz datę (opcjonalne)</div>
+                </div>
+                <div>
+                    <label>Pasażerowie i klasa</label>
+                    <div class="dropdown-select" id="passengers-class" name="passengers">1 Pasażer, Ekonomiczna</div>
+                </div>
+                <div style="grid-column: 1 / 4; display: flex; gap: 1rem;">
+                    <label><input type="radio" name="trip-type" value="one-way" checked onchange="toggleReturn()"> Lot w jedną stronę</label>
+                    <label><input type="radio" name="trip-type" value="round-trip" onchange="toggleReturn()"> Lot w obie strony</label>
+                </div>
+                <button type="submit" class="search-btn">Szukaj</button>
+            </form>
+            <div class="additional-options">
+                <a href="#">Mam kod promocyjny</a>
+                <a href="#">Mam kartę Dużej Rodziny</a>
+                <a href="#">Oferty specjalne</a>
+                <span>Rezerwacja bez opłat!</span>
             </div>
-            <h3>Wylot - dostępne loty</h3>
-            <table id="departure-table">
-                <thead>
-                    <tr>
-                        <th>Godzina wylotu</th>
-                        <th>Godzina przylotu</th>
-                        <th>Czas lotu</th>
-                        <th>Lotnisko wylotu</th>
-                        <th>Lotnisko przylotu</th>
-                        <th>Klasy</th>
-                        <th>Wybierz</th>
-                    </tr>
-                </thead>
-                <tbody id="departure-list"></tbody>
-            </table>
-            <div class="airline-info" id="departure-airline"></div>
         </div>
-        <div class="section" id="return-section" style="display: none;">
-            <div class="calendar-container" id="return-calendar">
-                <button id="prev-return"><</button>
-                <div class="calendar" id="calendar-return"></div>
-                <button id="next-return">></button>
+    </div>
+
+    <div class="modal" id="origin-modal">
+        <div class="modal-content">
+            <h3>Wybierz lotnisko - Skąd</h3>
+            <ul id="origin-modal-list">
+                <li data-value="Poland"><strong>Polska</strong></li>
+                <li data-value="Warszawa-Chopina (WAW)">Warszawa - Chopin (WAW)</li>
+                <li data-value="Warszawa-Modlin (WMI)">Warszawa - Modlin (WMI)</li>
+                <li data-value="Kraków-Balice (KRK)">Kraków - Balice (KRK)</li>
+                <li data-value="Gdańsk-Rębiechowo (GDN)">Gdańsk - Lech Wałęsa (GDN)</li>
+                <li data-value="Wrocław-Strachowice (WRO)">Wrocław - Copernicus (WRO)</li>
+                <li data-value="Katowice-Pyrzowice (KTW)">Katowice - Pyrzowice (KTW)</li>
+                <li data-value="Poznań-Ławica (POZ)">Poznań - Ławica (POZ)</li>
+                <li data-value="Łódź-Lublinek (LCJ)">Łódź - Lublinek (LCJ)</li>
+                <li data-value="Rzeszów-Jasionka (RZE)">Rzeszów - Jasionka (RZE)</li>
+                <li data-value="Szczecin-Goleniów (SZZ)">Szczecin - Goleniów (SZZ)</li>
+                <li data-value="Bydgoszcz-Szwederowo (BZG)">Bydgoszcz - Szwederowo (BZG)</li>
+                <li data-value="Zielona Góra-Babimost (IEG)">Zielona Góra - Babimost (IEG)</li>
+                <li data-value="Lublin-Świdnik (LUZ)">Lublin - Świdnik (LUZ)</li>
+                <li data-value="Olsztyn-Mazury (SZY)">Olsztyn - Mazury (SZY)</li>
+                <li data-value="Radom (RDO)">Radom (RDO)</li>
+                <li data-value="Centralny Port Komunikacyjny">Centralny Port Komunikacyjny</li>
+                <li data-value="Germany"><strong>Niemcy</strong></li>
+                <li data-value="Berlin-Tegel (TXL)">Berlin - Tegel (TXL)</li>
+                <li data-value="Berlin-Schönefeld (SXF)">Berlin - Schönefeld (SXF)</li>
+                <li data-value="Frankfurt nad Menem (FRA)">Frankfurt nad Menem (FRA)</li>
+                <li data-value="Monachium (MUC)">Monachium (MUC)</li>
+                <li data-value="Düsseldorf (DUS)">Düsseldorf (DUS)</li>
+                <li data-value="Hamburg (HAM)">Hamburg (HAM)</li>
+                <li data-value="Kolonia/Bonn (CGN)">Kolonia/Bonn (CGN)</li>
+                <li data-value="Stuttgart (STR)">Stuttgart (STR)</li>
+                <li data-value="Hanower (HAJ)">Hanower (HAJ)</li>
+                <li data-value="Dortmund (DTM)">Dortmund (DTM)</li>
+                <li data-value="Brema (BRE)">Brema (BRE)</li>
+                <li data-value="Lipsk/Halle (LEJ)">Lipsk/Halle (LEJ)</li>
+                <li data-value="Norymberga (NUE)">Norymberga (NUE)</li>
+                <li data-value="France"><strong>Francja</strong></li>
+                <li data-value="Paryż-Charles de Gaulle (CDG)">Paryż - Charles de Gaulle (CDG)</li>
+                <li data-value="Paryż-Orly (ORY)">Paryż - Orly (ORY)</li>
+                <li data-value="Nicea-Lazurowe Wybrzeże (NCE)">Nicea - Lazurowe Wybrzeże (NCE)</li>
+                <li data-value="Lyon-Saint-Exupéry (LYS)">Lyon - Saint-Exupéry (LYS)</li>
+                <li data-value="Marsylia-Prowansja (MRS)">Marsylia - Prowansja (MRS)</li>
+                <li data-value="Tuluza-Blagnac (TLS)">Tuluza - Blagnac (TLS)</li>
+                <li data-value="Bordeaux-Mérignac (BOD)">Bordeaux - Mérignac (BOD)</li>
+                <li data-value="Nantes-Atlantique (NTE)">Nantes - Atlantique (NTE)</li>
+                <li data-value="Strasburg-Entzheim (SXB)">Strasburg - Entzheim (SXB)</li>
+                <li data-value="Lille-Lesquin (LIL)">Lille - Lesquin (LIL)</li>
+                <li data-value="Spain"><strong>Hiszpania</strong></li>
+                <li data-value="Madryt-Barajas (MAD)">Madryt - Barajas (MAD)</li>
+                <li data-value="Barcelona-El Prat (BCN)">Barcelona - El Prat (BCN)</li>
+                <li data-value="Malaga-Costa del Sol (AGP)">Malaga - Costa del Sol (AGP)</li>
+                <li data-value="Palma de Mallorca (PMI)">Palma de Mallorca (PMI)</li>
+                <li data-value="Walencja (VLC)">Walencja (VLC)</li>
+                <li data-value="Sewilla-San Pablo (SVQ)">Sewilla - San Pablo (SVQ)</li>
+                <li data-value="Bilbao (BIO)">Bilbao (BIO)</li>
+                <li data-value="Gran Canaria (LPA)">Gran Canaria (LPA)</li>
+                <li data-value="Teneryfa-Południe (TFS)">Teneryfa - Południe (TFS)</li>
+                <li data-value="Alicante-Elche (ALC)">Alicante - Elche (ALC)</li>
+                <li data-value="Italy"><strong>Włochy</strong></li>
+                <li data-value="Rzym-Fiumicino (FCO)">Rzym - Fiumicino (FCO)</li>
+                <li data-value="Mediolan-Malpensa (MXP)">Mediolan - Malpensa (MXP)</li>
+                <li data-value="Wenecja-Marco Polo (VCE)">Wenecja - Marco Polo (VCE)</li>
+                <li data-value="Neapol-Capodichino (NAP)">Neapol - Capodichino (NAP)</li>
+                <li data-value="Turyn-Caselle (TRN)">Turyn - Caselle (TRN)</li>
+                <li data-value="Florencja-Peretola (FLR)">Florencja - Peretola (FLR)</li>
+                <li data-value="Bolonia-Guglielmo Marconi (BLQ)">Bolonia - Guglielmo Marconi (BLQ)</li>
+                <li data-value="Genua-Cristoforo Colombo (GOA)">Genua - Cristoforo Colombo (GOA)</li>
+                <li data-value="Katania-Fontanarossa (CTA)">Katania - Fontanarossa (CTA)</li>
+                <li data-value="USA"><strong>USA</strong></li>
+                <li data-value="Nowy Jork-JFK (JFK)">Nowy Jork - JFK (JFK)</li>
+                <li data-value="Los Angeles-LAX (LAX)">Los Angeles - LAX (LAX)</li>
+                <li data-value="Chicago-O'Hare (ORD)">Chicago - O'Hare (ORD)</li>
+                <li data-value="Miami (MIA)">Miami (MIA)</li>
+                <li data-value="San Francisco (SFO)">San Francisco (SFO)</li>
+                <li data-value="Atlanta-Hartsfield-Jackson (ATL)">Atlanta - Hartsfield-Jackson (ATL)</li>
+                <li data-value="Houston-George Bush (IAH)">Houston - George Bush (IAH)</li>
+                <li data-value="Seattle-Tacoma (SEA)">Seattle - Tacoma (SEA)</li>
+                <li data-value="Boston-Logan (BOS)">Boston - Logan (BOS)</li>
+                <li data-value="Portugal"><strong>Portugalia</strong></li>
+                <li data-value="Lizbona-Humberto Delgado (LIS)">Lizbona - Humberto Delgado (LIS)</li>
+                <li data-value="Porto (OPO)">Porto (OPO)</li>
+                <li data-value="Faro (FAO)">Faro (FAO)</li>
+                <li data-value="Funchal-Madeira (FNC)">Funchal - Madeira (FNC)</li>
+                <li data-value="Ponta Delgada (PDL)">Ponta Delgada (PDL)</li>
+                <li data-value="Czech Republic"><strong>Czechy</strong></li>
+                <li data-value="Praga-Ruzyně (PRG)">Praga - Ruzyně (PRG)</li>
+                <li data-value="Brno-Tuřany (BRQ)">Brno - Tuřany (BRQ)</li>
+                <li data-value="Ostrawa-Leoš Janáček (OSR)">Ostrawa - Leoš Janáček (OSR)</li>
+                <li data-value="China"><strong>Chiny</strong></li>
+                <li data-value="Pekin-Capital (PEK)">Pekin - Capital (PEK)</li>
+                <li data-value="Szanghaj-Pudong (PVG)">Szanghaj - Pudong (PVG)</li>
+                <li data-value="Guangzhou-Baiyun (CAN)">Guangzhou - Baiyun (CAN)</li>
+                <li data-value="Szenzen-Bao'an (SZX)">Szenzen - Bao'an (SZX)</li>
+                <li data-value="Chengdu-Shuangliu (CTU)">Chengdu - Shuangliu (CTU)</li>
+                <li data-value="United Kingdom"><strong>Wielka Brytania</strong></li>
+                <li data-value="Londyn-Heathrow (LHR)">Londyn - Heathrow (LHR)</li>
+                <li data-value="Londyn-Gatwick (LGW)">Londyn - Gatwick (LGW)</li>
+                <li data-value="Manchester (MAN)">Manchester (MAN)</li>
+                <li data-value="Birmingham (BHX)">Birmingham (BHX)</li>
+                <li data-value="Edynburg (EDI)">Edynburg (EDI)</li>
+                <li data-value="Glasgow (GLA)">Glasgow (GLA)</li>
+                <li data-value="Liverpool-John Lennon (LPL)">Liverpool - John Lennon (LPL)</li>
+                <li data-value="Bristol (BRS)">Bristol (BRS)</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="modal" id="destination-modal">
+        <div class="modal-content">
+            <h3>Wybierz lotnisko - Dokąd</h3>
+            <ul id="destination-modal-list">
+                <li data-value="Poland"><strong>Polska</strong></li>
+                <li data-value="Warszawa-Chopina (WAW)">Warszawa - Chopin (WAW)</li>
+                <li data-value="Warszawa-Modlin (WMI)">Warszawa - Modlin (WMI)</li>
+                <li data-value="Kraków-Balice (KRK)">Kraków - Balice (KRK)</li>
+                <li data-value="Gdańsk-Rębiechowo (GDN)">Gdańsk - Lech Wałęsa (GDN)</li>
+                <li data-value="Wrocław-Strachowice (WRO)">Wrocław - Copernicus (WRO)</li>
+                <li data-value="Katowice-Pyrzowice (KTW)">Katowice - Pyrzowice (KTW)</li>
+                <li data-value="Poznań-Ławica (POZ)">Poznań - Ławica (POZ)</li>
+                <li data-value="Łódź-Lublinek (LCJ)">Łódź - Lublinek (LCJ)</li>
+                <li data-value="Rzeszów-Jasionka (RZE)">Rzeszów - Jasionka (RZE)</li>
+                <li data-value="Szczecin-Goleniów (SZZ)">Szczecin - Goleniów (SZZ)</li>
+                <li data-value="Bydgoszcz-Szwederowo (BZG)">Bydgoszcz - Szwederowo (BZG)</li>
+                <li data-value="Zielona Góra-Babimost (IEG)">Zielona Góra - Babimost (IEG)</li>
+                <li data-value="Lublin-Świdnik (LUZ)">Lublin - Świdnik (LUZ)</li>
+                <li data-value="Olsztyn-Mazury (SZY)">Olsztyn - Mazury (SZY)</li>
+                <li data-value="Radom (RDO)">Radom (RDO)</li>
+                <li data-value="Centralny Port Komunikacyjny">Centralny Port Komunikacyjny</li>
+                <li data-value="Germany"><strong>Niemcy</strong></li>
+                <li data-value="Berlin-Tegel (TXL)">Berlin - Tegel (TXL)</li>
+                <li data-value="Berlin-Schönefeld (SXF)">Berlin - Schönefeld (SXF)</li>
+                <li data-value="Frankfurt nad Menem (FRA)">Frankfurt nad Menem (FRA)</li>
+                <li data-value="Monachium (MUC)">Monachium (MUC)</li>
+                <li data-value="Düsseldorf (DUS)">Düsseldorf (DUS)</li>
+                <li data-value="Hamburg (HAM)">Hamburg (HAM)</li>
+                <li data-value="Kolonia/Bonn (CGN)">Kolonia/Bonn (CGN)</li>
+                <li data-value="Stuttgart (STR)">Stuttgart (STR)</li>
+                <li data-value="Hanower (HAJ)">Hanower (HAJ)</li>
+                <li data-value="Dortmund (DTM)">Dortmund (DTM)</li>
+                <li data-value="Brema (BRE)">Brema (BRE)</li>
+                <li data-value="Lipsk/Halle (LEJ)">Lipsk/Halle (LEJ)</li>
+                <li data-value="Norymberga (NUE)">Norymberga (NUE)</li>
+                <li data-value="France"><strong>Francja</strong></li>
+                <li data-value="Paryż-Charles de Gaulle (CDG)">Paryż - Charles de Gaulle (CDG)</li>
+                <li data-value="Paryż-Orly (ORY)">Paryż - Orly (ORY)</li>
+                <li data-value="Nicea-Lazurowe Wybrzeże (NCE)">Nicea - Lazurowe Wybrzeże (NCE)</li>
+                <li data-value="Lyon-Saint-Exupéry (LYS)">Lyon - Saint-Exupéry (LYS)</li>
+                <li data-value="Marsylia-Prowansja (MRS)">Marsylia - Prowansja (MRS)</li>
+                <li data-value="Tuluza-Blagnac (TLS)">Tuluza - Blagnac (TLS)</li>
+                <li data-value="Bordeaux-Mérignac (BOD)">Bordeaux - Mérignac (BOD)</li>
+                <li data-value="Nantes-Atlantique (NTE)">Nantes - Atlantique (NTE)</li>
+                <li data-value="Strasburg-Entzheim (SXB)">Strasburg - Entzheim (SXB)</li>
+                <li data-value="Lille-Lesquin (LIL)">Lille - Lesquin (LIL)</li>
+                <li data-value="Spain"><strong>Hiszpania</strong></li>
+                <li data-value="Madryt-Barajas (MAD)">Madryt - Barajas (MAD)</li>
+                <li data-value="Barcelona-El Prat (BCN)">Barcelona - El Prat (BCN)</li>
+                <li data-value="Malaga-Costa del Sol (AGP)">Malaga - Costa del Sol (AGP)</li>
+                <li data-value="Palma de Mallorca (PMI)">Palma de Mallorca (PMI)</li>
+                <li data-value="Walencja (VLC)">Walencja (VLC)</li>
+                <li data-value="Sewilla-San Pablo (SVQ)">Sewilla - San Pablo (SVQ)</li>
+                <li data-value="Bilbao (BIO)">Bilbao (BIO)</li>
+                <li data-value="Gran Canaria (LPA)">Gran Canaria (LPA)</li>
+                <li data-value="Teneryfa-Południe (TFS)">Teneryfa - Południe (TFS)</li>
+                <li data-value="Alicante-Elche (ALC)">Alicante - Elche (ALC)</li>
+                <li data-value="Italy"><strong>Włochy</strong></li>
+                <li data-value="Rzym-Fiumicino (FCO)">Rzym - Fiumicino (FCO)</li>
+                <li data-value="Mediolan-Malpensa (MXP)">Mediolan - Malpensa (MXP)</li>
+                <li data-value="Wenecja-Marco Polo (VCE)">Wenecja - Marco Polo (VCE)</li>
+                <li data-value="Neapol-Capodichino (NAP)">Neapol - Capodichino (NAP)</li>
+                <li data-value="Turyn-Caselle (TRN)">Turyn - Caselle (TRN)</li>
+                <li data-value="Florencja-Peretola (FLR)">Florencja - Peretola (FLR)</li>
+                <li data-value="Bolonia-Guglielmo Marconi (BLQ)">Bolonia - Guglielmo Marconi (BLQ)</li>
+                <li data-value="Genua-Cristoforo Colombo (GOA)">Genua - Cristoforo Colombo (GOA)</li>
+                <li data-value="Katania-Fontanarossa (CTA)">Katania - Fontanarossa (CTA)</li>
+                <li data-value="USA"><strong>USA</strong></li>
+                <li data-value="Nowy Jork-JFK (JFK)">Nowy Jork - JFK (JFK)</li>
+                <li data-value="Los Angeles-LAX (LAX)">Los Angeles - LAX (LAX)</li>
+                <li data-value="Chicago-O'Hare (ORD)">Chicago - O'Hare (ORD)</li>
+                <li data-value="Miami (MIA)">Miami (MIA)</li>
+                <li data-value="San Francisco (SFO)">San Francisco (SFO)</li>
+                <li data-value="Atlanta-Hartsfield-Jackson (ATL)">Atlanta - Hartsfield-Jackson (ATL)</li>
+                <li data-value="Houston-George Bush (IAH)">Houston - George Bush (IAH)</li>
+                <li data-value="Seattle-Tacoma (SEA)">Seattle - Tacoma (SEA)</li>
+                <li data-value="Boston-Logan (BOS)">Boston - Logan (BOS)</li>
+                <li data-value="Portugal"><strong>Portugalia</strong></li>
+                <li data-value="Lizbona-Humberto Delgado (LIS)">Lizbona - Humberto Delgado (LIS)</li>
+                <li data-value="Porto (OPO)">Porto (OPO)</li>
+                <li data-value="Faro (FAO)">Faro (FAO)</li>
+                <li data-value="Funchal-Madeira (FNC)">Funchal - Madeira (FNC)</li>
+                <li data-value="Ponta Delgada (PDL)">Ponta Delgada (PDL)</li>
+                <li data-value="Czech Republic"><strong>Czechy</strong></li>
+                <li data-value="Praga-Ruzyně (PRG)">Praga - Ruzyně (PRG)</li>
+                <li data-value="Brno-Tuřany (BRQ)">Brno - Tuřany (BRQ)</li>
+                <li data-value="Ostrawa-Leoš Janáček (OSR)">Ostrawa - Leoš Janáček (OSR)</li>
+                <li data-value="China"><strong>Chiny</strong></li>
+                <li data-value="Pekin-Capital (PEK)">Pekin - Capital (PEK)</li>
+                <li data-value="Szanghaj-Pudong (PVG)">Szanghaj - Pudong (PVG)</li>
+                <li data-value="Guangzhou-Baiyun (CAN)">Guangzhou - Baiyun (CAN)</li>
+                <li data-value="Szenzen-Bao'an (SZX)">Szenzen - Bao'an (SZX)</li>
+                <li data-value="Chengdu-Shuangliu (CTU)">Chengdu - Shuangliu (CTU)</li>
+                <li data-value="United Kingdom"><strong>Wielka Brytania</strong></li>
+                <li data-value="Londyn-Heathrow (LHR)">Londyn - Heathrow (LHR)</li>
+                <li data-value="Londyn-Gatwick (LGW)">Londyn - Gatwick (LGW)</li>
+                <li data-value="Manchester (MAN)">Manchester (MAN)</li>
+                <li data-value="Birmingham (BHX)">Birmingham (BHX)</li>
+                <li data-value="Edynburg (EDI)">Edynburg (EDI)</li>
+                <li data-value="Glasgow (GLA)">Glasgow (GLA)</li>
+                <li data-value="Liverpool-John Lennon (LPL)">Liverpool - John Lennon (LPL)</li>
+                <li data-value="Bristol (BRS)">Bristol (BRS)</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="modal" id="departure-modal">
+        <div class="modal-content">
+            <div class="calendar-header">
+                <button id="prev-month-departure"><</button>
+                <span id="current-month-departure"></span>
+                <button id="next-month-departure">></button>
             </div>
-            <h3>Powrót - dostępne loty</h3>
-            <table id="return-table">
-                <thead>
-                    <tr>
-                        <th>Godzina wylotu</th>
-                        <th>Godzina przylotu</th>
-                        <th>Czas lotu</th>
-                        <th>Lotnisko wylotu</th>
-                        <th>Lotnisko przylotu</th>
-                        <th>Klasy</th>
-                        <th>Wybierz</th>
-                    </tr>
-                </thead>
-                <tbody id="return-list"></tbody>
-            </table>
-            <div class="airline-info" id="return-airline"></div>
+            <div class="calendar-grid" id="departure-calendar-grid"></div>
         </div>
-        <a href="index.html" class="back-btn">Powrót do wyszukiwania</a>
+    </div>
+
+    <div class="modal" id="return-modal">
+        <div class="modal-content">
+            <div class="calendar-header">
+                <button id="prev-month-return"><</button>
+                <span id="current-month-return"></span>
+                <button id="next-month-return">></button>
+            </div>
+            <div class="calendar-grid" id="return-calendar-grid"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="passengers-modal">
+        <div class="passengers-modal">
+            <h3>Pasażerowie i klasa podróży</h3>
+            <div class="class-options">
+                <label><input type="radio" name="class" value="economy" checked> Ekonomiczna</label>
+                <label><input type="radio" name="class" value="premium"> Ekonomia Premium</label>
+                <label><input type="radio" name="class" value="business"> Biznes</label>
+                <label><input type="radio" name="class" value="first"> Pierwsza</label>
+            </div>
+            <div class="passenger-controls">
+                <div>
+                    <span>Dorośli (16+ lat)</span>
+                    <button type="button" onclick="changePassenger('adult', -1)">-</button>
+                    <span id="adult-count">1</span>
+                    <button type="button" onclick="changePassenger('adult', 1)">+</button>
+                </div>
+                <div>
+                    <span>Dzieci (2-15 lat)</span>
+                    <button type="button" onclick="changePassenger('child', -1)">-</button>
+                    <span id="child-count">0</span>
+                    <button type="button" onclick="changePassenger('child', 1)">+</button>
+                </div>
+                <div>
+                    <span>Niemowlęta (0-24 miesiące)</span>
+                    <button type="button" onclick="changePassenger('infant', -1)">-</button>
+                    <span id="infant-count">0</span>
+                    <button type="button" onclick="changePassenger('infant', 1)">+</button>
+                </div>
+            </div>
+            <button type="button" class="confirm-btn" onclick="updatePassengers()">Potwierdź</button>
+        </div>
     </div>
 
     <script>
-        // Pobieranie parametrów z URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const origin = urlParams.get('origin') || 'Nie wybrano';
-        const destination = urlParams.get('destination') || 'Nie wybrano';
-        const departure = urlParams.get('departure') || 'Nie wybrano';
-        const returnDate = urlParams.get('return') || '';
-        const passengers = urlParams.get('passengers') || '1 Pasażer, Ekonomiczna';
-        const tripType = urlParams.get('trip-type') || 'one-way';
-        const selectedClass = urlParams.get('class') || 'Ekonomi';
-        const selectedPrice = urlParams.get('price') || '';
-
-        // Funkcja do czyszczenia nazwy z nawiasów
-        function cleanAirportName(name) {
-            return name.replace(/\s\([^)]+\)$/, '');
+        // Pobieranie zapisanych danych z localStorage przy załadowaniu strony
+        let storedData = JSON.parse(localStorage.getItem('flightData')) || {};
+        if (storedData.origin) document.getElementById('origin-select').textContent = storedData.origin;
+        if (storedData.destination) document.getElementById('destination-select').textContent = storedData.destination;
+        if (storedData.departure) document.getElementById('departure-calendar').textContent = storedData.departure;
+        if (storedData.return) document.getElementById('return-calendar').textContent = storedData.return;
+        if (storedData.passengers) document.getElementById('passengers-class').textContent = storedData.passengers;
+        if (storedData.tripType) {
+            document.querySelector(`input[name="trip-type"][value="${storedData.tripType}"]`).checked = true;
+            toggleReturn();
         }
 
-        // Mapowanie pełnych nazw na kody IATA i synonimy
-        const airportIata = {
-            'Szczecin-Goleniów': 'SZZ',
-            'Centralny Port Komunikacyjny': 'WAW',
-            'Gdańsk-Rębiechowo': 'GDN',
-            'Gdańsk-Lech Wałęsa': 'GDN',
-            'Brno-Tuřany': 'BRQ',
-            'Ostrawa-Leoš Janáček': 'OSR',
-            'Hanower-Langenhagen': 'HAJ',
-            'Berlin-Tegel': 'TXL',
-            'Nowy Jork-JFK': 'JFK',
-            'Chicago-O’Hare': 'ORD',
-            'Kraków-Balice': 'KRK',
-            'Frankfurt nad Menem': 'FRA',
-            'Paryż-Charles de Gaulle': 'CDG',
-            'Monachium': 'MUC',
-            'Manchester': 'MAN',
-            'Londyn-Heathrow': 'LHR',
-            'Rzym-Fiumicino': 'FCO',
-            'Los Angeles-LAX': 'LAX',
-            'Poznań-Ławica': 'POZ',
-            'Mediolan-Malpensa': 'MXP',
-            'Verona-Valerio Catullo': 'VRN',
-            'Stuttgart-Echterdingen': 'STR',
-            'Liverpool-John Lennon': 'LPL',
-            'Birmingham': 'BHX',
-            'Bristol': 'BRS',
-            'San Francisco': 'SFO',
-            'Warszawa-Okęcie': 'WAW',
-            'Teneryfa-Północna': 'TFN',
-            'Madryt-Barajas': 'MAD',
-            'Wrocław-Copernicus': 'WRO',
-            'Rzym-Fiumicino': 'FCO',
-            'Bydgoszcz-Szwederowo': 'BZG',
-            'Olsztyn-Mazury': 'SZY',
-            'Zielona Góra-Babimost': 'IEG',
-            'Praga-Ruzyně': 'PRG',
-            'Lublin': 'LUZ',
-            'Katowice-Pyrzowice': 'KTW',
-            'Gdańsk': 'GDN'
-        };
+        // Modal dla lotnisk
+        const originSelect = document.getElementById('origin-select');
+        const originModal = document.getElementById('origin-modal');
+        const originModalList = document.getElementById('origin-modal-list');
+        const destinationSelect = document.getElementById('destination-select');
+        const destinationModal = document.getElementById('destination-modal');
+        const destinationModalList = document.getElementById('destination-modal-list');
 
-        // Wyświetlanie podsumowania
-        document.getElementById('summary-text').textContent = `Wyszukiwanie: ${origin} → ${destination}, ${departure}${tripType === 'round-trip' ? `, Powrót: ${returnDate}` : ''}, ${passengers}${selectedClass ? `, Klasa: ${selectedClass}` : ''}`;
+        originSelect.addEventListener('click', () => {
+            originModal.style.display = 'flex';
+            destinationModal.style.display = 'none';
+        });
 
-        // Pełna lista lotów z cenami według klasy
-        const flights = [
-            { plane: 'A220-100', origin: 'Szczecin-Goleniów', destination: 'Centralny Port Komunikacyjny', time: '05:00', arrival: '06:00', duration: '1h 00m', prices: { Ekonomi: '199 PLN', Biznes: '399 PLN' } },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Brno-Tuřany', time: '06:45', arrival: '07:55', duration: '1h 10m', prices: { Ekonomi: '249 PLN', Biznes: '449 PLN' } },
-            { plane: 'A220-100', origin: 'Brno-Tuřany', destination: 'Centralny Port Komunikacyjny', time: '08:40', arrival: '09:50', duration: '1h 10m', prices: { Ekonomi: '249 PLN', Biznes: '449 PLN' } },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Ostrawa-Leoš Janáček', time: '10:35', arrival: '11:30', duration: '0h 55m', prices: { Ekonomi: '199 PLN', Biznes: '399 PLN' } },
-            { plane: 'A220-100', origin: 'Ostrawa-Leoš Janáček', destination: 'Centralny Port Komunikacyjny', time: '12:15', arrival: '13:10', duration: '0h 55m', prices: { Ekonomi: '199 PLN', Biznes: '399 PLN' } },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Hanower-Langenhagen', time: '13:55', arrival: '15:35', duration: '1h 40m', prices: { Ekonomi: '299 PLN', Biznes: '499 PLN' } },
-            { plane: 'A220-100', origin: 'Hanower-Langenhagen', destination: 'Centralny Port Komunikacyjny', time: '16:20', arrival: '18:00', duration: '1h 40m', prices: { Ekonomi: '299 PLN', Biznes: '499 PLN' } },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Berlin-Tegel', time: '18:45', arrival: '19:55', duration: '1h 10m', prices: { Ekonomi: '229 PLN', Biznes: '429 PLN' } },
-            { plane: 'A220-100', origin: 'Berlin-Tegel', destination: 'Centralny Port Komunikacyjny', time: '20:40', arrival: '21:50', duration: '1h 10m', prices: { Ekonomi: '229 PLN', Biznes: '429 PLN' } },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Szczecin-Goleniów', time: '22:20', arrival: '23:20', duration: '1h 00m', prices: { Ekonomi: '199 PLN', Biznes: '399 PLN' } },
-            { plane: 'A220-300', origin: 'Gdańsk-Lech Wałęsa', destination: 'Centralny Port Komunikacyjny', time: '04:30', arrival: '05:25', duration: '0h 55m', prices: { Ekonomi: '179 PLN', Biznes: '379 PLN' } },
-            { plane: 'A220-300', origin: 'Centralny Port Komunikacyjny', destination: 'Monachium', time: '06:10', arrival: '07:40', duration: '1h 30m', prices: { Ekonomi: '239 PLN', Biznes: '439 PLN' } },
-            { plane: 'A220-300', origin: 'Monachium', destination: 'Centralny Port Komunikacyjny', time: '08:25', arrival: '09:55', duration: '1h 30m', prices: { Ekonomi: '239 PLN', Biznes: '439 PLN' } },
-            { plane: 'A220-300', origin: 'Centralny Port Komunikacyjny', destination: 'Gdańsk-Lech Wałęsa', time: '10:40', arrival: '11:35', duration: '0h 55m', prices: { Ekonomi: '179 PLN', Biznes: '379 PLN' } },
-            { plane: 'A220-300', origin: 'Gdańsk-Lech Wałęsa', destination: 'Centralny Port Komunikacyjny', time: '12:20', arrival: '13:15', duration: '0h 55m', prices: { Ekonomi: '179 PLN', Biznes: '379 PLN' } },
-            { plane: 'A220-300', origin: 'Centralny Port Komunikacyjny', destination: 'Szczecin-Goleniów', time: '14:00', arrival: '15:00', duration: '1h 00m', prices: { Ekonomi: '199 PLN', Biznes: '399 PLN' } },
-            { plane: 'A220-300', origin: 'Szczecin-Goleniów', destination: 'Centralny Port Komunikacyjny', time: '15:45', arrival: '16:45', duration: '1h 00m', prices: { Ekonomi: '199 PLN', Biznes: '399 PLN' } },
-            { plane: 'A220-300', origin: 'Centralny Port Komunikacyjny', destination: 'Frankfurt nad Menem', time: '17:30', arrival: '19:00', duration: '1h 30m', prices: { Ekonomi: '259 PLN', Biznes: '459 PLN' } },
-            { plane: 'A220-300', origin: 'Frankfurt nad Menem', destination: 'Centralny Port Komunikacyjny', time: '19:45', arrival: '21:15', duration: '1h 30m', prices: { Ekonomi: '259 PLN', Biznes: '459 PLN' } },
-            { plane: 'A220-300', origin: 'Centralny Port Komunikacyjny', destination: 'Gdańsk-Lech Wałęsa', time: '21:00', arrival: '22:00', duration: '1h 00m', prices: { Ekonomi: '179 PLN', Biznes: '379 PLN' } },
-            { plane: 'A320 NEO', origin: 'Kraków-Balice', destination: 'Centralny Port Komunikacyjny', time: '06:00', arrival: '07:00', duration: '1h 00m', prices: { Ekonomi: '189 PLN', Biznes: '389 PLN' } },
-            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Frankfurt nad Menem', time: '07:45', arrival: '09:25', duration: '1h 40m', prices: { Ekonomi: '259 PLN', Biznes: '459 PLN' } },
-            { plane: 'A320 NEO', origin: 'Frankfurt nad Menem', destination: 'Centralny Port Komunikacyjny', time: '10:10', arrival: '11:50', duration: '1h 40m', prices: { Ekonomi: '259 PLN', Biznes: '459 PLN' } },
-            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Paryż-Charles de Gaulle', time: '12:35', arrival: '15:05', duration: '2h 30m', prices: { Ekonomi: '299 PLN', Biznes: '499 PLN' } },
-            { plane: 'A320 NEO', origin: 'Paryż-Charles de Gaulle', destination: 'Centralny Port Komunikacyjny', time: '15:50', arrival: '18:20', duration: '2h 30m', prices: { Ekonomi: '299 PLN', Biznes: '499 PLN' } },
-            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Monachium', time: '19:05', arrival: '20:35', duration: '1h 30m', prices: { Ekonomi: '239 PLN', Biznes: '439 PLN' } },
-            { plane: 'A320 NEO', origin: 'Monachium', destination: 'Centralny Port Komunikacyjny', time: '21:20', arrival: '22:50', duration: '1h 30m', prices: { Ekonomi: '239 PLN', Biznes: '439 PLN' } },
-            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Kraków-Balice', time: '23:20', arrival: '00:20', duration: '1h 00m', prices: { Ekonomi: '189 PLN', Biznes: '389 PLN' } },
-            { plane: 'A320 NEO', origin: 'Manchester', destination: 'Centralny Port Komunikacyjny', time: '06:00', arrival: '08:45', duration: '2h 45m', prices: { Ekonomi: '319 PLN', Biznes: '519 PLN' } },
-            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Londyn-Heathrow', time: '09:30', arrival: '12:10', duration: '2h 40m', prices: { Ekonomi: '309 PLN', Biznes: '509 PLN' } },
-            { plane: 'A320 NEO', origin: 'Londyn-Heathrow', destination: 'Centralny Port Komunikacyjny', time: '12:55', arrival: '15:35', duration: '2h 40m', prices: { Ekonomi: '309 PLN', Biznes: '509 PLN' } },
-            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Rzym-Fiumicino', time: '16:20', arrival: '18:50', duration: '2h 30m', prices: { Ekonomi: '289 PLN', Biznes: '489 PLN' } },
-            { plane: 'A320 NEO', origin: 'Rzym-Fiumicino', destination: 'Centralny Port Komunikacyjny', time: '19:35', arrival: '22:05', duration: '2h 30m', prices: { Ekonomi: '289 PLN', Biznes: '489 PLN' } },
-            { plane: 'A320 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Manchester', time: '22:50', arrival: '01:20', duration: '2h 30m', prices: { Ekonomi: '319 PLN', Biznes: '519 PLN' } },
-            { plane: 'A330-900', origin: 'Centralny Port Komunikacyjny', destination: 'Nowy Jork-JFK', time: '23:00', arrival: '08:30', duration: '9h 30m', prices: { Ekonomi: '1299 PLN', 'Ekonomi Premium': '1499 PLN', Biznes: '1999 PLN', 'Pierwsza Klasa': '2999 PLN' } },
-            { plane: 'A330-900', origin: 'Nowy Jork-JFK', destination: 'Centralny Port Komunikacyjny', time: '11:00', arrival: '20:30', duration: '9h 30m', prices: { Ekonomi: '1299 PLN', 'Ekonomi Premium': '1499 PLN', Biznes: '1999 PLN', 'Pierwsza Klasa': '2999 PLN' } },
-            { plane: 'A330-900', origin: 'Centralny Port Komunikacyjny', destination: 'Nowy Jork-JFK', time: '14:00', arrival: '23:30', duration: '9h 30m', prices: { Ekonomi: '1299 PLN', 'Ekonomi Premium': '1499 PLN', Biznes: '1999 PLN', 'Pierwsza Klasa': '2999 PLN' } },
-            { plane: 'A330-900', origin: 'Nowy Jork-JFK', destination: 'Centralny Port Komunikacyjny', time: '02:00', arrival: '11:30', duration: '9h 30m', prices: { Ekonomi: '1299 PLN', 'Ekonomi Premium': '1499 PLN', Biznes: '1999 PLN', 'Pierwsza Klasa': '2999 PLN' } },
-            { plane: 'A330-900', origin: 'Centralny Port Komunikacyjny', destination: 'Nowy Jork-JFK', time: '18:30', arrival: '04:00', duration: '9h 30m', prices: { Ekonomi: '1299 PLN', 'Ekonomi Premium': '1499 PLN', Biznes: '1999 PLN', 'Pierwsza Klasa': '2999 PLN' } },
-            { plane: 'A330-900', origin: 'Nowy Jork-JFK', destination: 'Centralny Port Komunikacyjny', time: '06:30', arrival: '16:00', duration: '9h 30m', prices: { Ekonomi: '1299 PLN', 'Ekonomi Premium': '1499 PLN', Biznes: '1999 PLN', 'Pierwsza Klasa': '2999 PLN' } },
-            { plane: 'A350-1000', origin: 'Centralny Port Komunikacyjny', destination: 'Los Angeles-LAX', time: '16:00', arrival: '03:40', duration: '11h 40m', prices: { Ekonomi: '1499 PLN', 'Ekonomi Premium': '1799 PLN', Biznes: '2499 PLN', 'Pierwsza Klasa': '3499 PLN' } },
-            { plane: 'A350-1000', origin: 'Los Angeles-LAX', destination: 'Centralny Port Komunikacyjny', time: '08:00', arrival: '21:40', duration: '11h 40m', prices: { Ekonomi: '1499 PLN', 'Ekonomi Premium': '1799 PLN', Biznes: '2499 PLN', 'Pierwsza Klasa': '3499 PLN' } },
-            { plane: 'A220-100', origin: 'Poznań-Ławica', destination: 'Centralny Port Komunikacyjny', time: '05:00', arrival: '05:50', duration: '0h 50m', prices: { Ekonomi: '189 PLN', Biznes: '389 PLN' } },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Mediolan-Malpensa', time: '06:35', arrival: '08:45', duration: '2h 10m', prices: { Ekonomi: '299 PLN', Biznes: '499 PLN' } },
-            { plane: 'A220-100', origin: 'Mediolan-Malpensa', destination: 'Centralny Port Komunikacyjny', time: '09:30', arrival: '11:50', duration: '2h 20m', prices: { Ekonomi: '299 PLN', Biznes: '499 PLN' } },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Verona-Valerio Catullo', time: '12:35', arrival: '14:40', duration: '2h 05m', prices: { Ekonomi: '279 PLN', Biznes: '479 PLN' } },
-            { plane: 'A220-100', origin: 'Verona-Valerio Catullo', destination: 'Centralny Port Komunikacyjny', time: '15:25', arrival: '17:30', duration: '2h 05m', prices: { Ekonomi: '279 PLN', Biznes: '479 PLN' } },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Stuttgart-Echterdingen', time: '18:15', arrival: '20:05', duration: '1h 50m', prices: { Ekonomi: '259 PLN', Biznes: '459 PLN' } },
-            { plane: 'A220-100', origin: 'Stuttgart-Echterdingen', destination: 'Centralny Port Komunikacyjny', time: '20:50', arrival: '22:40', duration: '1h 50m', prices: { Ekonomi: '259 PLN', Biznes: '459 PLN' } },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Poznań-Ławica', time: '23:25', arrival: '00:20', duration: '0h 55m', prices: { Ekonomi: '189 PLN', Biznes: '389 PLN' } },
-            { plane: 'A319 NEO', origin: 'Liverpool-John Lennon', destination: 'Centralny Port Komunikacyjny', time: '05:00', arrival: '07:40', duration: '2h 40m', prices: { Ekonomi: '309 PLN', Biznes: '509 PLN' } },
-            { plane: 'A319 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Birmingham', time: '08:25', arrival: '11:05', duration: '2h 40m', prices: { Ekonomi: '309 PLN', Biznes: '509 PLN' } },
-            { plane: 'A319 NEO', origin: 'Birmingham', destination: 'Centralny Port Komunikacyjny', time: '11:50', arrival: '14:30', duration: '2h 40m', prices: { Ekonomi: '309 PLN', Biznes: '509 PLN' } },
-            { plane: 'A319 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Bristol', time: '15:15', arrival: '17:00', duration: '1h 45m', prices: { Ekonomi: '259 PLN', Biznes: '459 PLN' } },
-            { plane: 'A319 NEO', origin: 'Bristol', destination: 'Centralny Port Komunikacyjny', time: '17:45', arrival: '20:30', duration: '2h 45m', prices: { Ekonomi: '319 PLN', Biznes: '519 PLN' } },
-            { plane: 'A319 NEO', origin: 'Centralny Port Komunikacyjny', destination: 'Liverpool-John Lennon', time: '21:15', arrival: '00:00', duration: '2h 45m', prices: { Ekonomi: '309 PLN', Biznes: '509 PLN' } },
-            { plane: 'A350-1000', origin: 'Centralny Port Komunikacyjny', destination: 'San Francisco', time: '13:00', arrival: '00:20', duration: '11h 20m', prices: { Ekonomi: '1499 PLN', 'Ekonomi Premium': '1799 PLN', Biznes: '2499 PLN', 'Pierwsza Klasa': '3499 PLN' } },
-            { plane: 'A350-1000', origin: 'San Francisco', destination: 'Centralny Port Komunikacyjny', time: '02:40', arrival: '14:00', duration: '11h 20m', prices: { Ekonomi: '1499 PLN', 'Ekonomi Premium': '1799 PLN', Biznes: '2499 PLN', 'Pierwsza Klasa': '3499 PLN' } },
-            { plane: 'A321 XLR', origin: 'Warszawa-Okęcie', destination: 'Teneryfa-Północna', time: '00:00', arrival: '06:00', duration: '6h 00m', prices: { Ekonomi: '799 PLN', Biznes: '1299 PLN' } },
-            { plane: 'A321 XLR', origin: 'Teneryfa-Północna', destination: 'Warszawa-Okęcie', time: '08:00', arrival: '14:00', duration: '6h 00m', prices: { Ekonomi: '799 PLN', Biznes: '1299 PLN' } },
-            { plane: 'A321 XLR', origin: 'Warszawa-Okęcie', destination: 'Madryt-Barajas', time: '14:45', arrival: '18:40', duration: '3h 55m', prices: { Ekonomi: '499 PLN', Biznes: '799 PLN' } },
-            { plane: 'A321 XLR', origin: 'Madryt-Barajas', destination: 'Warszawa-Okęcie', time: '19:25', arrival: '23:15', duration: '3h 50m', prices: { Ekonomi: '499 PLN', Biznes: '799 PLN' } },
-            { plane: 'A220-100', origin: 'Wrocław-Copernicus', destination: 'Centralny Port Komunikacyjny', time: '06:00', arrival: '06:55', duration: '0h 55m', prices: { Ekonomi: '179 PLN', Biznes: '379 PLN' } },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Stuttgart-Echterdingen', time: '07:40', arrival: '09:30', duration: '1h 50m', prices: { Ekonomi: '259 PLN', Biznes: '459 PLN' } },
-            { plane: 'A220-100', origin: 'Stuttgart-Echterdingen', destination: 'Centralny Port Komunikacyjny', time: '10:15', arrival: '12:05', duration: '1h 50m', prices: { Ekonomi: '259 PLN', Biznes: '459 PLN' } },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Rzym-Fiumicino', time: '12:50', arrival: '15:20', duration: '2h 30m', prices: { Ekonomi: '289 PLN', Biznes: '489 PLN' } },
-            { plane: 'A220-100', origin: 'Rzym-Fiumicino', destination: 'Centralny Port Komunikacyjny', time: '16:05', arrival: '18:35', duration: '2h 30m', prices: { Ekonomi: '289 PLN', Biznes: '489 PLN' } },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Kraków-Balice', time: '19:20', arrival: '20:15', duration: '0h 55m', prices: { Ekonomi: '179 PLN', Biznes: '379 PLN' } },
-            { plane: 'A220-100', origin: 'Kraków-Balice', destination: 'Centralny Port Komunikacyjny', time: '21:00', arrival: '21:55', duration: '0h 55m', prices: { Ekonomi: '179 PLN', Biznes: '379 PLN' } },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Wrocław-Copernicus', time: '22:40', arrival: '23:35', duration: '0h 55m', prices: { Ekonomi: '179 PLN', Biznes: '379 PLN' } },
-            { plane: 'A220-100', origin: 'Katowice-Pyrzowice', destination: 'Centralny Port Komunikacyjny', time: '05:00', arrival: '05:55', duration: '0h 55m', prices: { Ekonomi: '179 PLN', Biznes: '379 PLN' } },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Gdańsk', time: '06:40', arrival: '07:35', duration: '0h 55m', prices: { Ekonomi: '179 PLN', Biznes: '379 PLN' } },
-            { plane: 'A220-100', origin: 'Gdańsk', destination: 'Centralny Port Komunikacyjny', time: '08:20', arrival: '09:15', duration: '0h 55m', prices: { Ekonomi: '179 PLN', Biznes: '379 PLN' } },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Bydgoszcz-Szwederowo', time: '10:00', arrival: '10:55', duration: '0h 55m', prices: { Ekonomi: '189 PLN', Biznes: '389 PLN' } },
-            { plane: 'A220-100', origin: 'Bydgoszcz-Szwederowo', destination: 'Centralny Port Komunikacyjny', time: '11:40', arrival: '12:35', duration: '0h 55m', prices: { Ekonomi: '189 PLN', Biznes: '389 PLN' } },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Olsztyn-Mazury', time: '13:20', arrival: '14:10', duration: '0h 50m', prices: { Ekonomi: '189 PLN', Biznes: '389 PLN' } },
-            { plane: 'A220-100', origin: 'Olsztyn-Mazury', destination: 'Centralny Port Komunikacyjny', time: '14:55', arrival: '15:45', duration: '0h 50m', prices: { Ekonomi: '189 PLN', Biznes: '389 PLN' } },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Zielona Góra-Babimost', time: '16:30', arrival: '17:30', duration: '1h 00m', prices: { Ekonomi: '199 PLN', Biznes: '399 PLN' } },
-            { plane: 'A220-100', origin: 'Zielona Góra-Babimost', destination: 'Centralny Port Komunikacyjny', time: '18:15', arrival: '19:10', duration: '0h 55m', prices: { Ekonomi: '199 PLN', Biznes: '399 PLN' } },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Praga-Ruzyně', time: '19:55', arrival: '21:05', duration: '1h 10m', prices: { Ekonomi: '229 PLN', Biznes: '429 PLN' } },
-            { plane: 'A220-100', origin: 'Praga-Ruzyně', destination: 'Centralny Port Komunikacyjny', time: '21:50', arrival: '23:00', duration: '1h 10m', prices: { Ekonomi: '229 PLN', Biznes: '429 PLN' } },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Katowice-Pyrzowice', time: '23:45', arrival: '00:40', duration: '0h 55m', prices: { Ekonomi: '179 PLN', Biznes: '379 PLN' } },
-            { plane: 'A220-100', origin: 'Katowice-Pyrzowice', destination: 'Centralny Port Komunikacyjny', time: '07:00', arrival: '07:55', duration: '0h 55m', prices: { Ekonomi: '179 PLN', Biznes: '379 PLN' } },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Lublin', time: '08:40', arrival: '09:30', duration: '0h 50m', prices: { Ekonomi: '189 PLN', Biznes: '389 PLN' } },
-            { plane: 'A220-100', origin: 'Lublin', destination: 'Centralny Port Komunikacyjny', time: '10:15', arrival: '11:05', duration: '0h 50m', prices: { Ekonomi: '189 PLN', Biznes: '389 PLN' } },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Praga-Ruzyně', time: '11:50', arrival: '13:00', duration: '1h 10m', prices: { Ekonomi: '229 PLN', Biznes: '429 PLN' } },
-            { plane: 'A220-100', origin: 'Praga-Ruzyně', destination: 'Centralny Port Komunikacyjny', time: '13:45', arrival: '14:55', duration: '1h 10m', prices: { Ekonomi: '229 PLN', Biznes: '429 PLN' } },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Mediolan-Malpensa', time: '15:40', arrival: '17:50', duration: '2h 10m', prices: { Ekonomi: '299 PLN', Biznes: '499 PLN' } },
-            { plane: 'A220-100', origin: 'Mediolan-Malpensa', destination: 'Centralny Port Komunikacyjny', time: '18:35', arrival: '20:45', duration: '2h 10m', prices: { Ekonomi: '299 PLN', Biznes: '499 PLN' } },
-            { plane: 'A220-100', origin: 'Centralny Port Komunikacyjny', destination: 'Katowice-Pyrzowice', time: '21:30', arrival: '22:30', duration: '1h 00m', prices: { Ekonomi: '179 PLN', Biznes: '379 PLN' } }
-        ];
+        destinationSelect.addEventListener('click', () => {
+            destinationModal.style.display = 'flex';
+            originModal.style.display = 'none';
+        });
 
-        // Funkcja określająca wybraną klasę i cenę
-        function getClassAndPrice(flight) {
-            if (selectedClass && flight.prices[selectedClass]) {
-                return `${selectedClass} - ${flight.prices[selectedClass]}`;
-            } else {
-                return 'Klasa nie dostępna';
-            }
-        }
-
-        // Funkcja generująca możliwe przesiadki na podstawie istniejących lotów
-        function generateLayoverFlights(origin, destination, departureDate) {
-            const layoverFlights = [];
-            const departureTime = new Date(departureDate);
-
-            const firstLegs = flights.filter(f => cleanAirportName(f.origin) === cleanAirportName(origin) && cleanAirportName(f.destination) === 'Centralny Port Komunikacyjny');
-            const secondLegs = flights.filter(f => cleanAirportName(f.origin) === 'Centralny Port Komunikacyjny' && cleanAirportName(f.destination) === cleanAirportName(destination));
-
-            firstLegs.forEach(firstLeg => {
-                secondLegs.forEach(secondLeg => {
-                    const firstArrival = new Date(departureDate);
-                    const [firstHour, firstMinute] = firstLeg.arrival.split(':').map(Number);
-                    firstArrival.setHours(firstHour, firstMinute, 0, 0);
-
-                    const secondDeparture = new Date(departureDate);
-                    const [secondHour, secondMinute] = secondLeg.time.split(':').map(Number);
-                    secondDeparture.setHours(secondHour, secondMinute, 0, 0);
-
-                    const timeDiff = (secondDeparture - firstArrival) / (1000 * 60); // Różnica w minutach
-                    if (timeDiff > 0 && timeDiff <= 600) { // Maksymalnie 10 godzin na przesiadkę
-                        layoverFlights.push({
-                            segments: [firstLeg, secondLeg],
-                            layoverDuration: `${Math.floor(timeDiff / 60)}h ${timeDiff % 60}min`
-                        });
-                    }
-                });
-            });
-
-            return layoverFlights;
-        }
-
-        // Wyświetlanie lotów
-        const departureList = document.getElementById('departure-list');
-        const returnList = document.getElementById('return-list');
-        const departureSection = document.getElementById('departure-section');
-        const returnSection = document.getElementById('return-section');
-        const returnCalendar = document.getElementById('return-calendar');
-        const departureAirline = document.getElementById('departure-airline');
-        const returnAirline = document.getElementById('return-airline');
-
-        if (departure !== 'Nie wybrano') {
-            const departureDate = new Date(departure);
-
-            if (tripType === 'one-way') {
-                let directFlights = flights.filter(flight => 
-                    cleanAirportName(flight.origin) === cleanAirportName(origin) && cleanAirportName(flight.destination) === cleanAirportName(destination)
-                );
-                directFlights.forEach(flight => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${flight.time}</td>
-                        <td>${flight.arrival}</td>
-                        <td>${flight.duration}</td>
-                        <td>${flight.origin} (${airportIata[flight.origin] || ''})</td>
-                        <td>${flight.destination} (${airportIata[flight.destination] || ''})</td>
-                        <td>${getClassAndPrice(flight)}</td>
-                        <td><button class="select-btn" onclick="selectFlight('${flight.time}', '${flight.arrival}', 'direct', '${encodeURIComponent(JSON.stringify(flight))}')">Wybierz</button></td>
-                    `;
-                    departureList.appendChild(row);
-                    const airlineInfo = document.createElement('tr');
-                    airlineInfo.innerHTML = `<td colspan="7" class="airline-info">Obsługiwane przez VIS Airlines | Model samolotu: ${flight.plane}</td>`;
-                    departureList.appendChild(airlineInfo);
-                });
-
-                const layoverFlights = generateLayoverFlights(origin, destination, departureDate);
-                layoverFlights.forEach(layover => {
-                    const [firstLeg, secondLeg] = layover.segments;
-                    const row1 = document.createElement('tr');
-                    row1.innerHTML = `
-                        <td>${firstLeg.time}</td>
-                        <td>${firstLeg.arrival}</td>
-                        <td>${firstLeg.duration}</td>
-                        <td>${firstLeg.origin} (${airportIata[firstLeg.origin] || ''})</td>
-                        <td>${firstLeg.destination} (${airportIata[firstLeg.destination] || ''})</td>
-                        <td>${getClassAndPrice(firstLeg)}</td>
-                        <td></td>
-                    `;
-                    departureList.appendChild(row1);
-
-                    const row2 = document.createElement('tr');
-                    row2.innerHTML = `
-                        <td>${secondLeg.time}</td>
-                        <td>${secondLeg.arrival}</td>
-                        <td>${secondLeg.duration}</td>
-                        <td>${secondLeg.origin} (${airportIata[secondLeg.origin] || ''})</td>
-                        <td>${secondLeg.destination} (${airportIata[secondLeg.destination] || ''})</td>
-                        <td>${getClassAndPrice(secondLeg)}</td>
-                        <td><button class="select-btn" onclick="selectFlight('${firstLeg.time},${secondLeg.time}', '${firstLeg.arrival},${secondLeg.arrival}', 'layover', '${encodeURIComponent(JSON.stringify([firstLeg, secondLeg]))}')">Wybierz</button></td>
-                    `;
-                    departureList.appendChild(row2);
-
-                    const layoverInfo = document.createElement('tr');
-                    layoverInfo.innerHTML = `<td colspan="7" class="airline-info">Przesiadka w ${firstLeg.destination}: ${layover.layoverDuration}</td>`;
-                    departureList.appendChild(layoverInfo);
-
-                    const airlineInfo = document.createElement('tr');
-                    airlineInfo.innerHTML = `<td colspan="7" class="airline-info">Obsługiwane przez VIS Airlines | Model samolotu: ${firstLeg.plane} / ${secondLeg.plane}</td>`;
-                    departureList.appendChild(airlineInfo);
-                });
-
-                if (directFlights.length === 0 && layoverFlights.length === 0) {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `<td colspan="7">Brak dostępnych lotów.</td>`;
-                    departureList.appendChild(row);
-                }
-                departureAirline.textContent = '';
-            } else if (tripType === 'round-trip') {
-                departureSection.style.display = 'block';
-                returnSection.style.display = 'block';
-                returnCalendar.style.display = 'flex';
-
-                let outboundDirectFlights = flights.filter(flight => 
-                    cleanAirportName(flight.origin) === cleanAirportName(origin) && cleanAirportName(flight.destination) === cleanAirportName(destination)
-                );
-                outboundDirectFlights.forEach(flight => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${flight.time}</td>
-                        <td>${flight.arrival}</td>
-                        <td>${flight.duration}</td>
-                        <td>${flight.origin} (${airportIata[flight.origin] || ''})</td>
-                        <td>${flight.destination} (${airportIata[flight.destination] || ''})</td>
-                        <td>${getClassAndPrice(flight)}</td>
-                        <td><button class="select-btn" onclick="selectOutbound('${flight.time}', '${flight.arrival}', 'direct', '${encodeURIComponent(JSON.stringify(flight))}')">Wybierz</button></td>
-                    `;
-                    departureList.appendChild(row);
-                    const airlineInfo = document.createElement('tr');
-                    airlineInfo.innerHTML = `<td colspan="7" class="airline-info">Obsługiwane przez VIS Airlines | Model samolotu: ${flight.plane}</td>`;
-                    departureList.appendChild(airlineInfo);
-                });
-
-                const outboundLayoverFlights = generateLayoverFlights(origin, destination, departureDate);
-                outboundLayoverFlights.forEach(layover => {
-                    const [firstLeg, secondLeg] = layover.segments;
-                    const row1 = document.createElement('tr');
-                    row1.innerHTML = `
-                        <td>${firstLeg.time}</td>
-                        <td>${firstLeg.arrival}</td>
-                        <td>${firstLeg.duration}</td>
-                        <td>${firstLeg.origin} (${airportIata[firstLeg.origin] || ''})</td>
-                        <td>${firstLeg.destination} (${airportIata[firstLeg.destination] || ''})</td>
-                        <td>${getClassAndPrice(firstLeg)}</td>
-                        <td></td>
-                    `;
-                    departureList.appendChild(row1);
-
-                    const row2 = document.createElement('tr');
-                    row2.innerHTML = `
-                        <td>${secondLeg.time}</td>
-                        <td>${secondLeg.arrival}</td>
-                        <td>${secondLeg.duration}</td>
-                        <td>${secondLeg.origin} (${airportIata[secondLeg.origin] || ''})</td>
-                        <td>${secondLeg.destination} (${airportIata[secondLeg.destination] || ''})</td>
-                        <td>${getClassAndPrice(secondLeg)}</td>
-                        <td><button class="select-btn" onclick="selectOutbound('${firstLeg.time},${secondLeg.time}', '${firstLeg.arrival},${secondLeg.arrival}', 'layover', '${encodeURIComponent(JSON.stringify([firstLeg, secondLeg]))}')">Wybierz</button></td>
-                    `;
-                    departureList.appendChild(row2);
-
-                    const layoverInfo = document.createElement('tr');
-                    layoverInfo.innerHTML = `<td colspan="7" class="airline-info">Przesiadka w ${firstLeg.destination}: ${layover.layoverDuration}</td>`;
-                    departureList.appendChild(layoverInfo);
-
-                    const airlineInfo = document.createElement('tr');
-                    airlineInfo.innerHTML = `<td colspan="7" class="airline-info">Obsługiwane przez VIS Airlines | Model samolotu: ${firstLeg.plane} / ${secondLeg.plane}</td>`;
-                    departureList.appendChild(airlineInfo);
-                });
-
-                if (returnDate !== '' && returnDate !== 'Nie wybrano') {
-                    const returnDateObj = new Date(returnDate);
-                    let returnDirectFlights = flights.filter(flight => 
-                        cleanAirportName(flight.origin) === cleanAirportName(destination) && cleanAirportName(flight.destination) === cleanAirportName(origin)
-                    );
-                    returnDirectFlights.forEach(flight => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${flight.time}</td>
-                            <td>${flight.arrival}</td>
-                            <td>${flight.duration}</td>
-                            <td>${flight.origin} (${airportIata[flight.origin] || ''})</td>
-                            <td>${flight.destination} (${airportIata[flight.destination] || ''})</td>
-                            <td>${getClassAndPrice(flight)}</td>
-                            <td><button class="select-btn" onclick="selectReturn('${flight.time}', '${flight.arrival}', 'direct', '${encodeURIComponent(JSON.stringify(flight))}')">Wybierz</button></td>
-                        `;
-                        returnList.appendChild(row);
-                        const airlineInfo = document.createElement('tr');
-                        airlineInfo.innerHTML = `<td colspan="7" class="airline-info">Obsługiwane przez VIS Airlines | Model samolotu: ${flight.plane}</td>`;
-                        returnList.appendChild(airlineInfo);
-                    });
-
-                    const returnLayoverFlights = generateLayoverFlights(destination, origin, returnDateObj);
-                    returnLayoverFlights.forEach(layover => {
-                        const [firstLeg, secondLeg] = layover.segments;
-                        const row1 = document.createElement('tr');
-                        row1.innerHTML = `
-                            <td>${firstLeg.time}</td>
-                            <td>${firstLeg.arrival}</td>
-                            <td>${firstLeg.duration}</td>
-                            <td>${firstLeg.origin} (${airportIata[firstLeg.origin] || ''})</td>
-                            <td>${firstLeg.destination} (${airportIata[firstLeg.destination] || ''})</td>
-                            <td>${getClassAndPrice(firstLeg)}</td>
-                            <td></td>
-                        `;
-                        returnList.appendChild(row1);
-
-                        const row2 = document.createElement('tr');
-                        row2.innerHTML = `
-                            <td>${secondLeg.time}</td>
-                            <td>${secondLeg.arrival}</td>
-                            <td>${secondLeg.duration}</td>
-                            <td>${secondLeg.origin} (${airportIata[secondLeg.origin] || ''})</td>
-                            <td>${secondLeg.destination} (${airportIata[secondLeg.destination] || ''})</td>
-                            <td>${getClassAndPrice(secondLeg)}</td>
-                            <td><button class="select-btn" onclick="selectReturn('${firstLeg.time},${secondLeg.time}', '${firstLeg.arrival},${secondLeg.arrival}', 'layover', '${encodeURIComponent(JSON.stringify([firstLeg, secondLeg]))}')">Wybierz</button></td>
-                        `;
-                        returnList.appendChild(row2);
-
-                        const layoverInfo = document.createElement('tr');
-                        layoverInfo.innerHTML = `<td colspan="7" class="airline-info">Przesiadka w ${firstLeg.destination}: ${layover.layoverDuration}</td>`;
-                        returnList.appendChild(layoverInfo);
-
-                        const airlineInfo = document.createElement('tr');
-                        airlineInfo.innerHTML = `<td colspan="7" class="airline-info">Obsługiwane przez VIS Airlines | Model samolotu: ${firstLeg.plane} / ${secondLeg.plane}</td>`;
-                        returnList.appendChild(airlineInfo);
-                    });
-
-                    if (returnDirectFlights.length === 0 && returnLayoverFlights.length === 0) {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `<td colspan="7">Brak dostępnych lotów powrotnych.</td>`;
-                        returnList.appendChild(row);
-                    }
-                    returnAirline.textContent = '';
-                }
-
-                if (outboundDirectFlights.length === 0 && outboundLayoverFlights.length === 0) {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `<td colspan="7">Brak dostępnych lotów wylotowych.</td>`;
-                    departureList.appendChild(row);
-                }
-                departureAirline.textContent = '';
-            }
-        } else {
-            const row = document.createElement('tr');
-            row.innerHTML = `<td colspan="7">Nie wybrano daty wylotu.</td>`;
-            departureList.appendChild(row);
-        }
-
-        // Zmienne do przechowywania wybranych lotów
-        let selectedOutbound = null;
-        let selectedReturn = null;
-
-        // Funkcje do wyboru lotów
-        function selectFlight(times, arrivals, type, flightData) {
-            selectedOutbound = { times, arrivals, type, flightData };
-            updateButtons();
-        }
-
-        function selectOutbound(times, arrivals, type, flightData) {
-            selectedOutbound = { times, arrivals, type, flightData };
-            updateButtons();
-        }
-
-        function selectReturn(times, arrivals, type, flightData) {
-            selectedReturn = { times, arrivals, type, flightData };
-            updateButtons();
-        }
-
-        function updateButtons() {
-            const buttons = document.querySelectorAll('#departure-list .select-btn, #return-list .select-btn');
-            buttons.forEach(button => {
-                if (button.textContent === 'Wybierz') {
-                    button.classList.remove('select-btn');
-                    button.classList.add('next-btn');
-                    button.textContent = 'Dalej';
+        document.querySelectorAll('.modal-content ul li').forEach(li => {
+            li.addEventListener('click', () => {
+                const value = li.dataset.value;
+                if (li.parentElement.id === 'origin-modal-list') {
+                    originSelect.textContent = value;
+                    originSelect.dataset.value = value;
+                    originModal.style.display = 'none';
+                    saveFlightData(); // Zapisz dane po wybraniu
+                } else {
+                    destinationSelect.textContent = value;
+                    destinationSelect.dataset.value = value;
+                    destinationModal.style.display = 'none';
+                    saveFlightData(); // Zapisz dane po wybraniu
                 }
             });
+        });
 
-            if (tripType === 'one-way' && selectedOutbound) {
-                redirectToExtras();
-            } else if (tripType === 'round-trip' && selectedOutbound && selectedReturn) {
-                redirectToExtras();
+        document.addEventListener('click', (e) => {
+            if (!originSelect.contains(e.target) && !originModal.contains(e.target)) {
+                originModal.style.display = 'none';
             }
-        }
+            if (!destinationSelect.contains(e.target) && !destinationModal.contains(e.target)) {
+                destinationModal.style.display = 'none';
+            }
+        });
 
-        function redirectToExtras() {
-            const params = new URLSearchParams();
-            params.set('origin', origin);
-            params.set('destination', destination);
-            params.set('departure', departure);
-            if (returnDate) params.set('return', returnDate);
-            params.set('passengers', passengers);
-            params.set('class', selectedClass);
-            if (selectedOutbound) {
-                params.set('outboundTimes', selectedOutbound.times);
-                params.set('outboundArrivals', selectedOutbound.arrivals);
-                params.set('outboundType', selectedOutbound.type);
-                params.set('outboundFlightData', selectedOutbound.flightData);
-            }
-            if (selectedReturn) {
-                params.set('returnTimes', selectedReturn.times);
-                params.set('returnArrivals', selectedReturn.arrivals);
-                params.set('returnType', selectedReturn.type);
-                params.set('returnFlightData', selectedReturn.flightData);
-            }
-            window.location.href = `extras.html?${params.toString()}`;
-        }
-
-        // Kalendarz z 10 dniami i suwakami
-        let currentDateDeparture = departure ? new Date(departure) : new Date();
-        let currentDateReturn = returnDate ? new Date(returnDate) : new Date();
-        currentDateDeparture.setHours(0, 0, 0, 0);
-        currentDateReturn.setHours(0, 0, 0, 0);
+        // Kalendarz
+        let currentDate = new Date();
+        currentDate.setHours(0, 0, 0, 0);
         const today = new Date();
         const maxDate = new Date(today);
         maxDate.setFullYear(maxDate.getFullYear() + 1); // Do 17 lipca 2026
         const months = ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'];
+        const days = ['Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So', 'Nd'];
 
-        function renderCalendar(date, calendarId, monthId, prevId, nextId) {
+        function renderCalendar(date, gridId, monthId, prevId, nextId) {
             const year = date.getFullYear();
             const month = date.getMonth();
-            const day = date.getDate();
-            document.getElementById(monthId).textContent = `${months[month]} ${year}`;
-            const calendar = document.getElementById(calendarId);
-            calendar.innerHTML = '';
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
 
-            for (let i = 0; i < 10; i++) {
-                const current = new Date(year, month, day + i);
-                if (current > maxDate) break;
+            document.getElementById(monthId).textContent = `${months[month]} ${year}`;
+            const grid = document.getElementById(gridId);
+            grid.innerHTML = '';
+
+            days.forEach(day => {
                 const dayElement = document.createElement('div');
-                dayElement.textContent = current.getDate();
+                dayElement.textContent = day;
+                dayElement.className = 'calendar-day';
+                grid.appendChild(dayElement);
+            });
+
+            for (let i = 0; i < firstDay.getDay() - 1; i++) {
+                const empty = document.createElement('div');
+                grid.appendChild(empty);
+            }
+
+            for (let day = 1; day <= lastDay.getDate(); day++) {
+                const dayElement = document.createElement('div');
+                dayElement.textContent = day;
+                const current = new Date(year, month, day);
                 dayElement.className = 'calendar-day';
                 if (current < today) {
-                    dayElement.classList.add('disabled');
+                    dayElement.style.color = '#ccc';
+                } else if (current > maxDate) {
+                    dayElement.style.color = '#ccc';
                 } else {
                     dayElement.addEventListener('click', () => {
-                        const newDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(current.getDate()).padStart(2, '0')}`;
-                        if (calendarId.includes('departure')) {
-                            currentDateDeparture = current;
-                            const params = new URLSearchParams(window.location.search);
-                            params.set('departure', newDate);
-                            window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
-                            location.reload();
-                        } else {
-                            currentDateReturn = current;
-                            const params = new URLSearchParams(window.location.search);
-                            params.set('return', newDate);
-                            window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
-                            location.reload();
-                        }
+                        const calendar = document.getElementById(gridId === 'departure-calendar-grid' ? 'departure-calendar' : 'return-calendar');
+                        calendar.textContent = `${day} ${months[month]} ${year}`;
+                        calendar.dataset.value = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                        document.getElementById(gridId === 'departure-calendar-grid' ? 'departure-modal' : 'return-modal').style.display = 'none';
+                        saveFlightData(); // Zapisz dane po wybraniu daty
                     });
                 }
-                calendar.appendChild(dayElement);
+                grid.appendChild(dayElement);
             }
         }
 
-        const monthDeparture = document.createElement('div');
-        monthDeparture.id = 'current-month-departure';
-        monthDeparture.style.textAlign = 'center';
-        monthDeparture.style.flexGrow = '1';
-        document.getElementById('departure-calendar').insertBefore(monthDeparture, document.getElementById('calendar-departure'));
-        renderCalendar(currentDateDeparture, 'calendar-departure', 'current-month-departure', 'prev-departure', 'next-departure');
-
-        if (tripType === 'round-trip' && returnDate) {
-            const monthReturn = document.createElement('div');
-            monthReturn.id = 'current-month-return';
-            monthReturn.style.textAlign = 'center';
-            monthReturn.style.flexGrow = '1';
-            document.getElementById('return-calendar').insertBefore(monthReturn, document.getElementById('calendar-return'));
-            renderCalendar(currentDateReturn, 'calendar-return', 'current-month-return', 'prev-return', 'next-return');
-        }
-
-        document.getElementById('prev-departure').addEventListener('click', () => {
-            currentDateDeparture.setDate(currentDateDeparture.getDate() - 10);
-            if (currentDateDeparture < today) currentDateDeparture = new Date(today);
-            renderCalendar(currentDateDeparture, 'calendar-departure', 'current-month-departure', 'prev-departure', 'next-departure');
+        document.getElementById('departure-calendar').addEventListener('click', () => {
+            const modal = document.getElementById('departure-modal');
+            modal.style.display = 'flex';
+            renderCalendar(currentDate, 'departure-calendar-grid', 'current-month-departure', 'prev-month-departure', 'next-month-departure');
         });
 
-        document.getElementById('next-departure').addEventListener('click', () => {
-            currentDateDeparture.setDate(currentDateDeparture.getDate() + 10);
-            if (currentDateDeparture > maxDate) currentDateDeparture = new Date(maxDate);
-            renderCalendar(currentDateDeparture, 'calendar-departure', 'current-month-departure', 'prev-departure', 'next-departure');
+        document.getElementById('return-calendar').addEventListener('click', () => {
+            const modal = document.getElementById('return-modal');
+            modal.style.display = 'flex';
+            renderCalendar(currentDate, 'return-calendar-grid', 'current-month-return', 'prev-month-return', 'next-month-return');
         });
 
-        if (tripType === 'round-trip') {
-            document.getElementById('return-calendar').style.display = 'flex';
-            document.getElementById('prev-return').addEventListener('click', () => {
-                currentDateReturn.setDate(currentDateReturn.getDate() - 10);
-                if (currentDateReturn < today) currentDateReturn = new Date(today);
-                renderCalendar(currentDateReturn, 'calendar-return', 'current-month-return', 'prev-return', 'next-return');
-            });
+        document.getElementById('prev-month-departure').addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            if (currentDate < today) currentDate = new Date(today);
+            renderCalendar(currentDate, 'departure-calendar-grid', 'current-month-departure', 'prev-month-departure', 'next-month-departure');
+        });
 
-            document.getElementById('next-return').addEventListener('click', () => {
-                currentDateReturn.setDate(currentDateReturn.getDate() + 10);
-                if (currentDateReturn > maxDate) currentDateReturn = new Date(maxDate);
-                renderCalendar(currentDateReturn, 'calendar-return', 'current-month-return', 'prev-return', 'next-return');
-            });
+        document.getElementById('next-month-departure').addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            if (currentDate > maxDate) currentDate = new Date(maxDate);
+            renderCalendar(currentDate, 'departure-calendar-grid', 'current-month-departure', 'prev-month-departure', 'next-month-departure');
+        });
+
+        document.getElementById('prev-month-return').addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            if (currentDate < today) currentDate = new Date(today);
+            renderCalendar(currentDate, 'return-calendar-grid', 'current-month-return', 'prev-month-return', 'next-month-return');
+        });
+
+        document.getElementById('next-month-return').addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            if (currentDate > maxDate) currentDate = new Date(maxDate);
+            renderCalendar(currentDate, 'return-calendar-grid', 'current-month-return', 'prev-month-return', 'next-month-return');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!document.getElementById('departure-calendar').contains(e.target) && !document.getElementById('departure-modal').contains(e.target)) {
+                document.getElementById('departure-modal').style.display = 'none';
+            }
+            if (!document.getElementById('return-calendar').contains(e.target) && !document.getElementById('return-modal').contains(e.target)) {
+                document.getElementById('return-modal').style.display = 'none';
+            }
+        });
+
+        // Dynamiczne przełączanie Powrót
+        function toggleReturn() {
+            const returnDiv = document.getElementById('return-div');
+            const tripType = document.querySelector('input[name="trip-type"]:checked').value;
+            returnDiv.style.display = tripType === 'one-way' ? 'none' : 'block';
+            saveFlightData(); // Zapisz typ podróży
         }
+
+        // Pasażerowie
+        let adultCount = 1, childCount = 0, infantCount = 0;
+
+        function changePassenger(type, delta) {
+            if (type === 'adult') adultCount = Math.max(1, adultCount + delta);
+            if (type === 'child') childCount = Math.max(0, childCount + delta);
+            if (type === 'infant') infantCount = Math.max(0, infantCount + delta);
+            updateCounts();
+        }
+
+        function updateCounts() {
+            document.getElementById('adult-count').textContent = adultCount;
+            document.getElementById('child-count').textContent = childCount;
+            document.getElementById('infant-count').textContent = infantCount;
+        }
+
+        const passengersClass = document.getElementById('passengers-class');
+        const passengersModal = document.getElementById('passengers-modal');
+
+        passengersClass.addEventListener('click', () => {
+            passengersModal.style.display = 'flex';
+        });
+
+        function updatePassengers() {
+            const classType = document.querySelector('input[name="class"]:checked').value;
+            const totalPassengers = adultCount + childCount + infantCount;
+            passengersClass.textContent = `${totalPassengers} Pasażer(ów), ${classType.charAt(0).toUpperCase() + classType.slice(1)}`;
+            passengersModal.style.display = 'none';
+            saveFlightData(); // Zapisz dane po aktualizacji pasażerów
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!passengersClass.contains(e.target) && !passengersModal.contains(e.target)) {
+                passengersModal.style.display = 'none';
+            }
+        });
+
+        // Funkcja zapisywania danych w localStorage
+        function saveFlightData() {
+            const origin = document.getElementById('origin-select').dataset.value || '';
+            const destination = document.getElementById('destination-select').dataset.value || '';
+            const departure = document.getElementById('departure-calendar').dataset.value || '';
+            const returnDate = document.getElementById('return-calendar').dataset.value || '';
+            const passengers = document.getElementById('passengers-class').textContent;
+            const tripType = document.querySelector('input[name="trip-type"]:checked').value;
+
+            localStorage.setItem('flightData', JSON.stringify({
+                origin,
+                destination,
+                departure,
+                return: tripType === 'round-trip' ? returnDate : '',
+                passengers,
+                tripType
+            }));
+        }
+
+        // Obsługa przesyłania formularza
+        document.getElementById('flightSearchForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const origin = document.getElementById('origin-select').dataset.value || 'Nie wybrano';
+            const destination = document.getElementById('destination-select').dataset.value || 'Nie wybrano';
+            const departure = document.getElementById('departure-calendar').dataset.value || 'Nie wybrano';
+            const returnDate = document.getElementById('return-calendar').dataset.value || 'Nie wybrano';
+            const passengers = document.getElementById('passengers-class').textContent;
+            const tripType = document.querySelector('input[name="trip-type"]:checked').value;
+
+            // Zapisz dane przed przekierowaniem
+            saveFlightData();
+
+            // Przekieruj do results.html z parametrami
+            const params = new URLSearchParams({
+                origin,
+                destination,
+                departure,
+                return: tripType === 'round-trip' ? returnDate : '',
+                passengers,
+                'trip-type': tripType
+            });
+            window.location.href = `results.html?${params.toString()}`;
+        });
     </script>
 </body>
 </html>
