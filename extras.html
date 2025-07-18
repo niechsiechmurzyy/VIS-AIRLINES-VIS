@@ -47,25 +47,25 @@
         <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
             <h3 class="text-xl font-semibold text-gray-900 mb-4">Bagaż rejestrowany</h3>
             <div class="grid grid-cols-4 gap-4">
-                <div class="text-center p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer" onclick="selectExtra('baggage', 10)">
+                <div class="text-center p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer baggage-option" onclick="selectExtra('baggage', 10)">
                     <div class="baggage-icon">🧳</div>
                     <span class="block text-sm font-medium">10kg</span>
                     <button class="select-btn mt-2 w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors" onclick="selectBaggage(10, event)">Wybierz</button>
                     <div class="price mt-2" id="price-10">Cena: 50 PLN</div>
                 </div>
-                <div class="text-center p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer" onclick="selectExtra('baggage', 15)">
+                <div class="text-center p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer baggage-option" onclick="selectExtra('baggage', 15)">
                     <div class="baggage-icon">🧳</div>
                     <span class="block text-sm font-medium">15kg</span>
                     <button class="select-btn mt-2 w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors" onclick="selectBaggage(15, event)">Wybierz</button>
                     <div class="price mt-2" id="price-15">Cena: 75 PLN</div>
                 </div>
-                <div class="text-center p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer" onclick="selectExtra('baggage', 20)">
+                <div class="text-center p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer baggage-option" onclick="selectExtra('baggage', 20)">
                     <div class="baggage-icon">🧳</div>
                     <span class="block text-sm font-medium">20kg</span>
                     <button class="select-btn mt-2 w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors" onclick="selectBaggage(20, event)">Wybierz</button>
                     <div class="price mt-2" id="price-20">Cena: 100 PLN</div>
                 </div>
-                <div class="text-center p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer" onclick="selectExtra('baggage', 25)">
+                <div class="text-center p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer baggage-option" onclick="selectExtra('baggage', 25)">
                     <div class="baggage-icon">🧳</div>
                     <span class="block text-sm font-medium">25kg</span>
                     <button class="select-btn mt-2 w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors" onclick="selectBaggage(25, event)">Wybierz</button>
@@ -106,19 +106,26 @@
     </div>
 
     <script>
-        // Pobieranie parametrów z URL
+        // Pobieranie parametrów z URL lub localStorage
         const urlParams = new URLSearchParams(window.location.search);
-        const origin = urlParams.get('origin') || 'Nie wybrano';
-        const destination = urlParams.get('destination') || 'Nie wybrano';
-        const departure = urlParams.get('departure') || 'Nie wybrano';
-        const returnDate = urlParams.get('return') || '';
-        const passengers = urlParams.get('passengers') || '1 Pasażer, Ekonomiczna';
-        const selectedClass = urlParams.get('class') || 'Ekonomi';
-        const outboundFlightData = JSON.parse(decodeURIComponent(urlParams.get('outboundFlightData') || '{}'));
-        const returnFlightData = urlParams.get('returnFlightData') ? JSON.parse(decodeURIComponent(urlParams.get('returnFlightData'))) : null;
+        let storedData = JSON.parse(localStorage.getItem('flightData')) || {};
+        const origin = urlParams.get('origin') || storedData.origin || 'Nie wybrano';
+        const destination = urlParams.get('destination') || storedData.destination || 'Nie wybrano';
+        const departure = urlParams.get('departure') || storedData.departure || 'Nie wybrano';
+        const returnDate = urlParams.get('return') || storedData.return || '';
+        const passengers = urlParams.get('passengers') || storedData.passengers || '1 Pasażer, Ekonomiczna';
+        const selectedClass = urlParams.get('class') || storedData.class || 'Ekonomi';
+        const outboundTimes = urlParams.get('outboundTimes') || storedData.selectedOutbound?.times || '';
+        const outboundArrivals = urlParams.get('outboundArrivals') || storedData.selectedOutbound?.arrivals || '';
+        const outboundType = urlParams.get('outboundType') || storedData.selectedOutbound?.type || 'direct';
+        const outboundFlightData = urlParams.get('outboundFlightData') ? JSON.parse(decodeURIComponent(urlParams.get('outboundFlightData'))) : storedData.selectedOutbound?.flightData || null;
+        const returnTimes = urlParams.get('returnTimes') || storedData.selectedReturn?.times || '';
+        const returnArrivals = urlParams.get('returnArrivals') || storedData.selectedReturn?.arrivals || '';
+        const returnType = urlParams.get('returnType') || storedData.selectedReturn?.type || 'direct';
+        const returnFlightData = urlParams.get('returnFlightData') ? JSON.parse(decodeURIComponent(urlParams.get('returnFlightData'))) : storedData.selectedReturn?.flightData || null;
 
         // Wyświetlanie podsumowania
-        document.getElementById('summary-text').textContent = `Rezerwacja: ${origin} → ${destination}, ${departure}${returnDate ? `, Powrót: ${returnDate}` : ''}, ${passengers}, Klasa: ${selectedClass}`;
+        document.getElementById('summary-text').textContent = `Rezerwacja: ${origin} → ${destination}, ${departure}${returnDate ? `, Powrót: ${returnDate}` : ''}, ${passengers}, Klasa: ${selectedClass}${outboundTimes ? `, Wylot: ${outboundTimes}` : ''}${returnTimes ? `, Powrót: ${returnTimes}` : ''}`;
 
         // Obliczanie kosztu biletów
         function calculateTicketPrice(flightData) {
@@ -127,7 +134,7 @@
             return parseFloat(priceStr.replace(' PLN', '')) || 0;
         }
 
-        let ticketPrice = calculateTicketPrice(outboundFlightData);
+        let ticketPrice = outboundFlightData ? calculateTicketPrice(outboundFlightData) : 0;
         if (returnFlightData) ticketPrice += calculateTicketPrice(returnFlightData);
         localStorage.setItem('ticketPrice', ticketPrice);
 
