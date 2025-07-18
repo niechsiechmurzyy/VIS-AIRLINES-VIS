@@ -292,7 +292,7 @@
             background: #fff;
             padding: 1.8rem;
             border-radius: 8px;
-            margin_rsp            margin-bottom: 1.5rem;
+            margin-bottom: 1.5rem;
         }
 
         .passengers-modal .passenger-controls div {
@@ -819,6 +819,10 @@
         }
 
         // Pobieranie zapisanych danych z localStorage przy załadowaniu strony
+        let adultCount = 1;
+        let childCount = 0;
+        let infantCount = 0;
+
         window.addEventListener('load', () => {
             let storedData = JSON.parse(localStorage.getItem('flightData')) || {};
             if (storedData.origin) {
@@ -847,15 +851,17 @@
             if (storedData.class) {
                 document.querySelector(`input[name="class"][value="${storedData.class}"]`).checked = true;
             }
+            if (storedData.adultCount) adultCount = storedData.adultCount;
+            if (storedData.childCount) childCount = storedData.childCount;
+            if (storedData.infantCount) infantCount = storedData.infantCount;
+            updateCounts();
         });
 
         // Modal dla lotnisk
         const originSelect = document.getElementById('origin-select');
         const originModal = document.getElementById('origin-modal');
-        const originModalList = document.getElementById('origin-modal-list');
         const destinationSelect = document.getElementById('destination-select');
         const destinationModal = document.getElementById('destination-modal');
-        const destinationModalList = document.getElementById('destination-modal-list');
 
         originSelect.addEventListener('click', (e) => {
             e.preventDefault();
@@ -890,23 +896,50 @@
             });
         });
 
-        // Zamykanie modalnych okien po kliknięciu poza nimi
-        document.addEventListener('click', (e) => {
-            if (!originSelect.contains(e.target) && !originModal.contains(e.target) && originModal.style.display === 'flex') {
-                originModal.style.display = 'none';
-            }
-            if (!destinationSelect.contains(e.target) && !destinationModal.contains(e.target) && destinationModal.style.display === 'flex') {
-                destinationModal.style.display = 'none';
-            }
-            if (!document.getElementById('departure-calendar').contains(e.target) && !document.getElementById('departure-modal').contains(e.target) && document.getElementById('departure-modal').style.display === 'flex') {
-                document.getElementById('departure-modal').style.display = 'none';
-            }
-            if (!document.getElementById('return-calendar').contains(e.target) && !document.getElementById('return-modal').contains(e.target) && document.getElementById('return-modal').style.display === 'flex') {
-                document.getElementById('return-modal').style.display = 'none';
-            }
-            if (!document.getElementById('passengers-class').contains(e.target) && !document.getElementById('passengers-modal').contains(e.target) && document.getElementById('passengers-modal').style.display === 'flex') {
-                document.getElementById('passengers-modal').style.display = 'none';
-            }
+        // Modal dla pasażerów
+        const passengersClass = document.getElementById('passengers-class');
+        const passengersModal = document.getElementById('passengers-modal');
+
+        passengersClass.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            closeAllModals();
+            passengersModal.style.display = 'flex';
+            updateCounts();
+        });
+
+        function changePassenger(type, delta) {
+            if (type === 'adult') adultCount = Math.max(1, adultCount + delta);
+            if (type === 'child') childCount = Math.max(0, childCount + delta);
+            if (type === 'infant') infantCount = Math.max(0, infantCount + delta);
+            updateCounts();
+        }
+
+        function updateCounts() {
+            document.getElementById('adult-count').textContent = adultCount;
+            document.getElementById('child-count').textContent = childCount;
+            document.getElementById('infant-count').textContent = infantCount;
+        }
+
+        function updatePassengers() {
+            const classType = document.querySelector('input[name="class"]:checked').value;
+            const totalPassengers = adultCount + childCount + infantCount;
+            passengersClass.textContent = `${totalPassengers} Pasażer(ów), ${classType.charAt(0).toUpperCase() + classType.slice(1)}`;
+            passengersModal.style.display = 'none';
+            saveFlightData();
+        }
+
+        document.querySelectorAll('.passenger-controls button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        });
+
+        document.querySelector('.confirm-btn').addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            updatePassengers();
         });
 
         // Kalendarz
@@ -1018,43 +1051,6 @@
             renderCalendar(currentDate, 'return-calendar-grid', 'current-month-return', 'prev-month-return', 'next-month-return');
         });
 
-        // Pasażerowie
-        let adultCount = storedData.adultCount || 1;
-        let childCount = storedData.childCount || 0;
-        let infantCount = storedData.infantCount || 0;
-
-        function changePassenger(type, delta) {
-            if (type === 'adult') adultCount = Math.max(1, adultCount + delta);
-            if (type === 'child') childCount = Math.max(0, childCount + delta);
-            if (type === 'infant') infantCount = Math.max(0, infantCount + delta);
-            updateCounts();
-        }
-
-        function updateCounts() {
-            document.getElementById('adult-count').textContent = adultCount;
-            document.getElementById('child-count').textContent = childCount;
-            document.getElementById('infant-count').textContent = infantCount;
-        }
-
-        const passengersClass = document.getElementById('passengers-class');
-        const passengersModal = document.getElementById('passengers-modal');
-
-        passengersClass.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            closeAllModals();
-            passengersModal.style.display = 'flex';
-            updateCounts();
-        });
-
-        function updatePassengers() {
-            const classType = document.querySelector('input[name="class"]:checked').value;
-            const totalPassengers = adultCount + childCount + infantCount;
-            passengersClass.textContent = `${totalPassengers} Pasażer(ów), ${classType.charAt(0).toUpperCase() + classType.slice(1)}`;
-            passengersModal.style.display = 'none';
-            saveFlightData();
-        }
-
         // Dynamiczne przełączanie Powrót
         function toggleReturn() {
             const returnDiv = document.getElementById('return-div');
@@ -1073,7 +1069,7 @@
             const tripType = document.querySelector('input[name="trip-type"]:checked').value;
             const classType = document.querySelector('input[name="class"]:checked')?.value || 'economy';
 
-            localStorage.setItem('flightData', JSON.stringify({
+            const flightData = {
                 origin,
                 destination,
                 departure,
@@ -1084,32 +1080,67 @@
                 adultCount,
                 childCount,
                 infantCount
-            }));
+            };
+
+            try {
+                localStorage.setItem('flightData', JSON.stringify(flightData));
+                console.log('Dane zapisane w localStorage:', flightData);
+            } catch (error) {
+                console.error('Błąd zapisu do localStorage:', error);
+            }
         }
+
+        // Zamykanie modalnych okien po kliknięciu poza nimi
+        document.addEventListener('click', (e) => {
+            if (!originSelect.contains(e.target) && !originModal.contains(e.target) && originModal.style.display === 'flex') {
+                originModal.style.display = 'none';
+            }
+            if (!destinationSelect.contains(e.target) && !destinationModal.contains(e.target) && destinationModal.style.display === 'flex') {
+                destinationModal.style.display = 'none';
+            }
+            if (!document.getElementById('departure-calendar').contains(e.target) && !document.getElementById('departure-modal').contains(e.target) && document.getElementById('departure-modal').style.display === 'flex') {
+                document.getElementById('departure-modal').style.display = 'none';
+            }
+            if (!document.getElementById('return-calendar').contains(e.target) && !document.getElementById('return-modal').contains(e.target) && document.getElementById('return-modal').style.display === 'flex') {
+                document.getElementById('return-modal').style.display = 'none';
+            }
+            if (!passengersClass.contains(e.target) && !passengersModal.contains(e.target) && passengersModal.style.display === 'flex') {
+                passengersModal.style.display = 'none';
+            }
+        });
 
         // Obsługa przesyłania formularza
         document.getElementById('flightSearchForm').addEventListener('submit', (e) => {
             e.preventDefault();
+            console.log('Formularz przesłany, rozpoczęcie przekierowania...');
+
             const origin = document.getElementById('origin-select').dataset.value || 'Nie wybrano';
             const destination = document.getElementById('destination-select').dataset.value || 'Nie wybrano';
             const departure = document.getElementById('departure-calendar').dataset.value || 'Nie wybrano';
             const returnDate = document.getElementById('return-calendar').dataset.value || 'Nie wybrano';
-            const passengers = document.getElementById('passengers-class').textContent;
-            const tripType = document.querySelector('input[name="trip-type"]:checked').value;
+            const passengers = document.getElementById('passengers-class').textContent || '1 Pasażer, Ekonomiczna';
+            const tripType = document.querySelector('input[name="trip-type"]:checked').value || 'one-way';
 
-            // Zapisz dane przed przekierowaniem
+            const params = new URLSearchParams({
+                origin: encodeURIComponent(origin),
+                destination: encodeURIComponent(destination),
+                departure: encodeURIComponent(departure),
+                return: tripType === 'round-trip' ? encodeURIComponent(returnDate) : '',
+                passengers: encodeURIComponent(passengers),
+                'trip-type': encodeURIComponent(tripType)
+            });
+
             saveFlightData();
 
-            // Przekieruj do results.html z parametrami
-            const params = new URLSearchParams({
-                origin,
-                destination,
-                departure,
-                return: tripType === 'round-trip' ? returnDate : '',
-                passengers,
-                'trip-type': tripType
-            });
-            window.location.href = `results.html?${params.toString()}`;
+            const url = `results.html?${params.toString()}`;
+            console.log('Przekierowanie na URL:', url);
+
+            try {
+                window.location.href = url;
+            } catch (error) {
+                console.error('Błąd podczas przekierowania:', error);
+                alert('Wystąpił problem z przekierowaniem. Sprawdź, czy plik results.html istnieje i konsolę przeglądarki.');
+            }
         });
     </script>
 </body>
