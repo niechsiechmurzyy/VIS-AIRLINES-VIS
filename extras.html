@@ -114,9 +114,22 @@
         const returnDate = urlParams.get('return') || '';
         const passengers = urlParams.get('passengers') || '1 Pasażer, Ekonomiczna';
         const selectedClass = urlParams.get('class') || 'Ekonomi';
+        const outboundFlightData = JSON.parse(decodeURIComponent(urlParams.get('outboundFlightData') || '{}'));
+        const returnFlightData = urlParams.get('returnFlightData') ? JSON.parse(decodeURIComponent(urlParams.get('returnFlightData'))) : null;
 
         // Wyświetlanie podsumowania
         document.getElementById('summary-text').textContent = `Rezerwacja: ${origin} → ${destination}, ${departure}${returnDate ? `, Powrót: ${returnDate}` : ''}, ${passengers}, Klasa: ${selectedClass}`;
+
+        // Obliczanie kosztu biletów
+        function calculateTicketPrice(flightData) {
+            if (!flightData || !flightData.prices) return 0;
+            const priceStr = flightData.prices[selectedClass] || flightData.prices['Ekonomi'] || '0 PLN';
+            return parseFloat(priceStr.replace(' PLN', '')) || 0;
+        }
+
+        let ticketPrice = calculateTicketPrice(outboundFlightData);
+        if (returnFlightData) ticketPrice += calculateTicketPrice(returnFlightData);
+        localStorage.setItem('ticketPrice', ticketPrice);
 
         // Zarządzanie wyborem bagażu
         function selectBaggage(weight, event) {
@@ -140,6 +153,18 @@
                 document.getElementById(`price-${type}`).style.display = selectedExtras[type] ? 'block' : 'none';
             }
             localStorage.setItem('selectedExtras', JSON.stringify(selectedExtras));
+            updateTotalPrice();
+        }
+
+        // Obliczanie i aktualizacja całkowitej ceny
+        function updateTotalPrice() {
+            const selectedExtras = JSON.parse(localStorage.getItem('selectedExtras')) || {};
+            let extraPrice = 0;
+            if (selectedExtras.baggage) extraPrice += { 10: 50, 15: 75, 20: 100, 25: 125 }[selectedExtras.baggage];
+            if (selectedExtras.insurance) extraPrice += 30;
+            if (selectedExtras.priority) extraPrice += 20;
+            if (selectedExtras.windowSeat) extraPrice += 15;
+            localStorage.setItem('extraPrice', extraPrice);
         }
 
         // Załadowanie zapisanych opcji przy odświeżeniu
@@ -155,6 +180,7 @@
                     document.querySelector(`[onclick="selectExtra('${type}')"]`).closest('.cursor-pointer').classList.add('selected');
                 }
             });
+            updateTotalPrice();
         };
     </script>
 </body>
