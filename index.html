@@ -458,7 +458,7 @@
 
     <div class="main-content">
         <div class="search-container">
-            <form class="search-form" action="results.html" method="GET">
+            <form class="search-form" id="flightSearchForm">
                 <div>
                     <label for="origin">Skąd</label>
                     <div class="dropdown-select" id="origin-select" name="origin">Wybierz lotnisko</div>
@@ -762,6 +762,18 @@
     </div>
 
     <script>
+        // Pobieranie zapisanych danych z localStorage przy załadowaniu strony
+        let storedData = JSON.parse(localStorage.getItem('flightData')) || {};
+        if (storedData.origin) document.getElementById('origin-select').textContent = storedData.origin;
+        if (storedData.destination) document.getElementById('destination-select').textContent = storedData.destination;
+        if (storedData.departure) document.getElementById('departure-calendar').textContent = storedData.departure;
+        if (storedData.return) document.getElementById('return-calendar').textContent = storedData.return;
+        if (storedData.passengers) document.getElementById('passengers-class').textContent = storedData.passengers;
+        if (storedData.tripType) {
+            document.querySelector(`input[name="trip-type"][value="${storedData.tripType}"]`).checked = true;
+            toggleReturn();
+        }
+
         // Modal dla lotnisk
         const originSelect = document.getElementById('origin-select');
         const originModal = document.getElementById('origin-modal');
@@ -787,10 +799,12 @@
                     originSelect.textContent = value;
                     originSelect.dataset.value = value;
                     originModal.style.display = 'none';
+                    saveFlightData(); // Zapisz dane po wybraniu
                 } else {
                     destinationSelect.textContent = value;
                     destinationSelect.dataset.value = value;
                     destinationModal.style.display = 'none';
+                    saveFlightData(); // Zapisz dane po wybraniu
                 }
             });
         });
@@ -850,6 +864,7 @@
                         calendar.textContent = `${day} ${months[month]} ${year}`;
                         calendar.dataset.value = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                         document.getElementById(gridId === 'departure-calendar-grid' ? 'departure-modal' : 'return-modal').style.display = 'none';
+                        saveFlightData(); // Zapisz dane po wybraniu daty
                     });
                 }
                 grid.appendChild(dayElement);
@@ -906,6 +921,7 @@
             const returnDiv = document.getElementById('return-div');
             const tripType = document.querySelector('input[name="trip-type"]:checked').value;
             returnDiv.style.display = tripType === 'one-way' ? 'none' : 'block';
+            saveFlightData(); // Zapisz typ podróży
         }
 
         // Pasażerowie
@@ -933,8 +949,10 @@
 
         function updatePassengers() {
             const classType = document.querySelector('input[name="class"]:checked').value;
-            passengersClass.textContent = `${adultCount} Pasażer(ów), ${classType.charAt(0).toUpperCase() + classType.slice(1)}`;
+            const totalPassengers = adultCount + childCount + infantCount;
+            passengersClass.textContent = `${totalPassengers} Pasażer(ów), ${classType.charAt(0).toUpperCase() + classType.slice(1)}`;
             passengersModal.style.display = 'none';
+            saveFlightData(); // Zapisz dane po aktualizacji pasażerów
         }
 
         document.addEventListener('click', (e) => {
@@ -943,28 +961,47 @@
             }
         });
 
-        // Obsługa przesyłania formularza
-        document.querySelector('.search-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const form = e.target;
-            const origin = document.getElementById('origin-select').dataset.value;
-            const destination = document.getElementById('destination-select').dataset.value;
-            const departure = document.getElementById('departure-calendar').dataset.value;
-            const returnDate = document.getElementById('return-calendar').dataset.value;
+        // Funkcja zapisywania danych w localStorage
+        function saveFlightData() {
+            const origin = document.getElementById('origin-select').dataset.value || '';
+            const destination = document.getElementById('destination-select').dataset.value || '';
+            const departure = document.getElementById('departure-calendar').dataset.value || '';
+            const returnDate = document.getElementById('return-calendar').dataset.value || '';
             const passengers = document.getElementById('passengers-class').textContent;
             const tripType = document.querySelector('input[name="trip-type"]:checked').value;
 
-            // Utwórz URL z parametrami
-            const params = new URLSearchParams({
-                origin: origin || 'Nie wybrano',
-                destination: destination || 'Nie wybrano',
-                departure: departure || 'Nie wybrano',
-                return: tripType === 'round-trip' ? returnDate || 'Nie wybrano' : '',
-                passengers: passengers,
-                'trip-type': tripType
-            });
+            localStorage.setItem('flightData', JSON.stringify({
+                origin,
+                destination,
+                departure,
+                return: tripType === 'round-trip' ? returnDate : '',
+                passengers,
+                tripType
+            }));
+        }
+
+        // Obsługa przesyłania formularza
+        document.getElementById('flightSearchForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const origin = document.getElementById('origin-select').dataset.value || 'Nie wybrano';
+            const destination = document.getElementById('destination-select').dataset.value || 'Nie wybrano';
+            const departure = document.getElementById('departure-calendar').dataset.value || 'Nie wybrano';
+            const returnDate = document.getElementById('return-calendar').dataset.value || 'Nie wybrano';
+            const passengers = document.getElementById('passengers-class').textContent;
+            const tripType = document.querySelector('input[name="trip-type"]:checked').value;
+
+            // Zapisz dane przed przekierowaniem
+            saveFlightData();
 
             // Przekieruj do results.html z parametrami
+            const params = new URLSearchParams({
+                origin,
+                destination,
+                departure,
+                return: tripType === 'round-trip' ? returnDate : '',
+                passengers,
+                'trip-type': tripType
+            });
             window.location.href = `results.html?${params.toString()}`;
         });
     </script>
