@@ -4,13 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VIS - Twoja Podróż</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Helvetica', sans-serif;
         }
 
         body {
@@ -20,126 +19,100 @@
         }
 
         header {
-            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 50%, #81d4fa 100%);
-            padding: 1.2rem 2rem;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            background: #ffffff;
+            padding: 1.5rem 3rem;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
             position: fixed;
             width: 100%;
             z-index: 1000;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 3px solid rgba(255, 255, 255, 0.3);
-            transition: all 0.3s ease;
         }
 
         .logo {
-            font-size: 2.2rem;
+            font-size: 2.5rem;
             font-weight: 700;
-            color: #1e3a8a;
+            color: #1e4a8a;
             text-align: center;
-            letter-spacing: 1.5px;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
             flex-grow: 1;
         }
 
         nav {
             display: flex;
-            gap: 1.2rem;
+            gap: 2rem;
             align-items: center;
         }
 
         nav a {
             color: #1a2b3c;
             text-decoration: none;
-            font-weight: 500;
-            font-size: 1rem;
-            padding: 0.6rem 1.2rem;
-            border-radius: 25px;
-            background: rgba(255, 255, 255, 0.15);
-            transition: background 0.3s, color 0.3s, transform 0.2s, box-shadow 0.2s;
+            font-weight: 600;
+            transition: color 0.3s;
         }
 
         nav a:hover {
-            background: #ffffff;
-            color: #0288d1;
-            transform: scale(1.05);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            color: #ff6f61;
         }
 
         .dropdown {
             position: relative;
             cursor: pointer;
-            padding: 0.6rem 1.2rem;
-            border-radius: 25px;
-            background: rgba(255, 255, 255, 0.15);
-            transition: background 0.3s, transform 0.2s, box-shadow 0.2s;
-        }
-
-        .dropdown:hover {
-            background: #ffffff;
-            transform: scale(1.05);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            padding: 0.5rem 1rem;
         }
 
         .dropdown-content {
             display: none;
             position: absolute;
-            background: linear-gradient(135deg, #e6f0fa 0%, #bbdefb 100%);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            border-radius: 10px;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
             min-width: 200px;
             z-index: 1001;
-            margin-top: 0.6rem;
+            max-height: 300px;
             overflow-y: auto;
-            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         .dropdown:hover .dropdown-content {
             display: block;
         }
 
-        .dropdown-content div, .dropdown-content a {
-            padding: 0.8rem 1.2rem;
+        .dropdown-content div {
+            padding: 0.5rem 1rem;
             color: #1a2b3c;
             text-decoration: none;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            font-size: 0.95rem;
-            font-weight: 400;
-            transition: background 0.2s, transform 0.2s;
         }
 
-        .dropdown-content div:hover, .dropdown-content a:hover {
-            background: #ffffff;
-            transform: translateX(5px);
+        .dropdown-content div:hover {
+            background: #f0f6fa;
         }
 
         .main-content {
-            padding-top: 100px;
+            padding-top: 120px;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: calc(100vh - 100px);
+            min-height: calc(100vh - 120px);
             background: #e6eef7;
         }
 
         .search-container {
-            background: linear-gradient(135deg, #ffffff 0%, #e6f0fa 100%);
-            padding: 2.5rem;
-            border-radius: 15px;
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 900px;
-            border: 2px solid #d1c4e9;
+            max-width: 800px;
         }
 
         .search-form {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 1.2rem;
-            margin-bottom: 1.5rem;
+            gap: 1rem;
+            margin-bottom: 1rem;
         }
 
         .search-form div {
@@ -148,27 +121,25 @@
         }
 
         .search-form label {
-            font-size: 0.95rem;
-            font-weight: 500;
-            color: #1e3a8a;
-            margin-bottom: 0.4rem;
-            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+            font-size: 0.9rem;
+            color: #1a2b3c;
+            margin-bottom: 0.3rem;
         }
 
-        .search-form .dropdown-select, .search-form .calendar {
-            padding: 0.8rem;
-            border: 2px solid #d1c4e9;
-            border-radius: 10px;
+        .search-form .dropdown-select {
+            padding: 0.6rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
             font-size: 1rem;
             cursor: pointer;
-            background: #ffffff;
-            transition: border-color 0.3s, box-shadow 0.3s, transform 0.2s;
         }
 
-        .search-form .dropdown-select:hover, .search-form .calendar:hover {
-            border-color: #81d4fa;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            transform: translateY(-2px);
+        .calendar {
+            padding: 0.6rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
         }
 
         .modal {
@@ -193,12 +164,6 @@
             overflow-y: auto;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             text-align: center;
-        }
-
-        .modal-content h3 {
-            color: #1e4a8a;
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
         }
 
         .modal-content .calendar-header {
@@ -254,7 +219,7 @@
         }
 
         .passengers-modal h3 {
-            color: #1e3a8a;
+            color: #1e4a8a;
             font-size: 1.5rem;
             margin-bottom: 1.5rem;
             font-weight: 700;
@@ -342,20 +307,35 @@
 
         .search-btn {
             grid-column: 1 / 4;
-            background: linear-gradient(90deg, #d1c4e9, #81d4fa);
-            color: #1e3a8a;
+            background: #ff6f61;
+            color: white;
             border: none;
-            padding: 1rem;
-            border-radius: 10px;
-            font-size: 1.2rem;
-            font-weight: 600;
+            padding: 0.8rem;
+            border-radius: 6px;
+            font-size: 1.1rem;
             cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: background 0.3s;
         }
 
         .search-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            background: #e65b50;
+        }
+
+        .options {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #1a2b3c;
+        }
+
+        .options a {
+            color: #1e4a8a;
+            text-decoration: none;
+        }
+
+        .options a:hover {
+            text-decoration: underline;
         }
 
         .additional-options {
@@ -364,65 +344,39 @@
             margin-top: 1.5rem;
             font-size: 0.9rem;
             color: #1a2b3c;
-            flex-wrap: wrap;
-            gap: 1rem;
         }
 
         .additional-options a {
-            color: #0288d1;
+            color: #1e4a8a;
             text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s, transform 0.2s;
         }
 
         .additional-options a:hover {
-            color: #d1c4e9;
-            transform: translateY(-2px);
+            text-decoration: underline;
         }
 
         @media (max-width: 768px) {
             header {
-                padding: 0.8rem 1rem;
+                padding: 1rem;
                 flex-direction: column;
-                gap: 0.8rem;
+                gap: 1rem;
             }
 
             .logo {
-                font-size: 1.8rem;
+                font-size: 2rem;
             }
 
             nav {
-                flex-direction: row;
-                flex-wrap: wrap;
-                gap: 0.6rem;
-                justify-content: center;
-            }
-
-            nav a, .dropdown {
-                font-size: 0.85rem;
-                padding: 0.5rem 1rem;
-                border-radius: 20px;
-            }
-
-            .dropdown-content {
-                min-width: 160px;
-                margin-top: 0.4rem;
-            }
-
-            .search-container {
-                padding: 1.5rem;
-                max-width: 95%;
+                flex-direction: column;
+                gap: 1rem;
             }
 
             .search-form {
                 grid-template-columns: 1fr;
-                gap: 1rem;
             }
 
             .search-btn {
                 grid-column: 1;
-                padding: 0.8rem;
-                font-size: 1.1rem;
             }
 
             .modal-content {
@@ -462,8 +416,7 @@
 
             .additional-options {
                 flex-direction: column;
-                gap: 0.8rem;
-                font-size: 0.85rem;
+                gap: 1rem;
             }
         }
     </style>
@@ -530,7 +483,7 @@
                     <label><input type="radio" name="trip-type" value="one-way" checked onchange="toggleReturn()"> Lot w jedną stronę</label>
                     <label><input type="radio" name="trip-type" value="round-trip" onchange="toggleReturn()"> Lot w obie strony</label>
                 </div>
-                <button type="submit" class="search-btn">Szukaj lotów</button>
+                <button type="submit" class="search-btn">Szukaj</button>
             </form>
             <div class="additional-options">
                 <a href="#">Mam kod promocyjny</a>
@@ -809,137 +762,60 @@
     </div>
 
     <script>
-        // Funkcja zamykania wszystkich modalnych okien
-        function closeAllModals() {
-            document.getElementById('origin-modal').style.display = 'none';
-            document.getElementById('destination-modal').style.display = 'none';
-            document.getElementById('departure-modal').style.display = 'none';
-            document.getElementById('return-modal').style.display = 'none';
-            document.getElementById('passengers-modal').style.display = 'none';
-        }
-
         // Pobieranie zapisanych danych z localStorage przy załadowaniu strony
-        let adultCount = 1;
-        let childCount = 0;
-        let infantCount = 0;
-
-        window.addEventListener('load', () => {
-            let storedData = JSON.parse(localStorage.getItem('flightData')) || {};
-            if (storedData.origin) {
-                document.getElementById('origin-select').textContent = storedData.origin;
-                document.getElementById('origin-select').dataset.value = storedData.origin;
-            }
-            if (storedData.destination) {
-                document.getElementById('destination-select').textContent = storedData.destination;
-                document.getElementById('destination-select').dataset.value = storedData.destination;
-            }
-            if (storedData.departure) {
-                document.getElementById('departure-calendar').textContent = storedData.departure;
-                document.getElementById('departure-calendar').dataset.value = storedData.departure;
-            }
-            if (storedData.return) {
-                document.getElementById('return-calendar').textContent = storedData.return;
-                document.getElementById('return-calendar').dataset.value = storedData.return;
-            }
-            if (storedData.passengers) {
-                document.getElementById('passengers-class').textContent = storedData.passengers;
-            }
-            if (storedData.tripType) {
-                document.querySelector(`input[name="trip-type"][value="${storedData.tripType}"]`).checked = true;
-                toggleReturn();
-            }
-            if (storedData.class) {
-                document.querySelector(`input[name="class"][value="${storedData.class}"]`).checked = true;
-            }
-            if (storedData.adultCount) adultCount = storedData.adultCount;
-            if (storedData.childCount) childCount = storedData.childCount;
-            if (storedData.infantCount) infantCount = storedData.infantCount;
-            updateCounts();
-        });
+        let storedData = JSON.parse(localStorage.getItem('flightData')) || {};
+        if (storedData.origin) document.getElementById('origin-select').textContent = storedData.origin;
+        if (storedData.destination) document.getElementById('destination-select').textContent = storedData.destination;
+        if (storedData.departure) document.getElementById('departure-calendar').textContent = storedData.departure;
+        if (storedData.return) document.getElementById('return-calendar').textContent = storedData.return;
+        if (storedData.passengers) document.getElementById('passengers-class').textContent = storedData.passengers;
+        if (storedData.tripType) {
+            document.querySelector(`input[name="trip-type"][value="${storedData.tripType}"]`).checked = true;
+            toggleReturn();
+        }
 
         // Modal dla lotnisk
         const originSelect = document.getElementById('origin-select');
         const originModal = document.getElementById('origin-modal');
+        const originModalList = document.getElementById('origin-modal-list');
         const destinationSelect = document.getElementById('destination-select');
         const destinationModal = document.getElementById('destination-modal');
+        const destinationModalList = document.getElementById('destination-modal-list');
 
-        originSelect.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            closeAllModals();
+        originSelect.addEventListener('click', () => {
             originModal.style.display = 'flex';
+            destinationModal.style.display = 'none';
         });
 
-        destinationSelect.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            closeAllModals();
+        destinationSelect.addEventListener('click', () => {
             destinationModal.style.display = 'flex';
+            originModal.style.display = 'none';
         });
 
-        document.querySelectorAll('#origin-modal-list li, #destination-modal-list li').forEach(li => {
-            li.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
+        document.querySelectorAll('.modal-content ul li').forEach(li => {
+            li.addEventListener('click', () => {
                 const value = li.dataset.value;
-                const modalId = li.parentElement.id;
-                if (modalId === 'origin-modal-list') {
+                if (li.parentElement.id === 'origin-modal-list') {
                     originSelect.textContent = value;
                     originSelect.dataset.value = value;
                     originModal.style.display = 'none';
+                    saveFlightData(); // Zapisz dane po wybraniu
                 } else {
                     destinationSelect.textContent = value;
                     destinationSelect.dataset.value = value;
                     destinationModal.style.display = 'none';
+                    saveFlightData(); // Zapisz dane po wybraniu
                 }
-                saveFlightData();
             });
         });
 
-        // Modal dla pasażerów
-        const passengersClass = document.getElementById('passengers-class');
-        const passengersModal = document.getElementById('passengers-modal');
-
-        passengersClass.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            closeAllModals();
-            passengersModal.style.display = 'flex';
-            updateCounts();
-        });
-
-        function changePassenger(type, delta) {
-            if (type === 'adult') adultCount = Math.max(1, adultCount + delta);
-            if (type === 'child') childCount = Math.max(0, childCount + delta);
-            if (type === 'infant') infantCount = Math.max(0, infantCount + delta);
-            updateCounts();
-        }
-
-        function updateCounts() {
-            document.getElementById('adult-count').textContent = adultCount;
-            document.getElementById('child-count').textContent = childCount;
-            document.getElementById('infant-count').textContent = infantCount;
-        }
-
-        function updatePassengers() {
-            const classType = document.querySelector('input[name="class"]:checked').value;
-            const totalPassengers = adultCount + childCount + infantCount;
-            passengersClass.textContent = `${totalPassengers} Pasażer(ów), ${classType.charAt(0).toUpperCase() + classType.slice(1)}`;
-            passengersModal.style.display = 'none';
-            saveFlightData();
-        }
-
-        document.querySelectorAll('.passenger-controls button').forEach(button => {
-            button.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-            });
-        });
-
-        document.querySelector('.confirm-btn').addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            updatePassengers();
+        document.addEventListener('click', (e) => {
+            if (!originSelect.contains(e.target) && !originModal.contains(e.target)) {
+                originModal.style.display = 'none';
+            }
+            if (!destinationSelect.contains(e.target) && !destinationModal.contains(e.target)) {
+                destinationModal.style.display = 'none';
+            }
         });
 
         // Kalendarz
@@ -947,7 +823,7 @@
         currentDate.setHours(0, 0, 0, 0);
         const today = new Date();
         const maxDate = new Date(today);
-        maxDate.setFullYear(maxDate.getFullYear() + 1);
+        maxDate.setFullYear(maxDate.getFullYear() + 1); // Do 17 lipca 2026
         const months = ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'];
         const days = ['Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So', 'Nd'];
 
@@ -965,11 +841,10 @@
                 const dayElement = document.createElement('div');
                 dayElement.textContent = day;
                 dayElement.className = 'calendar-day';
-                dayElement.style.color = '#1e4a8a';
                 grid.appendChild(dayElement);
             });
 
-            for (let i = 0; i < (firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1); i++) {
+            for (let i = 0; i < firstDay.getDay() - 1; i++) {
                 const empty = document.createElement('div');
                 grid.appendChild(empty);
             }
@@ -981,74 +856,64 @@
                 dayElement.className = 'calendar-day';
                 if (current < today) {
                     dayElement.style.color = '#ccc';
-                    dayElement.style.cursor = 'not-allowed';
                 } else if (current > maxDate) {
                     dayElement.style.color = '#ccc';
-                    dayElement.style.cursor = 'not-allowed';
                 } else {
-                    dayElement.style.cursor = 'pointer';
-                    dayElement.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
+                    dayElement.addEventListener('click', () => {
                         const calendar = document.getElementById(gridId === 'departure-calendar-grid' ? 'departure-calendar' : 'return-calendar');
                         calendar.textContent = `${day} ${months[month]} ${year}`;
                         calendar.dataset.value = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                         document.getElementById(gridId === 'departure-calendar-grid' ? 'departure-modal' : 'return-modal').style.display = 'none';
-                        saveFlightData();
+                        saveFlightData(); // Zapisz dane po wybraniu daty
                     });
                 }
                 grid.appendChild(dayElement);
             }
         }
 
-        document.getElementById('departure-calendar').addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            closeAllModals();
+        document.getElementById('departure-calendar').addEventListener('click', () => {
             const modal = document.getElementById('departure-modal');
             modal.style.display = 'flex';
             renderCalendar(currentDate, 'departure-calendar-grid', 'current-month-departure', 'prev-month-departure', 'next-month-departure');
         });
 
-        document.getElementById('return-calendar').addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            closeAllModals();
+        document.getElementById('return-calendar').addEventListener('click', () => {
             const modal = document.getElementById('return-modal');
             modal.style.display = 'flex';
             renderCalendar(currentDate, 'return-calendar-grid', 'current-month-return', 'prev-month-return', 'next-month-return');
         });
 
-        document.getElementById('prev-month-departure').addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
+        document.getElementById('prev-month-departure').addEventListener('click', () => {
             currentDate.setMonth(currentDate.getMonth() - 1);
             if (currentDate < today) currentDate = new Date(today);
             renderCalendar(currentDate, 'departure-calendar-grid', 'current-month-departure', 'prev-month-departure', 'next-month-departure');
         });
 
-        document.getElementById('next-month-departure').addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
+        document.getElementById('next-month-departure').addEventListener('click', () => {
             currentDate.setMonth(currentDate.getMonth() + 1);
             if (currentDate > maxDate) currentDate = new Date(maxDate);
             renderCalendar(currentDate, 'departure-calendar-grid', 'current-month-departure', 'prev-month-departure', 'next-month-departure');
         });
 
-        document.getElementById('prev-month-return').addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
+        document.getElementById('prev-month-return').addEventListener('click', () => {
             currentDate.setMonth(currentDate.getMonth() - 1);
             if (currentDate < today) currentDate = new Date(today);
             renderCalendar(currentDate, 'return-calendar-grid', 'current-month-return', 'prev-month-return', 'next-month-return');
         });
 
-        document.getElementById('next-month-return').addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
+        document.getElementById('next-month-return').addEventListener('click', () => {
             currentDate.setMonth(currentDate.getMonth() + 1);
             if (currentDate > maxDate) currentDate = new Date(maxDate);
             renderCalendar(currentDate, 'return-calendar-grid', 'current-month-return', 'prev-month-return', 'next-month-return');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!document.getElementById('departure-calendar').contains(e.target) && !document.getElementById('departure-modal').contains(e.target)) {
+                document.getElementById('departure-modal').style.display = 'none';
+            }
+            if (!document.getElementById('return-calendar').contains(e.target) && !document.getElementById('return-modal').contains(e.target)) {
+                document.getElementById('return-modal').style.display = 'none';
+            }
         });
 
         // Dynamiczne przełączanie Powrót
@@ -1056,8 +921,45 @@
             const returnDiv = document.getElementById('return-div');
             const tripType = document.querySelector('input[name="trip-type"]:checked').value;
             returnDiv.style.display = tripType === 'one-way' ? 'none' : 'block';
-            saveFlightData();
+            saveFlightData(); // Zapisz typ podróży
         }
+
+        // Pasażerowie
+        let adultCount = 1, childCount = 0, infantCount = 0;
+
+        function changePassenger(type, delta) {
+            if (type === 'adult') adultCount = Math.max(1, adultCount + delta);
+            if (type === 'child') childCount = Math.max(0, childCount + delta);
+            if (type === 'infant') infantCount = Math.max(0, infantCount + delta);
+            updateCounts();
+        }
+
+        function updateCounts() {
+            document.getElementById('adult-count').textContent = adultCount;
+            document.getElementById('child-count').textContent = childCount;
+            document.getElementById('infant-count').textContent = infantCount;
+        }
+
+        const passengersClass = document.getElementById('passengers-class');
+        const passengersModal = document.getElementById('passengers-modal');
+
+        passengersClass.addEventListener('click', () => {
+            passengersModal.style.display = 'flex';
+        });
+
+        function updatePassengers() {
+            const classType = document.querySelector('input[name="class"]:checked').value;
+            const totalPassengers = adultCount + childCount + infantCount;
+            passengersClass.textContent = `${totalPassengers} Pasażer(ów), ${classType.charAt(0).toUpperCase() + classType.slice(1)}`;
+            passengersModal.style.display = 'none';
+            saveFlightData(); // Zapisz dane po aktualizacji pasażerów
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!passengersClass.contains(e.target) && !passengersModal.contains(e.target)) {
+                passengersModal.style.display = 'none';
+            }
+        });
 
         // Funkcja zapisywania danych w localStorage
         function saveFlightData() {
@@ -1067,80 +969,40 @@
             const returnDate = document.getElementById('return-calendar').dataset.value || '';
             const passengers = document.getElementById('passengers-class').textContent;
             const tripType = document.querySelector('input[name="trip-type"]:checked').value;
-            const classType = document.querySelector('input[name="class"]:checked')?.value || 'economy';
 
-            const flightData = {
+            localStorage.setItem('flightData', JSON.stringify({
                 origin,
                 destination,
                 departure,
                 return: tripType === 'round-trip' ? returnDate : '',
                 passengers,
-                tripType,
-                class: classType,
-                adultCount,
-                childCount,
-                infantCount
-            };
-
-            try {
-                localStorage.setItem('flightData', JSON.stringify(flightData));
-                console.log('Dane zapisane w localStorage:', flightData);
-            } catch (error) {
-                console.error('Błąd zapisu do localStorage:', error);
-            }
+                tripType
+            }));
         }
-
-        // Zamykanie modalnych okien po kliknięciu poza nimi
-        document.addEventListener('click', (e) => {
-            if (!originSelect.contains(e.target) && !originModal.contains(e.target) && originModal.style.display === 'flex') {
-                originModal.style.display = 'none';
-            }
-            if (!destinationSelect.contains(e.target) && !destinationModal.contains(e.target) && destinationModal.style.display === 'flex') {
-                destinationModal.style.display = 'none';
-            }
-            if (!document.getElementById('departure-calendar').contains(e.target) && !document.getElementById('departure-modal').contains(e.target) && document.getElementById('departure-modal').style.display === 'flex') {
-                document.getElementById('departure-modal').style.display = 'none';
-            }
-            if (!document.getElementById('return-calendar').contains(e.target) && !document.getElementById('return-modal').contains(e.target) && document.getElementById('return-modal').style.display === 'flex') {
-                document.getElementById('return-modal').style.display = 'none';
-            }
-            if (!passengersClass.contains(e.target) && !passengersModal.contains(e.target) && passengersModal.style.display === 'flex') {
-                passengersModal.style.display = 'none';
-            }
-        });
 
         // Obsługa przesyłania formularza
         document.getElementById('flightSearchForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            console.log('Formularz przesłany, rozpoczęcie przekierowania...');
-
             const origin = document.getElementById('origin-select').dataset.value || 'Nie wybrano';
             const destination = document.getElementById('destination-select').dataset.value || 'Nie wybrano';
             const departure = document.getElementById('departure-calendar').dataset.value || 'Nie wybrano';
             const returnDate = document.getElementById('return-calendar').dataset.value || 'Nie wybrano';
-            const passengers = document.getElementById('passengers-class').textContent || '1 Pasażer, Ekonomiczna';
-            const tripType = document.querySelector('input[name="trip-type"]:checked').value || 'one-way';
+            const passengers = document.getElementById('passengers-class').textContent;
+            const tripType = document.querySelector('input[name="trip-type"]:checked').value;
 
-            const params = new URLSearchParams({
-                origin: encodeURIComponent(origin),
-                destination: encodeURIComponent(destination),
-                departure: encodeURIComponent(departure),
-                return: tripType === 'round-trip' ? encodeURIComponent(returnDate) : '',
-                passengers: encodeURIComponent(passengers),
-                'trip-type': encodeURIComponent(tripType)
-            });
-
+            // Zapisz dane przed przekierowaniem
             saveFlightData();
 
-            const url = `results.html?${params.toString()}`;
-            console.log('Przekierowanie na URL:', url);
-
-            try {
-                window.location.href = url;
-            } catch (error) {
-                console.error('Błąd podczas przekierowania:', error);
-                alert('Wystąpił problem z przekierowaniem. Sprawdź, czy plik results.html istnieje i konsolę przeglądarki.');
-            }
+            // Przekieruj do results.html z parametrami
+            const params = new URLSearchParams({
+                origin,
+                destination,
+                departure,
+                return: tripType === 'round-trip' ? returnDate : '',
+                passengers,
+                'trip-type': tripType
+            });
+            window.location.href = `results.html?${params.toString()}`;
         });
     </script>
 </body>
